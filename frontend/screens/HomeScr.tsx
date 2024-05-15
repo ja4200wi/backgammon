@@ -1,28 +1,25 @@
-import { View, Text, StyleSheet, Button, SafeAreaView, ScrollView, StatusBar} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
 
-export default function HomeScr({navigation}) {
+export default function HomeScr({ navigation }) {
   return (
-    
-    <SafeAreaView style={[styles.container,{backgroundColor: "#28231C"}]}>
-      <StatusBar
-        barStyle={'dark-content'}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={[{backgroundColor: "#1f4336"}]}>
-        <View
-          style={{
-            backgroundColor: "#1f4336",
-          }}>
-    <View>
-      <Text style={styles.text}>Home Screen</Text>
-      <Button
-            title="Press to play"
-            onPress={() => navigation.navigate("Game")}
-          />
-    </View>
-    </View>
-    </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <View style={styles.innerContainer}>
+        <Text style={styles.title}>Backgammon</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Game')}
+        >
+          <Text style={styles.buttonText}>Play</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.signUpButton]}
+          onPress={() => navigation.navigate('SignUp')}
+        >
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -30,13 +27,36 @@ export default function HomeScr({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#968a6e',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#F5E8B6",
+  innerContainer: {
+    alignItems: 'center',
+    backgroundColor: '#28231C',
+    padding: 20,
+    borderRadius: 10,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#F5E8B6',
+    marginBottom: 40,
+  },
+  button: {
+    backgroundColor: '#5A7D7C',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    width: 200,
+    alignItems: 'center',
+  },
+  signUpButton: {
+    backgroundColor: '#8B4513',
+  },
+  buttonText: {
+    color: '#F5E8B6',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });

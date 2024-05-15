@@ -1,55 +1,20 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import {
-  Alert,
-  Button,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  Image,
-  FlatList,
-  SectionList,
-} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import HomeScr from './screens/HomeScr';
-import GameScr from './screens/GameScr';
+import GameScreen from './screens/GameScr';  // Ensure this component exists
+import SignUpScreen from './screens/SignupScr';  // Ensure this component exists
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
-function App(): React.JSX.Element {
+export default function App() {
   return (
-    
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScr} />
-        <Stack.Screen name="Game" component={GameScr} />
+        <Stack.Screen name="Game" component={GameScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
       </Stack.Navigator>
     </NavigationContainer>
-    
   );
 }
-
-const styles = StyleSheet.create({
-  Container: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  Textstyle: {
-    marginTop: 12,
-    color: "#000000",
-    padding: "auto",
-  }
-});
-
-export default App;
