@@ -1,11 +1,18 @@
-import React, { useRef } from 'react';
-import { View, StyleSheet, PanResponder, Animated, PanResponderInstance } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, StyleSheet, PanResponder, Animated } from 'react-native';
 
 const SpikeColorDark = "#1f4336";
 const SpikeColorLight = "#FFF";
 
-//game screen
+// Game screen
 export default function GameScr() {
+  // Initialize pip position
+  const initialPipPositions = [
+    { key: 'pip-1', x: new Animated.Value(100), y: new Animated.Value(50) }, // Example initial position
+  ];
+
+  const [pips, setPips] = useState(initialPipPositions);
+
   return (
     <View style={styles.container}>
       <View style={styles.board}>
@@ -44,12 +51,15 @@ export default function GameScr() {
             </View>
           </View>
         </View>
+        {pips.map((pip) => (
+        <DraggablePip key={pip.key} x={pip.x} y={pip.y} />
+      ))}
       </View>
     </View>
   );
 }
 
-//styling
+// Styling
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -107,10 +117,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    backgroundColor: "#FF0000",
     position: 'absolute',
-    top: '45%',
-    left: '45%',
-    backgroundColor: "#FFF",
   },
 });
 
@@ -131,3 +139,32 @@ const Spike: React.FC<SpikeProps> = ({ color, isBottom, isTop }) => (
     isTop && styles.spikeTop
   ]} />
 );
+
+interface DraggablePipProps {
+  x: Animated.Value;
+  y: Animated.Value;
+}
+
+// Draggable Pip Component
+const DraggablePip: React.FC<DraggablePipProps> = ({ x, y }) => {
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (e, gestureState) => {
+        x.setValue(gestureState.moveX); // Adjust to center the pip under the finger
+        y.setValue(gestureState.moveY); // Adjust to center the pip under the finger
+      },
+      onPanResponderRelease: () => {},
+    })
+  ).current;
+
+  return (
+    <Animated.View
+      {...panResponder.panHandlers}
+      style={[
+        styles.pip,
+        { transform: [{ translateX: x }, { translateY: y }] }
+      ]}
+    />
+  );
+};
