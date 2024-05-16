@@ -1,7 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-export default function HomeScr({ navigation }) {
+type RootStackParamList = {
+  Home: undefined, // undefined because you aren't passing any params to the home screen
+  Game: undefined,
+  SignUp: undefined,
+  Profile: { name: string }; 
+};
+type ProfileScreenNavigationProp = StackNavigationProp<
+  RootStackParamList
+>;
+type Props = {
+  navigation: ProfileScreenNavigationProp;
+};
+
+export default function HomeScr({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />

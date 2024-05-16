@@ -1,100 +1,10 @@
 import React, { useRef } from 'react';
 import { View, StyleSheet, PanResponder, Animated, PanResponderInstance } from 'react-native';
 
-// Spike Component
-const Spike = ({ color, isBottom, isTop }) => (
-  <View style={[
-    styles.spike, 
-    { backgroundColor: "transparent" }, 
-    { borderColor: color },
-    isBottom && styles.spikeBottom, 
-    isTop && styles.spikeTop
-  ]} />
-);
-
 const SpikeColorDark = "#1f4336";
 const SpikeColorLight = "#FFF";
 
-const Pipp = ({color}) => {
-  const pan = useRef(new Animated.ValueXY()).current;
-  const panResponder = React.useRef(
-    PanResponder.create({
-      // Ask to be the responder:
-      onStartShouldSetPanResponder: (evt, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (evt, gestureState) =>
-        true,
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) =>
-        true,
-
-      onPanResponderGrant: (evt, gestureState) => {
-        // The gesture has started. Show visual feedback so the user knows
-        // what is happening!
-        // gestureState.d{x,y} will be set to zero now
-      },
-      onPanResponderMove: Animated.event([
-        null,
-        {
-          dx: pan.x, // x,y are Animated.Value
-          dy: pan.y,
-        },
-      ], { useNativeDriver: false })
-,      
-      onPanResponderTerminationRequest: (evt, gestureState) =>
-        false,
-      onPanResponderRelease: (evt, gestureState) => {
-        // The user has released all touches while this view is the
-        // responder. This typically means a gesture has succeeded
-      },
-      onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder, so this gesture
-        // should be cancelled
-      },
-      onShouldBlockNativeResponder: (evt, gestureState) => {
-        // Returns whether this component should block native components from becoming the JS
-        // responder. Returns true by default. Is currently only supported on android.
-        return true;
-      },
-    }),
-  ).current;
-
-  return <Animated.View
-  {...panResponder.panHandlers}
-  style={[pan.getLayout(), styles.pip, { backgroundColor: color }]}
-/>;
-};
-// Pip Component
-const Pip = ({ color }) => {
-  const pan = useRef(new Animated.ValueXY()).current;
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        pan.setOffset({
-          x: pan.x._value,
-          y: pan.y._value,
-        });
-        pan.setValue({ x: 0, y: 0 });
-      },
-      onPanResponderMove: Animated.event(
-        [null, { dx: pan.x, dy: pan.y }],
-        { useNativeDriver: false }
-      ),
-      onPanResponderRelease: () => {
-        pan.flattenOffset();
-      },
-    })
-  ).current;
-
-  return (
-    <Animated.View
-      {...panResponder.panHandlers}
-      style={[pan.getLayout(), styles.pip, { backgroundColor: color }]}
-    />
-  );
-};
-
+//game screen
 export default function GameScr() {
   return (
     <View style={styles.container}>
@@ -134,13 +44,12 @@ export default function GameScr() {
             </View>
           </View>
         </View>
-        {/* Draggable Pip */}
-          <Pipp color="#FFF" />
       </View>
     </View>
   );
 }
 
+//styling
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -204,3 +113,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
   },
 });
+
+// Spike Component type definition
+interface SpikeProps {
+  color: string;
+  isBottom?: boolean;
+  isTop?: boolean;
+}
+
+// Spike Component with type annotations
+const Spike: React.FC<SpikeProps> = ({ color, isBottom, isTop }) => (
+  <View style={[
+    styles.spike, 
+    { backgroundColor: "transparent" }, 
+    { borderColor: color },
+    isBottom && styles.spikeBottom, 
+    isTop && styles.spikeTop
+  ]} />
+);
