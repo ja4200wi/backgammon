@@ -1,9 +1,10 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import 'react-native-gesture-handler';
 import HomeScr from './screens/HomeScr';
-import GameScreen from './screens/GameScr';  // Ensure this component exists
-import SignUpScreen from './screens/SignupScr';  // Ensure this component exists
+import GameScreen from './screens/GameScr'; // Ensure this component exists
+import SignUpScreen from './screens/SignupScr'; // Ensure this component exists
 
 const Stack = createStackNavigator();
 

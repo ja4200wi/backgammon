@@ -1,7 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  Alert,
+} from 'react-native';
 
-export default function HomeScr({ navigation }) {
+export default function HomeScr({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -9,15 +17,23 @@ export default function HomeScr({ navigation }) {
         <Text style={styles.title}>Backgammon</Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Game')}
-        >
+          onPress={() => navigation.navigate('Game')}>
           <Text style={styles.buttonText}>Play</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.signUpButton]}
-          onPress={() => navigation.navigate('SignUp')}
-        >
+          onPress={() => navigation.navigate('SignUp')}>
           <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            Alert.alert('Title', 'Message', [
+              {text: 'Yes', onPress: () => console.log('Yes pressed')},
+              {text: 'No', onPress: () => console.log('No pressed')},
+            ])
+          }>
+          <Text> Hola die Waldfee</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
