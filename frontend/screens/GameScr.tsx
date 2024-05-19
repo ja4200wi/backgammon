@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, StyleSheet, Dimensions, Text} from 'react-native';
+import React, {useState} from 'react';
+import {View, StyleSheet, Dimensions, Text, Button} from 'react-native';
 import Spike from '../components/Spike';
 import Checker from '../components/Checker';
 
@@ -10,7 +10,9 @@ const boardHeight = screenHeight * 0.6;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 2 - 30;
 
-const spikes: React.ReactElement[][] = new Array(24).fill(null).map(() => []);
+const initialSpikes: React.ReactElement[][] = new Array(24)
+  .fill(null)
+  .map(() => []);
 
 const whiteCheckers: React.ReactElement[] = new Array(15)
   .fill(null)
@@ -34,7 +36,7 @@ const blackCheckers: React.ReactElement[] = new Array(15)
     />
   ));
 
-const distributeCheckers = () => {
+const distributeCheckers = (spikes: React.ReactElement[][]) => {
   // Backgammon starting positions
   const startingPositions = [
     {index: 0, color: 'white', count: 2},
@@ -65,45 +67,86 @@ const distributeCheckers = () => {
   });
 };
 
-// Distribute the checkers according to the starting positions
-distributeCheckers();
+// Initial distribution of checkers
+const initialSpikesSetup = [...initialSpikes];
+distributeCheckers(initialSpikesSetup);
 
-const renderSpikes = () =>
-  spikes.flatMap((checkers, index) => {
-    if (index === 6 || index === 18) {
+const GameScr = () => {
+  const [spikes, setSpikes] =
+    useState<React.ReactElement[][]>(initialSpikesSetup);
+  const [selectedSource, setSelectedSource] = useState<number | null>(null);
+
+  const moveChecker = (sourceIndex: number, targetIndex: number) => {
+    setSpikes(prevSpikes => {
+      const newSpikes = [...prevSpikes];
+      const checker = newSpikes[sourceIndex].pop();
+      if (checker) {
+        newSpikes[targetIndex].push(checker);
+      }
+      return newSpikes;
+    });
+    setSelectedSource(null);
+  };
+
+  const handleSpikePress = (index: number) => {
+    if (selectedSource === null) {
+      setSelectedSource(index);
+    } else {
+      moveChecker(selectedSource, index);
+    }
+  };
+
+  const getOrder = (index: number) => {
+    if (index >= 12 && index <= 23) {
+      return 23 - index + 12;
+    }
+    return index + 1;
+  };
+
+  const renderSpikes = () => {
+    // Sort the spikes array based on the order
+    const sortedSpikes = spikes
+      .map((checkers, index) => ({checkers, index}))
+      .sort((a, b) => getOrder(a.index) - getOrder(b.index));
+
+    return sortedSpikes.flatMap(({checkers, index}) => {
+      const order = getOrder(index);
+      if (index === 6 || index === 18) {
+        return [
+          <View key={`blackView-before-${index}`} style={styles.blackView} />,
+          <Spike
+            key={index}
+            height={spikeHeight}
+            color={index % 2 === 0 ? 'red' : 'green'}
+            width={spikeWidth}
+            invert={index >= 12}
+            checkers={checkers}
+            onPress={() => handleSpikePress(index)}>
+            <Text>{index + ' ' + order}</Text>
+          </Spike>,
+        ];
+      }
       return [
-        <View key={`blackView-before-${index}`} style={styles.blackView} />,
         <Spike
           key={index}
           height={spikeHeight}
           color={index % 2 === 0 ? 'red' : 'green'}
           width={spikeWidth}
           invert={index >= 12}
-          checkers={checkers}>
-          <Text>{index}</Text>
+          checkers={checkers}
+          onPress={() => handleSpikePress(index)}>
+          <Text>{index + ' ' + order}</Text>
         </Spike>,
       ];
-    }
-    return [
-      <Spike
-        key={index}
-        height={spikeHeight}
-        color={index % 2 === 0 ? 'red' : 'green'}
-        width={spikeWidth}
-        invert={index >= 12}
-        checkers={checkers}>
-        <Text>{index}</Text>
-      </Spike>,
-    ];
-  });
+    });
+  };
 
-export default function GameScr() {
   return (
     <View style={styles.container}>
       <View style={styles.board}>{renderSpikes()}</View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -128,3 +171,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
 });
+
+export default GameScr;

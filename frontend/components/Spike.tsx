@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 
 interface SpikeProps {
   color: string;
@@ -8,6 +8,7 @@ interface SpikeProps {
   style?: any;
   invert?: boolean;
   checkers: React.ReactElement[];
+  onPress?: () => void;
   children?: React.ReactElement;
 }
 
@@ -17,24 +18,28 @@ const Spike: React.FC<SpikeProps> = ({
   height,
   invert,
   checkers,
+  onPress,
   children,
+  style,
 }) => {
   return (
-    <View
-      style={[
-        styles.spike,
-        {
-          backgroundColor: color,
-          width: width,
-          height: height,
-          justifyContent: invert ? 'flex-end' : 'flex-start',
-        },
-      ]}>
-      {checkers.map((CheckerComponent, index) =>
-        React.cloneElement(CheckerComponent, {key: index}),
-      )}
-      {children}
-    </View>
+    <TouchableOpacity onPress={onPress} style={[style]}>
+      <View
+        style={[
+          styles.spike,
+          {
+            backgroundColor: color,
+            width: width,
+            height: height,
+            justifyContent: invert ? 'flex-end' : 'flex-start',
+          },
+        ]}>
+        {checkers.map((CheckerComponent, index) =>
+          React.cloneElement(CheckerComponent, {key: index}),
+        )}
+        {children}
+      </View>
+    </TouchableOpacity>
   );
 };
 
