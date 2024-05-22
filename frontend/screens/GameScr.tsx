@@ -111,7 +111,7 @@ const GameScr = () => {
 
     return sortedSpikes.flatMap(({checkers, index}) => {
       const order = getOrder(index);
-      if (index === 6 || index === 18) {
+      if (index === 6 || index === 17) {
         return [
           <View key={`blackView-before-${index}`} style={styles.blackView} />,
           <Spike
@@ -143,6 +143,7 @@ const GameScr = () => {
 
   return (
     <View style={styles.container}>
+      <Text>Score PLayer 1: 23</Text>
       <View style={styles.board}>{renderSpikes()}</View>
     </View>
   );
