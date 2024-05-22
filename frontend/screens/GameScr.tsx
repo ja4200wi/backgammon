@@ -2,10 +2,12 @@ import React, {useState} from 'react';
 import {View, StyleSheet, Dimensions, Text, Button} from 'react-native';
 import Spike from '../components/Spike';
 import Checker from '../components/Checker';
+import Dice from '../components/Dice';
+import PipCount from '../components/PipCount';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const boardWidth = screenWidth * 0.8;
+const boardWidth = screenWidth * 0.95;
 const boardHeight = screenHeight * 0.6;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 2 - 30;
@@ -143,10 +145,11 @@ const GameScr = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Platzhalter Würfel</Text>
-      <Text>Platzhalter Spielstand</Text>
-      <Text>Platzhalter FinishLine</Text>
+      <Dice diceOne={1} diceTwo={2}/>
+      {/*später dann 167 mit currentcount ersetzen*/}
+      <PipCount color='white' count='167'/>
       <View style={styles.board}>{renderSpikes()}</View>
+      <PipCount color='black' count='167' />
     </View>
   );
 };
@@ -154,7 +157,7 @@ const GameScr = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#968a6e',
+    backgroundColor: '#f5deb3',
     justifyContent: 'center',
     alignItems: 'center',
   },

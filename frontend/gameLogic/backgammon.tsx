@@ -1,4 +1,4 @@
-class Game {
+export class Game {
   private board: (Stone[] | null)[];
   private finishWhite: number;
   private finishBlack: number;
@@ -284,7 +284,7 @@ class Game {
     this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
   }
 
-  public rollDice(): [number, number] {
+public rollDice(): [number, number] {
     this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
@@ -415,3 +415,4 @@ function promptMove() {
 }
 
 promptMove();
+
