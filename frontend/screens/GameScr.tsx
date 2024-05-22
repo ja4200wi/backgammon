@@ -143,7 +143,9 @@ const GameScr = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Score PLayer 1: 23</Text>
+      <Text>Platzhalter Würfel</Text>
+      <Text>Platzhalter Spielstand</Text>
+      <Text>Platzhalter FinishLine</Text>
       <View style={styles.board}>{renderSpikes()}</View>
     </View>
   );
