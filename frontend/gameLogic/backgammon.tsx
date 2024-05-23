@@ -1,4 +1,10 @@
 export class Game {
+  getBoard(): import('react').ReactElement<
+    any,
+    string | import('react').JSXElementConstructor<any>
+  >[][] {
+    throw new Error('Method not implemented.');
+  }
   private board: (Stone[] | null)[];
   private finishWhite: number;
   private finishBlack: number;
@@ -284,7 +290,7 @@ export class Game {
     this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
   }
 
-public rollDice(): [number, number] {
+  public rollDice(): [number, number] {
     this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
@@ -367,6 +373,45 @@ public rollDice(): [number, number] {
     const color = point[0].color.charAt(0).toUpperCase();
     return `${point.length}${color}`;
   }
+
+  public async startGame(callback: (state: any) => void) {
+    while (!this.isGameOver()) {
+      //this.displayBoard();
+
+      // Roll the dice for the current player
+      const diceRoll = this.rollDice();
+      callback({
+        board: this.board,
+        currentPlayer: this.currentPlayer,
+        dice: diceRoll,
+        movesLeft: this.movesLeft,
+      });
+
+      // Wait for a valid move from the current player
+      let validMove = false;
+      while (!validMove) {
+        const move = await this.getPlayerMove();
+        validMove = this.moveStone(move.from, move.steps);
+        if (validMove) {
+          callback({
+            board: this.board,
+            currentPlayer: this.currentPlayer,
+            dice: diceRoll,
+            movesLeft: this.movesLeft,
+          });
+        }
+      }
+
+      // Switch to the next player
+      this.switchPlayer();
+    }
+
+    // Game over, announce the winner
+    callback({gameOver: true, winner: this.whoIsWinner()});
+  }
+  getPlayerMove(): {from: number; steps: number} {
+    throw new Error('Method not implemented.');
+  }
 }
 
 class Stone {
@@ -415,4 +460,3 @@ function promptMove() {
 }
 
 promptMove();
-

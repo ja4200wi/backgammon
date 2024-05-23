@@ -4,13 +4,19 @@ import Spike from '../components/Spike';
 import Checker from '../components/Checker';
 import Dice from '../components/Dice';
 import PipCount from '../components/PipCount';
+import Board from '../components/Board';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const boardWidth = screenWidth * 0.95;
-const boardHeight = screenHeight * 0.6;
+const boardHeight = screenHeight * 0.7;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 2 - 30;
+const backgroundColor = '#dda15e';
+const secondBackgroundColor = '#606c38';
+const primaryColor = '#283618';
+const secondaryColor = '#fefae0';
+const tertiaryColor = '#bc6c25';
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
   .fill(null)
@@ -74,82 +80,34 @@ const initialSpikesSetup = [...initialSpikes];
 distributeCheckers(initialSpikesSetup);
 
 const GameScr = () => {
-  const [spikes, setSpikes] =
-    useState<React.ReactElement[][]>(initialSpikesSetup);
-  const [selectedSource, setSelectedSource] = useState<number | null>(null);
-
-  const moveChecker = (sourceIndex: number, targetIndex: number) => {
-    setSpikes(prevSpikes => {
-      const newSpikes = [...prevSpikes];
-      const checker = newSpikes[sourceIndex].pop();
-      if (checker) {
-        newSpikes[targetIndex].push(checker);
-      }
-      return newSpikes;
-    });
-    setSelectedSource(null);
-  };
-
-  const handleSpikePress = (index: number) => {
-    if (selectedSource === null) {
-      setSelectedSource(index);
-    } else {
-      moveChecker(selectedSource, index);
-    }
-  };
-
-  const getOrder = (index: number) => {
-    if (index >= 12 && index <= 23) {
-      return 23 - index + 12;
-    }
-    return index + 1;
-  };
-
-  const renderSpikes = () => {
-    // Sort the spikes array based on the order
-    const sortedSpikes = spikes
-      .map((checkers, index) => ({checkers, index}))
-      .sort((a, b) => getOrder(a.index) - getOrder(b.index));
-
-    return sortedSpikes.flatMap(({checkers, index}) => {
-      const order = getOrder(index);
-      if (index === 6 || index === 17) {
-        return [
-          <View key={`blackView-before-${index}`} style={styles.blackView} />,
-          <Spike
-            key={index}
-            height={spikeHeight}
-            color={index % 2 === 0 ? 'red' : 'green'}
-            width={spikeWidth}
-            invert={index >= 12}
-            checkers={checkers}
-            onPress={() => handleSpikePress(index)}>
-            <Text>{index + ' ' + order}</Text>
-          </Spike>,
-        ];
-      }
-      return [
-        <Spike
-          key={index}
-          height={spikeHeight}
-          color={index % 2 === 0 ? 'red' : 'green'}
-          width={spikeWidth}
-          invert={index >= 12}
-          checkers={checkers}
-          onPress={() => handleSpikePress(index)}>
-          <Text>{index + ' ' + order}</Text>
-        </Spike>,
-      ];
-    });
-  };
+  const startingPositions = [
+    {index: 0, color: 'white', count: 2},
+    {index: 11, color: 'white', count: 5},
+    {index: 16, color: 'white', count: 3},
+    {index: 18, color: 'white', count: 5},
+    {index: 23, color: 'black', count: 2},
+    {index: 12, color: 'black', count: 5},
+    {index: 7, color: 'black', count: 3},
+    {index: 5, color: 'black', count: 5},
+  ];
 
   return (
-    <View style={styles.container}>
-      <Dice diceOne={1} diceTwo={2}/>
+    <View style={[styles.container, {backgroundColor: secondBackgroundColor}]}>
       {/*später dann 167 mit currentcount ersetzen*/}
-      <PipCount color='white' count='167'/>
-      <View style={styles.board}>{renderSpikes()}</View>
-      <PipCount color='black' count='167' />
+      <PipCount color="white" count="167" />
+      {/* <View style={styles.board}>{renderSpikes()}</View> */}
+      <Board
+        colors={{
+          background: backgroundColor,
+          primary: primaryColor,
+          secondary: secondaryColor,
+          tertiary: tertiaryColor,
+        }}
+        width={boardWidth}
+        height={boardHeight}
+        positions={startingPositions}
+        dice={{diceOne: 0, diceTwo: 0}}></Board>
+      <PipCount color="black" count="167" />
     </View>
   );
 };
@@ -157,7 +115,6 @@ const GameScr = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5deb3',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -165,7 +122,8 @@ const styles = StyleSheet.create({
     width: boardWidth,
     height: boardHeight,
     backgroundColor: '#f5deb3',
-    borderRadius: 5,
+    borderRadius: 50,
+    overflow: 'hidden',
     borderColor: '#000',
     flexDirection: 'row',
     rowGap: boardHeight - spikeHeight * 2,

@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import Triangle from 'react-native-triangle';
 
 interface SpikeProps {
   color: string;
@@ -24,27 +25,43 @@ const Spike: React.FC<SpikeProps> = ({
 }) => {
   return (
     <TouchableOpacity onPress={onPress} style={[style]}>
+      {invert && (
+        <Triangle
+          width={width}
+          height={height}
+          color={color}
+          direction={invert ? 'up' : 'down'}></Triangle>
+      )}
       <View
         style={[
           styles.spike,
           {
             backgroundColor: color,
             width: width,
-            height: height,
+            height: 0,
             justifyContent: invert ? 'flex-end' : 'flex-start',
           },
         ]}>
         {checkers.map((CheckerComponent, index) =>
           React.cloneElement(CheckerComponent, {key: index}),
         )}
-        {children}
       </View>
+      {!invert && (
+        <Triangle
+          width={width}
+          height={height}
+          color={color}
+          direction={invert ? 'up' : 'down'}></Triangle>
+      )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  spike: {},
+  spike: {
+    zIndex: 100,
+    gap: 1,
+  },
 });
 
 export default Spike;
