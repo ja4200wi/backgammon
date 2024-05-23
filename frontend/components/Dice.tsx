@@ -1,8 +1,14 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Image, ImageSourcePropType, Text} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  StyleSheet,
+  Image,
+  ImageSourcePropType,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
 
-interface diceProps {
+interface DiceProps {
   diceOne: number;
   diceTwo: number;
 }
@@ -16,23 +22,49 @@ const DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
   6: require('../images/diceSix.png'),
 };
 
-//später just use diceOne and diceTwo um würfel anzuzeigen
-
-const Dice: React.FC<diceProps> = (diceOne, diceTwo) => {
-  const randnumb = () => {
-    return Math.floor(Math.random() * 6) + 1;
-  };
+const Dice: React.FC<DiceProps> = ({diceOne, diceTwo}) => {
+  const randnumb = () => Math.floor(Math.random() * 6) + 1;
   const [curDice, setDice] = useState([DICE_IMAGES[1], DICE_IMAGES[2]]);
+  const [shakeAnimation] = useState(new Animated.Value(0));
+
   const rolldice = () => {
-    setDice([DICE_IMAGES[randnumb()], DICE_IMAGES[randnumb()]]);
+    Animated.sequence([
+      Animated.timing(shakeAnimation, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(shakeAnimation, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setTimeout(() => {
+        setDice([DICE_IMAGES[randnumb()], DICE_IMAGES[randnumb()]]);
+      }, 100);
+    });
+  };
+
+  const shakeInterpolate = shakeAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: ['0deg', '10deg', '-10deg'],
+  });
+
+  const animatedStyle = {
+    transform: [
+      {
+        rotate: shakeInterpolate,
+      },
+    ],
   };
 
   return (
     <TouchableOpacity style={styles.container} onPress={rolldice}>
-      <View style={styles.diceContainer}>
+      <Animated.View style={[styles.diceContainer, animatedStyle]}>
         <Image style={styles.dice} source={curDice[0]} />
         <Image style={styles.dice} source={curDice[1]} />
-      </View>
+      </Animated.View>
     </TouchableOpacity>
   );
 };
@@ -50,14 +82,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginHorizontal: 10,
-  },
-  button: {
-    backgroundColor: 'green',
-    borderRadius: 5,
-  },
-  buttonText: {
-    textAlign: 'center',
-    fontWeight: 'bold',
   },
 });
 
