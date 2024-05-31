@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,12 +8,12 @@ import {
   Animated,
 } from 'react-native';
 
-interface DiceProps {
+export interface DiceProps {
   diceOne: number;
   diceTwo: number;
 }
 
-const DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
+const DICE_IMAGES: { [key: number]: ImageSourcePropType } = {
   1: require('../images/diceOne.png'),
   2: require('../images/diceTwo.png'),
   3: require('../images/diceThree.png'),
@@ -22,12 +22,15 @@ const DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
   6: require('../images/diceSix.png'),
 };
 
-const Dice: React.FC<DiceProps> = ({diceOne, diceTwo}) => {
-  const randnumb = () => Math.floor(Math.random() * 6) + 1;
-  const [curDice, setDice] = useState([DICE_IMAGES[1], DICE_IMAGES[2]]);
+const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo }) => {
+  const [curDice, setDice] = useState([DICE_IMAGES[diceOne], DICE_IMAGES[diceTwo]]);
   const [shakeAnimation] = useState(new Animated.Value(0));
 
-  const rolldice = () => {
+  useEffect(() => {
+    animateDice();
+  }, [diceOne, diceTwo]);
+
+  const animateDice = () => {
     Animated.sequence([
       Animated.timing(shakeAnimation, {
         toValue: 1,
@@ -40,9 +43,7 @@ const Dice: React.FC<DiceProps> = ({diceOne, diceTwo}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      setTimeout(() => {
-        setDice([DICE_IMAGES[randnumb()], DICE_IMAGES[randnumb()]]);
-      }, 100);
+      setDice([DICE_IMAGES[diceOne], DICE_IMAGES[diceTwo]]);
     });
   };
 
@@ -60,12 +61,12 @@ const Dice: React.FC<DiceProps> = ({diceOne, diceTwo}) => {
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={rolldice}>
+    <View style={styles.container}>
       <Animated.View style={[styles.diceContainer, animatedStyle]}>
         <Image style={styles.dice} source={curDice[0]} />
         <Image style={styles.dice} source={curDice[1]} />
       </Animated.View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

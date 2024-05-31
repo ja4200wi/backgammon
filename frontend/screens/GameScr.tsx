@@ -1,10 +1,14 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Dimensions, Text, Button} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Dimensions, Text, Button, TouchableOpacityBase, TouchableOpacity} from 'react-native';
 import Spike from '../components/Spike';
 import Checker from '../components/Checker';
-import Dice from '../components/Dice';
+import Dice, { DiceProps } from '../components/Dice';
 import PipCount from '../components/PipCount';
 import Board from '../components/Board';
+import { Game } from '../gameLogic/backgammon';
+import EventEmitter from 'eventemitter3';
+import { GameInstance } from '../gameLogic/testlogic';
+
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -79,6 +83,7 @@ const distributeCheckers = (spikes: React.ReactElement[][]) => {
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckers(initialSpikesSetup);
 
+
 const GameScr = () => {
   const startingPositions = [
     {index: 0, color: 'white', count: 2},
@@ -91,9 +96,47 @@ const GameScr = () => {
     {index: 5, color: 'black', count: 5},
   ];
 
+
+  const [dice,setdice] = useState<number[]>([1,2])
+  const [moveIsOver, setmoveIsOver] = useState(true)
+  const [game, setGame] = useState<GameInstance | null>(null);
+  
+  useEffect(() => {
+    console.log('Dice updated:', dice);
+  }, [dice]);
+  useEffect(() => {
+    if (moveIsOver && game) {
+      runGame(game);
+    }
+  }, [moveIsOver, game]);
+
+  const startGame = () => {
+    console.log('Game started');
+    let newgame = new GameInstance
+    setGame(newgame)
+    runGame(newgame)
+  }
+
+  const runGame = (game: GameInstance) => {
+    if(!game.gameisover && moveIsOver) {
+      setmoveIsOver(false)
+      game.rollDice()
+      setdice(game.dice)
+    }
+    
+  }
+
   return (
     <View style={[styles.container, {backgroundColor: secondBackgroundColor}]}>
       {/*später dann 167 mit currentcount ersetzen*/}
+      <View style={{flexDirection: 'row', gap: 50}}>
+      <TouchableOpacity onPress={startGame} style={styles.tempStartButton} >
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>Start Game</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setmoveIsOver(true)} style={styles.tempStartButton} >
+        <Text style={{fontWeight: 'bold', fontSize: 20, textAlign: 'center', textAlignVertical: 'center'}}>End Move</Text>
+      </TouchableOpacity>
+      </View>
       <PipCount color="white" count="167" />
       {/* <View style={styles.board}>{renderSpikes()}</View> */}
       <Board
@@ -106,11 +149,12 @@ const GameScr = () => {
         width={boardWidth}
         height={boardHeight}
         positions={startingPositions}
-        dice={{diceOne: 0, diceTwo: 0}}></Board>
+        dice={{diceOne: dice[0], diceTwo: dice[1]}}></Board>
       <PipCount color="black" count="167" />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -133,6 +177,11 @@ const styles = StyleSheet.create({
     width: spikeWidth,
     height: spikeHeight,
     backgroundColor: '#000000',
+  },
+  tempStartButton: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+    marginBottom: 30,
   },
 });
 

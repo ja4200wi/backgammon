@@ -3,7 +3,9 @@ import {View, StyleSheet, Alert} from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
 import Dice from './Dice';
+import { DiceProps } from './Dice';
 import Prison from './Prison';
+
 
 interface Position {
   index: number;
@@ -11,10 +13,6 @@ interface Position {
   count: number;
 }
 
-interface DiceProps {
-  diceOne: number;
-  diceTwo: number;
-}
 
 interface BoardProps {
   positions: Position[];

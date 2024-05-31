@@ -1,4 +1,6 @@
-export class Game {
+import EventEmitter from 'eventemitter3';
+
+export class Game extends EventEmitter{
   getBoard(): import('react').ReactElement<
     any,
     string | import('react').JSXElementConstructor<any>
@@ -22,6 +24,7 @@ export class Game {
 
   // Single implementation of the constructor
   constructor(homePlayer?: string) {
+    super();
     this.board = new Array(24).fill(null).map(() => []);
     this.finishWhite = 0;
     this.finishBlack = 0;
@@ -297,6 +300,7 @@ export class Game {
     } else {
       this.movesLeft = [...this.dice];
     }
+    this.emit('diceRolled', this.dice);
     return this.dice;
   }
 
@@ -374,6 +378,10 @@ export class Game {
     return `${point.length}${color}`;
   }
 
+  public startGame2() {
+    this.rollDice(); // Roll dice and emit event when the game starts
+  }
+  /*
   public async startGame(callback: (state: any) => void) {
     while (!this.isGameOver()) {
       //this.displayBoard();
@@ -412,6 +420,7 @@ export class Game {
   getPlayerMove(): {from: number; steps: number} {
     throw new Error('Method not implemented.');
   }
+  */
 }
 
 class Stone {
@@ -423,6 +432,7 @@ class Stone {
 }
 
 // Example of playing the game from the command line
+/*
 const game = new Game();
 
 const readline = require('readline').createInterface({
@@ -460,3 +470,5 @@ function promptMove() {
 }
 
 promptMove();
+
+*/
