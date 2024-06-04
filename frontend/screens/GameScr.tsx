@@ -158,9 +158,7 @@ const GameScr = () => {
 
   return (
     <View style={[styles.container, {backgroundColor: secondBackgroundColor}]}>
-      {/*später dann 167 mit currentcount ersetzen*/}
       <PipCount color="white" count={scores[0]} />
-      {/* <View style={styles.board}>{renderSpikes()}</View> */}
       <Board
         colors={{
           background: backgroundColor,

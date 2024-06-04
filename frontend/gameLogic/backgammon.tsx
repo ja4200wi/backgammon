@@ -135,6 +135,7 @@ export class Game {
     } else if (!this.board[to]) {
       this.finishBlack += 1;
     } else {
+      console.log('Pushed stone ', stone, ' onto ', to);
       this.board[to]?.push(stone);
     }
 
@@ -193,14 +194,12 @@ export class Game {
       }
     }
 
+    console.log('Move tried to to ', to, this.board[to]);
     // Check if only legal finish moves are handled by this
-    if (!this.board[to] && this.currentPlayer == 'white') {
-      this.finishWhite += 1;
-    } else if (!this.board[to]) {
-      this.finishBlack += 1;
-    } else {
-      this.board[to]?.push(stone);
+    if (this.board[to] == null) {
+      this.board[to] = [];
     }
+    this.board[to]?.push(stone);
 
     if (this.board[from]?.length === 0) {
       this.board[from] = null;
