@@ -125,21 +125,17 @@ const GameScr = () => {
   };
 
   const runGame = (game: Game) => {
+    game.updateDistances();
+    updateScores();
     if (game.isGameOver()) {
       return;
     }
     //case user clicked endmove
     if (game?.movesLeft.length === 0) {
-      console.log('Hello there');
       game.rollDice();
       setdice([...game.dice]);
-      game.updateDistances();
-      updateScores();
-      setpositions(game.getCurrentPositions());
       game.currentPlayer =
         game.currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
-    } else {
-      console.log('Hello there2');
     }
   };
 
@@ -147,7 +143,10 @@ const GameScr = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
+      console.log(game.getCurrentPositions());
       setmoveIsOver(game.movesLeft.length === 0);
+      game.updateDistances();
+      updateScores();
       return success;
     }
     return false;

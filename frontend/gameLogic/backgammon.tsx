@@ -153,7 +153,9 @@ export class Game {
   }
 
   public moveStone(from: number, to: number): boolean {
-    const steps = this.currentPlayer === 'white' ? to - from : from - to;
+    // Black player moves from prison
+    if (from == -1 && this.currentPlayer == 'black') from = 24;
+    let steps = this.currentPlayer === 'white' ? to - from : from - to;
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
       console.log(
@@ -161,8 +163,6 @@ export class Game {
       );
       return false;
     }
-    // Black player moves from prison
-    if (from == -1 && this.currentPlayer == 'black') from = 24;
     // Prevent invalid moves
     if (!this.isValidMove(from, to)) {
       console.log(`Invalid move from ${from + 1} to ${to + 1}`);
@@ -171,9 +171,9 @@ export class Game {
 
     const stone =
       from === -1
-        ? this.currentPlayer === 'black'
-          ? this.prisonBlack.pop()
-          : this.prisonWhite.pop()
+        ? this.prisonWhite.pop()
+        : from === 24
+        ? this.prisonBlack.pop()
         : this.board[from]?.pop();
 
     if (!stone) {
