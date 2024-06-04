@@ -98,7 +98,7 @@ const GameScr = () => {
     {index: 5, color: 'black', count: 5},
   ];
 
-  const startScores = [0, 0]; //white, black
+  const startScores = [167, 167]; //white, black
 
   const [dice, setdice] = useState<number[]>([1, 2]);
   const [moveIsOver, setmoveIsOver] = useState(true);
@@ -113,6 +113,10 @@ const GameScr = () => {
     }
   }, [moveIsOver, game]);
 
+  useEffect(() => {
+    startGame();
+  }, []);
+
   const startGame = () => {
     console.log('Game started');
     let newgame = new Game();
@@ -125,32 +129,28 @@ const GameScr = () => {
       return;
     }
     //case user clicked endmove
-    else if (moveIsOver) {
-      if (game?.movesLeft.length === 0) {
-        setmoveIsOver(false);
-        game.rollDice();
-        setdice([...game.dice]);
-        game.updateDistances();
-        updateScores();
-        setpositions(game.getCurrentPositions());
-        game.currentPlayer =
-          game.currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
-      } else {
-        Alert.alert('You still have moves left');
-      }
+    if (game?.movesLeft.length === 0) {
+      console.log('Hello there');
+      game.rollDice();
+      setdice([...game.dice]);
+      game.updateDistances();
+      updateScores();
+      setpositions(game.getCurrentPositions());
+      game.currentPlayer =
+        game.currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+    } else {
+      console.log('Hello there2');
     }
   };
+
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
+      setmoveIsOver(game.movesLeft.length === 0);
       return success;
     }
     return false;
-  };
-
-  const endmove = () => {
-    setmoveIsOver(true);
   };
 
   const updateScores = () => {
@@ -160,22 +160,6 @@ const GameScr = () => {
   return (
     <View style={[styles.container, {backgroundColor: secondBackgroundColor}]}>
       {/*später dann 167 mit currentcount ersetzen*/}
-      <View style={{flexDirection: 'row', gap: 50}}>
-        <TouchableOpacity onPress={startGame} style={styles.tempStartButton}>
-          <Text style={{fontWeight: 'bold', fontSize: 20}}>Start Game</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={endmove} style={styles.tempStartButton}>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: 20,
-              textAlign: 'center',
-              textAlignVertical: 'center',
-            }}>
-            End Move
-          </Text>
-        </TouchableOpacity>
-      </View>
       <PipCount color="white" count={scores[0]} />
       {/* <View style={styles.board}>{renderSpikes()}</View> */}
       <Board
