@@ -188,7 +188,7 @@ const GameScr = () => {
         width={boardWidth}
         height={boardHeight}
         positions={positions}
-        dice={{diceOne: dice[0], diceTwo: dice[1]}}
+        dice={{diceOne: dice[0], diceTwo: dice[1], color: game?.currentPlayer!}}
         onMoveChecker={onMoveChecker}></Board>
 
       <PipCount color="black" count={scores[1]} />

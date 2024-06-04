@@ -166,7 +166,13 @@ const Board: React.FC<BoardProps> = ({
       <View style={[styles.boardHalf]}>
         <View style={[styles.reverse]}>{SixSpikes(6)}</View>
         <View style={{height: spikeHeight, justifyContent: 'center'}}>
-          <Dice diceOne={dice.diceOne} diceTwo={dice.diceTwo} />
+          {dice.color === 'white' && (
+            <Dice
+              diceOne={dice.diceOne}
+              diceTwo={dice.diceTwo}
+              color={dice.color}
+            />
+          )}
         </View>
         <View style={[styles.sixSpikes]}>{SixSpikes(12)}</View>
       </View>
@@ -179,7 +185,15 @@ const Board: React.FC<BoardProps> = ({
       />
       <View style={[styles.boardHalf]}>
         <View style={[styles.reverse]}>{SixSpikes(0)}</View>
-        <View style={{height: spikeHeight}} />
+        <View style={{height: spikeHeight, justifyContent: 'center'}}>
+          {dice.color === 'black' && (
+            <Dice
+              diceOne={dice.diceOne}
+              diceTwo={dice.diceTwo}
+              color={dice.color}
+            />
+          )}
+        </View>
         <View style={[styles.sixSpikes]}>{SixSpikes(18)}</View>
       </View>
     </View>

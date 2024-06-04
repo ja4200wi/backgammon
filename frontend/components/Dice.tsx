@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
   Image,
   ImageSourcePropType,
-  TouchableOpacity,
   Animated,
 } from 'react-native';
 
 export interface DiceProps {
   diceOne: number;
   diceTwo: number;
+  color: string;
 }
 
-const DICE_IMAGES: { [key: number]: ImageSourcePropType } = {
+const WHITE_DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
   1: require('../images/diceOne.png'),
   2: require('../images/diceTwo.png'),
   3: require('../images/diceThree.png'),
@@ -22,8 +22,20 @@ const DICE_IMAGES: { [key: number]: ImageSourcePropType } = {
   6: require('../images/diceSix.png'),
 };
 
-const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo }) => {
-  const [curDice, setDice] = useState([DICE_IMAGES[diceOne], DICE_IMAGES[diceTwo]]);
+const BLACK_DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
+  1: require('../images/diceBlackOne.png'),
+  2: require('../images/diceBlackTwo.png'),
+  3: require('../images/diceBlackThree.png'),
+  4: require('../images/diceBlackFour.png'),
+  5: require('../images/diceBlackFive.png'),
+  6: require('../images/diceBlackSix.png'),
+};
+
+const Dice: React.FC<DiceProps> = ({diceOne, diceTwo, color}) => {
+  const [curDice, setDice] =
+    color == 'white'
+      ? useState([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]])
+      : useState([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
   const [shakeAnimation] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -43,7 +55,11 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo }) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      setDice([DICE_IMAGES[diceOne], DICE_IMAGES[diceTwo]]);
+      if (color == 'white') {
+        setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
+      } else {
+        setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
+      }
     });
   };
 
