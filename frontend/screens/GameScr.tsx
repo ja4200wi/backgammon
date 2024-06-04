@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Dimensions, Text, Button, TouchableOpacityBase, TouchableOpacity, Alert} from 'react-native';
-import Spike from '../components/Spike';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Text,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import Checker from '../components/Checker';
-import Dice, { DiceProps } from '../components/Dice';
 import PipCount from '../components/PipCount';
 import Board from '../components/Board';
-import { Game } from '../gameLogic/backgammon';
-import EventEmitter from 'eventemitter3';
-import { GameInstance } from '../gameLogic/testlogic';
-import { COLORS } from '../components/Board';
-
+import {Game} from '../gameLogic/backgammon';
+import {COLORS} from '../components/Board';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -50,16 +52,16 @@ const blackCheckers: React.ReactElement[] = new Array(15)
   ));
 
 const distributeCheckers = (spikes: React.ReactElement[][]) => {
-  // Backgammon starting positions
+  // Backgammon starting
   const startingPositions = [
-    {index: 0, color: COLORS.WHITE, count: 2},
-    {index: 11, color: COLORS.WHITE, count: 5},
-    {index: 16, color: COLORS.WHITE, count: 3},
-    {index: 18, color: COLORS.WHITE, count: 5},
-    {index: 23, color: COLORS.BLACK, count: 2},
-    {index: 12, color: COLORS.BLACK, count: 5},
-    {index: 7, color: COLORS.BLACK, count: 3},
-    {index: 5, color: COLORS.BLACK, count: 5},
+    {index: 0, color: 'white', count: 2},
+    {index: 11, color: 'white', count: 5},
+    {index: 16, color: 'white', count: 3},
+    {index: 18, color: 'white', count: 5},
+    {index: 23, color: 'black', count: 2},
+    {index: 12, color: 'black', count: 5},
+    {index: 7, color: 'black', count: 3},
+    {index: 5, color: 'black', count: 5},
   ];
 
   startingPositions.forEach(position => {
@@ -84,26 +86,27 @@ const distributeCheckers = (spikes: React.ReactElement[][]) => {
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckers(initialSpikesSetup);
 
-
 const GameScr = () => {
   const startingPositions = [
-    {index: 0, color: COLORS.WHITE, count: 2},
-    {index: 11, color: COLORS.WHITE, count: 5},
-    {index: 16, color: COLORS.WHITE, count: 3},
-    {index: 18, color: COLORS.WHITE, count: 5},
-    {index: 23, color: COLORS.BLACK, count: 2},
-    {index: 12, color: COLORS.BLACK, count: 5},
-    {index: 7, color: COLORS.BLACK, count: 3},
-    {index: 5, color: COLORS.BLACK, count: 5},
+    {index: 0, color: 'white', count: 2},
+    {index: 11, color: 'white', count: 5},
+    {index: 16, color: 'white', count: 3},
+    {index: 18, color: 'white', count: 5},
+    {index: 23, color: 'black', count: 2},
+    {index: 12, color: 'black', count: 5},
+    {index: 7, color: 'black', count: 3},
+    {index: 5, color: 'black', count: 5},
   ];
 
+  const startScores = [0, 0]; //white, black
 
-  const [dice,setdice] = useState<number[]>([1,2])
-  const [moveIsOver, setmoveIsOver] = useState(true)
-  const [game, setGame] = useState<GameInstance | null>(null);
-  const [positions, setpositions] = useState(startingPositions)
-  const firstmove = true
-  
+  const [dice, setdice] = useState<number[]>([1, 2]);
+  const [moveIsOver, setmoveIsOver] = useState(true);
+  const [game, setGame] = useState<Game | null>(null);
+  const [positions, setpositions] = useState(startingPositions);
+  const [scores, setScores] = useState(startScores);
+  const firstmove = true;
+
   useEffect(() => {
     if (game && moveIsOver) {
       runGame(game);
@@ -112,55 +115,68 @@ const GameScr = () => {
 
   const startGame = () => {
     console.log('Game started');
-    let newgame = new GameInstance
-    setGame(newgame)
-    runGame(newgame)
-  }
+    let newgame = new Game();
+    setGame(newgame);
+    runGame(newgame);
+  };
 
-  const runGame = (game: GameInstance) => {
-    if (game.gameisover){
-      return
+  const runGame = (game: Game) => {
+    if (game.isGameOver()) {
+      return;
     }
     //case user clicked endmove
-    else if(!game.gameisover && moveIsOver) {
-      if(game?.movesLeft.length === 0) {
-        console.log('this works')
-        setmoveIsOver(false)
-        game.rollDice()
-        setdice([...game.dice])
-        game.currentPlayer = game.currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE
+    else if (moveIsOver) {
+      if (game?.movesLeft.length === 0) {
+        setmoveIsOver(false);
+        game.rollDice();
+        setdice([...game.dice]);
+        game.updateDistances();
+        updateScores();
+        setpositions(game.getCurrentPositions());
+        game.currentPlayer =
+          game.currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
       } else {
-        Alert.alert('You still have moves left')
+        Alert.alert('You still have moves left');
       }
     }
-  }
+  };
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
-    console.log('we are in onmovechecker now',sourceIndex,targetIndex)
     if (game) {
-      console.log('we are in if now')
-      const success = game.moveChecker(sourceIndex, targetIndex);
-      console.log("now we return" + success)
-      console.log('current game', game.positions)
-      setpositions([...game.positions]);
+      const success = game.moveStone(sourceIndex, targetIndex);
+      setpositions(game.getCurrentPositions());
       return success;
     }
     return false;
   };
+
   const endmove = () => {
-    setmoveIsOver(true)
-  }
+    setmoveIsOver(true);
+  };
+
+  const updateScores = () => {
+    setScores([game?.totalDistanceWhite!, game?.totalDistanceBlack!]);
+  };
+
   return (
     <View style={[styles.container, {backgroundColor: secondBackgroundColor}]}>
       {/*später dann 167 mit currentcount ersetzen*/}
       <View style={{flexDirection: 'row', gap: 50}}>
-      <TouchableOpacity onPress={startGame} style={styles.tempStartButton} >
-        <Text style={{fontWeight: 'bold', fontSize: 20}}>Start Game</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={endmove} style={styles.tempStartButton} >
-        <Text style={{fontWeight: 'bold', fontSize: 20, textAlign: 'center', textAlignVertical: 'center'}}>End Move</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={startGame} style={styles.tempStartButton}>
+          <Text style={{fontWeight: 'bold', fontSize: 20}}>Start Game</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={endmove} style={styles.tempStartButton}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              fontSize: 20,
+              textAlign: 'center',
+              textAlignVertical: 'center',
+            }}>
+            End Move
+          </Text>
+        </TouchableOpacity>
       </View>
-      <PipCount color="white" count="167" />
+      <PipCount color="white" count={scores[0]} />
       {/* <View style={styles.board}>{renderSpikes()}</View> */}
       <Board
         colors={{
@@ -173,14 +189,12 @@ const GameScr = () => {
         height={boardHeight}
         positions={positions}
         dice={{diceOne: dice[0], diceTwo: dice[1]}}
-        onMoveChecker={onMoveChecker}
-        ></Board>
-        
-      <PipCount color="black" count="167" />
+        onMoveChecker={onMoveChecker}></Board>
+
+      <PipCount color="black" count={scores[1]} />
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

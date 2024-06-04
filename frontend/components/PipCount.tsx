@@ -3,7 +3,7 @@ import {View, StyleSheet, Text} from 'react-native';
 
 interface PipCountProps {
   color: string;
-  count: string;
+  count: number;
 }
 
 const PipCount: React.FC<PipCountProps> = ({color, count}) => {

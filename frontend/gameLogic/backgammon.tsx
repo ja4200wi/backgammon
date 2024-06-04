@@ -1,6 +1,4 @@
-import EventEmitter from 'eventemitter3';
-
-export class Game extends EventEmitter{
+export class Game {
   getBoard(): import('react').ReactElement<
     any,
     string | import('react').JSXElementConstructor<any>
@@ -15,8 +13,8 @@ export class Game extends EventEmitter{
   public currentPlayer: string;
   public dice: [number, number];
   public movesLeft: number[];
-  private totalDistanceWhite: number;
-  private totalDistanceBlack: number;
+  public totalDistanceWhite: number;
+  public totalDistanceBlack: number;
 
   // Overloaded constructor signatures
   constructor();
@@ -24,7 +22,6 @@ export class Game extends EventEmitter{
 
   // Single implementation of the constructor
   constructor(homePlayer?: string) {
-    super();
     this.board = new Array(24).fill(null).map(() => []);
     this.finishWhite = 0;
     this.finishBlack = 0;
@@ -90,7 +87,7 @@ export class Game extends EventEmitter{
     return stones;
   }
 
-  public moveStone(from: number, steps: number): boolean {
+  public moveStoneBy(from: number, steps: number): boolean {
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
       console.log(
@@ -102,6 +99,70 @@ export class Game extends EventEmitter{
     if (from == -1 && this.currentPlayer == 'black') from = 24;
 
     const to = this.calculateDestination(from, steps);
+    // Prevent invalid moves
+    if (!this.isValidMove(from, to)) {
+      console.log(`Invalid move from ${from + 1} to ${to + 1}`);
+      return false;
+    }
+
+    const stone =
+      from === -1
+        ? this.currentPlayer === 'black'
+          ? this.prisonBlack.pop()
+          : this.prisonWhite.pop()
+        : this.board[from]?.pop();
+
+    if (!stone) {
+      console.log(`No stone at position ${from + 1}`);
+      return false;
+    }
+    // Remove enemy stone from target if alone
+    if (
+      this.board[to]?.length == 1 &&
+      this.board[to]?.[0].color != this.currentPlayer
+    ) {
+      const enemyStone = this.board[to]?.pop();
+      if (enemyStone && this.currentPlayer == 'white') {
+        this.prisonBlack.push(enemyStone);
+      } else if (enemyStone) {
+        this.prisonWhite.push(enemyStone);
+      }
+    }
+
+    // Check if only legal finish moves are handled by this
+    if (!this.board[to] && this.currentPlayer == 'white') {
+      this.finishWhite += 1;
+    } else if (!this.board[to]) {
+      this.finishBlack += 1;
+    } else {
+      this.board[to]?.push(stone);
+    }
+
+    if (this.board[from]?.length === 0) {
+      this.board[from] = null;
+    }
+
+    // Remove only one move
+    const indexOfMove = this.movesLeft.indexOf(steps);
+    if (indexOfMove !== -1) {
+      this.movesLeft.splice(indexOfMove, 1);
+    }
+
+    this.movesLeft.splice(steps, 1);
+    return true;
+  }
+
+  public moveStone(from: number, to: number): boolean {
+    const steps = this.currentPlayer === 'white' ? to - from : from - to;
+    // Prevent taking steps that haven't been rolled with dice
+    if (!this.movesLeft.includes(steps)) {
+      console.log(
+        `Invalid move: ${steps} is not a valid step based on the dice roll.`,
+      );
+      return false;
+    }
+    // Black player moves from prison
+    if (from == -1 && this.currentPlayer == 'black') from = 24;
     // Prevent invalid moves
     if (!this.isValidMove(from, to)) {
       console.log(`Invalid move from ${from + 1} to ${to + 1}`);
@@ -300,7 +361,6 @@ export class Game extends EventEmitter{
     } else {
       this.movesLeft = [...this.dice];
     }
-    this.emit('diceRolled', this.dice);
     return this.dice;
   }
 
@@ -328,7 +388,36 @@ export class Game extends EventEmitter{
 
     return totalDistance;
   }
-
+  public getCurrentPositions(): {
+    index: number;
+    color: string;
+    count: number;
+  }[] {
+    const positions: {index: number; color: string; count: number}[] = [];
+    for (let i = 0; i < this.board.length; i++) {
+      const stones = this.board[i];
+      if (stones && stones.length > 0) {
+        const color = stones[0].color;
+        const count = stones.length;
+        positions.push({index: i, color, count});
+      }
+    }
+    if (this.prisonWhite.length > 0) {
+      positions.push({
+        index: -1,
+        color: 'white',
+        count: this.prisonWhite.length,
+      });
+    }
+    if (this.prisonBlack.length > 0) {
+      positions.push({
+        index: -1,
+        color: 'black',
+        count: this.prisonBlack.length,
+      });
+    }
+    return positions;
+  }
   public updateDistances() {
     this.totalDistanceBlack = this.calculateTotalDistance('black');
     this.totalDistanceWhite = this.calculateTotalDistance('white');

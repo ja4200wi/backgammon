@@ -3,21 +3,19 @@ import {View, StyleSheet, Alert} from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
 import Dice from './Dice';
-import { DiceProps } from './Dice';
+import {DiceProps} from './Dice';
 import Prison from './Prison';
-
 
 export interface Position {
   index: number;
-  color: COLORS;
+  color: string;
   count: number;
 }
 
 export enum COLORS {
   WHITE = 'white',
-  BLACK = 'black'
+  BLACK = 'black',
 }
-
 
 interface BoardProps {
   positions: Position[];
@@ -59,7 +57,6 @@ const Board: React.FC<BoardProps> = ({
     [],
   );
 
-
   const sendToPrison = (index: number) => {
     setPrisonCheckers(prevCheckers => {
       const newCheckers = [...prevCheckers];
@@ -71,26 +68,22 @@ const Board: React.FC<BoardProps> = ({
     });
   };
 
-
   const handleSpikePressTwo = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
       setSelectedSource(index);
-      console.log("succsess") //works
     } else if (selectedSource !== null) {
-      console.log('now we move',selectedSource,index) //works
       moveCheckerTwo(selectedSource, index);
     }
   };
 
   const moveCheckerTwo = async (sourceIndex: number, targetIndex: number) => {
-    console.log("we are in movechecker board",sourceIndex,targetIndex)
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
       // Update UI accordingly
       setSelectedSource(null);
     } else {
       setSelectedSource(null);
-      Alert.alert("Invalid move");
+      Alert.alert('Invalid move');
     }
   };
 
@@ -118,6 +111,8 @@ const Board: React.FC<BoardProps> = ({
       onPress: handleSpikePressTwo,
     }));
 
+    const prisonCheckers: React.ReactElement[] = [];
+
     positions.forEach(position => {
       const {index, color, count} = position;
       for (let i = 0; i < count; i++) {
@@ -129,10 +124,14 @@ const Board: React.FC<BoardProps> = ({
             height={spikeWidth}
           />
         );
-        newSpikes[index].checkers.push(checker);
+        if (index < 0) {
+          prisonCheckers.push(checker);
+        } else {
+          newSpikes[index].checkers.push(checker);
+        }
       }
     });
-
+    setPrisonCheckers(prisonCheckers);
     setSpikes(newSpikes);
   };
 
@@ -140,9 +139,7 @@ const Board: React.FC<BoardProps> = ({
     distributeCheckers();
   }, [positions]);
 
-  useEffect(() => {
-    
-  })
+  useEffect(() => {});
 
   const SixSpikes = (startIndex: number) => (
     <>
