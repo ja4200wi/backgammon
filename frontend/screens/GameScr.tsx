@@ -1,12 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  Text,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import Checker from '../components/Checker';
 import PipCount from '../components/PipCount';
 import Board from '../components/Board';
@@ -105,7 +98,6 @@ const GameScr = () => {
   const [game, setGame] = useState<Game | null>(null);
   const [positions, setpositions] = useState(startingPositions);
   const [scores, setScores] = useState(startScores);
-  const firstmove = true;
 
   useEffect(() => {
     if (game && moveIsOver) {
@@ -118,7 +110,6 @@ const GameScr = () => {
   }, []);
 
   const startGame = () => {
-    console.log('Game started');
     let newgame = new Game();
     setGame(newgame);
     runGame(newgame);
@@ -143,7 +134,6 @@ const GameScr = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
-      console.log(game.getCurrentPositions());
       setmoveIsOver(game.movesLeft.length === 0);
       game.updateDistances();
       updateScores();
@@ -171,7 +161,6 @@ const GameScr = () => {
         positions={positions}
         dice={{diceOne: dice[0], diceTwo: dice[1], color: game?.currentPlayer!}}
         onMoveChecker={onMoveChecker}></Board>
-
       <PipCount color="black" count={scores[1]} />
     </View>
   );
@@ -193,16 +182,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     rowGap: boardHeight - spikeHeight * 2,
     flexWrap: 'wrap',
-  },
-  blackView: {
-    width: spikeWidth,
-    height: spikeHeight,
-    backgroundColor: '#000000',
-  },
-  tempStartButton: {
-    backgroundColor: 'white',
-    borderRadius: 5,
-    marginBottom: 30,
   },
 });
 

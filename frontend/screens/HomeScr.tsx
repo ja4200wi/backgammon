@@ -6,10 +6,9 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
-  Alert,
 } from 'react-native';
 
-export default function HomeScr({navigation}) {
+export default function HomeScr({navigation}: {navigation: any}) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -24,16 +23,6 @@ export default function HomeScr({navigation}) {
           style={[styles.button, styles.signUpButton]}
           onPress={() => navigation.navigate('SignUp')}>
           <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() =>
-            Alert.alert('Title', 'Message', [
-              {text: 'Yes', onPress: () => console.log('Yes pressed')},
-              {text: 'No', onPress: () => console.log('No pressed')},
-            ])
-          }>
-          <Text> Hola die Waldfee</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

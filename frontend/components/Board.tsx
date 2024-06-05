@@ -57,17 +57,6 @@ const Board: React.FC<BoardProps> = ({
     [],
   );
 
-  const sendToPrison = (index: number) => {
-    setPrisonCheckers(prevCheckers => {
-      const newCheckers = [...prevCheckers];
-      const checker = spikes[index].checkers.reverse().pop();
-      if (checker) {
-        newCheckers.push(checker);
-      }
-      return newCheckers;
-    });
-  };
-
   const handleSpikePressTwo = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
       setSelectedSource(index);
