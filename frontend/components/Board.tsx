@@ -26,6 +26,7 @@ interface BoardProps {
     tertiary: string;
   };
   width: number;
+  currentPlayer: string;
   height: number;
   dice: DiceProps;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
@@ -36,6 +37,7 @@ const Board: React.FC<BoardProps> = ({
   width,
   height,
   dice,
+  currentPlayer,
   positions,
   onMoveChecker,
 }) => {
@@ -48,7 +50,7 @@ const Board: React.FC<BoardProps> = ({
     width: spikeWidth,
     invert: index >= 12 ? true : false,
     checkers: [] as React.ReactElement[],
-    onPress: handleSpikePressTwo,
+    onPress: handleSpikePress,
   }));
 
   const [spikes, setSpikes] = useState(initialSpikes);
@@ -56,19 +58,26 @@ const Board: React.FC<BoardProps> = ({
   const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
     [],
   );
+  const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
+  const [usedDice, setUsedDice] = useState<{[key: number]: number}>({});
 
-  const handleSpikePressTwo = (index: number) => {
+  const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
       setSelectedSource(index);
     } else if (selectedSource !== null) {
-      moveCheckerTwo(selectedSource, index);
+      moveChecker(selectedSource, index);
     }
   };
 
-  const moveCheckerTwo = async (sourceIndex: number, targetIndex: number) => {
+  const moveChecker = async (sourceIndex: number, targetIndex: number) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
-      // Update UI accordingly
+      const moveDistance = Math.abs(targetIndex - sourceIndex);
+      setUsedDice(prevUsedDice => ({
+        ...prevUsedDice,
+        [moveDistance]: (prevUsedDice[moveDistance] || 0) + 1,
+      }));
+      setPossibleMoves([]);
       setSelectedSource(null);
     } else {
       setSelectedSource(null);
@@ -80,7 +89,7 @@ const Board: React.FC<BoardProps> = ({
     if (selectedSource === null && prisonCheckers.length > 0) {
       setSelectedSource(-1);
     } else if (selectedSource !== null) {
-      moveCheckerTwo(selectedSource, index);
+      moveChecker(selectedSource, index);
     }
   };
 
@@ -97,7 +106,7 @@ const Board: React.FC<BoardProps> = ({
       width: spikeWidth,
       invert: index >= 12 ? true : false,
       checkers: [] as React.ReactElement[],
-      onPress: handleSpikePressTwo,
+      onPress: handleSpikePress,
     }));
 
     const prisonCheckers: React.ReactElement[] = [];
@@ -124,11 +133,33 @@ const Board: React.FC<BoardProps> = ({
     setSpikes(newSpikes);
   };
 
+  const calculatePossibleMoves = (sourceIndex: number) => {
+    const direction = currentPlayer === COLORS.WHITE ? 1 : -1;
+    const diceValues = [dice.diceOne, dice.diceTwo];
+    const remainingMoves = diceValues.flatMap(die => {
+      const maxUses = die === dice.diceOne && die === dice.diceTwo ? 4 : 1;
+      const used = usedDice[die] || 0;
+      return Array(maxUses - used).fill(die * direction);
+    });
+    const possibleMoves = remainingMoves
+      .map(move => sourceIndex + move)
+      .filter(target => target < 24 && target >= 0);
+    setPossibleMoves(possibleMoves);
+  };
+
   useEffect(() => {
     distributeCheckers();
   }, [positions]);
 
-  useEffect(() => {});
+  useEffect(() => {
+    setUsedDice([]);
+  }, [currentPlayer]);
+
+  useEffect(() => {
+    if (selectedSource !== null) {
+      calculatePossibleMoves(selectedSource);
+    }
+  }, [selectedSource]);
 
   const SixSpikes = (startIndex: number) => (
     <>
@@ -139,8 +170,9 @@ const Board: React.FC<BoardProps> = ({
           color={spike.color}
           width={spike.width}
           invert={spike.invert}
+          isHighlighted={possibleMoves.includes(startIndex + idx)}
           checkers={spike.checkers}
-          onPress={() => handleSpikePressTwo(startIndex + idx)} // Pass correct index here
+          onPress={() => handleSpikePress(startIndex + idx)} // Pass correct index here
         />
       ))}
     </>

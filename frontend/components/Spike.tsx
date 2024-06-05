@@ -6,7 +6,7 @@ interface SpikeProps {
   color: string;
   width: number;
   height: number;
-  style?: any;
+  isHighlighted?: boolean;
   invert?: boolean;
   checkers: React.ReactElement[];
   onPress?: () => void;
@@ -18,13 +18,14 @@ const Spike: React.FC<SpikeProps> = ({
   width,
   height,
   invert,
+  isHighlighted,
   checkers,
   onPress,
-  children,
-  style,
 }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[style]}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={{backgroundColor: isHighlighted ? 'yellow' : 'transparent'}}>
       {invert && (
         <Triangle
           width={width}

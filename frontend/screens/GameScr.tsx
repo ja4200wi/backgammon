@@ -92,7 +92,6 @@ const GameScr = () => {
   ];
 
   const startScores = [167, 167]; //white, black
-
   const [dice, setdice] = useState<number[]>([1, 2]);
   const [moveIsOver, setmoveIsOver] = useState(true);
   const [game, setGame] = useState<Game | null>(null);
@@ -159,6 +158,7 @@ const GameScr = () => {
         width={boardWidth}
         height={boardHeight}
         positions={positions}
+        currentPlayer={game?.currentPlayer!}
         dice={{diceOne: dice[0], diceTwo: dice[1], color: game?.currentPlayer!}}
         onMoveChecker={onMoveChecker}></Board>
       <PipCount color="black" count={scores[1]} />
