@@ -137,6 +137,8 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const calculatePossibleMoves = (sourceIndex: number) => {
+    if (spikes[sourceIndex].checkers.length === 0) return;
+    if (spikes[sourceIndex].checkers[0].props.color !== currentPlayer) return;
     const direction = currentPlayer === COLORS.WHITE ? 1 : -1;
     const diceValues = [dice.diceOne, dice.diceTwo];
     const remainingMoves = diceValues.flatMap(die => {
