@@ -106,6 +106,9 @@ export class Game {
     if (this.board[from] === null) {
       return false;
     }
+    if (this.board[from][0].color !== this.currentPlayer) {
+      return false;
+    }
     const sourcecount = this.board[from]?.length!;
     if (sourcecount < 0) {
       return false;

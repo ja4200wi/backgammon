@@ -146,7 +146,15 @@ const Board: React.FC<BoardProps> = ({
     });
     const possibleMoves = remainingMoves
       .map(move => sourceIndex + move)
-      .filter(target => target < 25 && target >= 1);
+      .filter(target => {
+        if (target < 1 || target >= 25) return false; // ensure within board limits
+        const targetSpike = spikes[target];
+        // Check if the spike has more than two enemy checkers
+        const isEnemyTerritory =
+          targetSpike.checkers.length > 2 &&
+          targetSpike.checkers[0].props.color !== currentPlayer;
+        return !isEnemyTerritory;
+      });
     setPossibleMoves(possibleMoves);
   };
 
