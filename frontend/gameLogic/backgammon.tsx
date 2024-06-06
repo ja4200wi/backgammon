@@ -1,5 +1,3 @@
-import { ContinousBaseGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/gesture";
-
 const BOARD_SIZE = 26;
 const HOME_AREA_SIZE = 6;
 const TOTAL_STONES = 15;
@@ -44,9 +42,9 @@ export class Game {
 
   public moveStone(from: number, to: number): boolean {
     let steps = this.currentPlayer === 'white' ? to - from : from - to;
-    console.log('From', from)
-    console.log('to', to)
-    console.log(steps)
+    console.log('From', from);
+    console.log('to', to);
+    console.log(steps);
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
       return false;
@@ -56,7 +54,7 @@ export class Game {
       return false;
     }
 
-    console.log('move was valid')
+    console.log('move was valid');
 
     const stone = this.board[from]?.pop();
 
@@ -120,8 +118,8 @@ export class Game {
     //check if prison move is necessary
     const prison =
       this.currentPlayer === 'white' ? this.board[0] : this.board[25];
-    if (prison?.length! > 0 && (from !== 0 && from !== 25)) {
-      console.log('prison error')
+    if (prison?.length! > 0 && from !== 0 && from !== 25) {
+      console.log('prison error');
       return false;
     }
     //check if player is allowed to move home
@@ -181,7 +179,7 @@ export class Game {
   }
 
   private getRandomDieRoll(): number {
-    return Math.floor(Math.random() * 6) + 1;
+    return 2;
   }
 
   public calculateTotalDistance(color: string): number {
