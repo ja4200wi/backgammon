@@ -81,14 +81,14 @@ distributeCheckers(initialSpikesSetup);
 
 const GameScr = () => {
   const startingPositions = [
-    {index: 0, color: 'white', count: 2},
-    {index: 11, color: 'white', count: 5},
-    {index: 16, color: 'white', count: 3},
-    {index: 18, color: 'white', count: 5},
-    {index: 23, color: 'black', count: 2},
-    {index: 12, color: 'black', count: 5},
-    {index: 7, color: 'black', count: 3},
-    {index: 5, color: 'black', count: 5},
+    {index: 1, color: 'white', count: 2},
+    {index: 12, color: 'white', count: 5},
+    {index: 17, color: 'white', count: 3},
+    {index: 19, color: 'white', count: 5},
+    {index: 24, color: 'black', count: 2},
+    {index: 13, color: 'black', count: 5},
+    {index: 8, color: 'black', count: 3},
+    {index: 6, color: 'black', count: 5},
   ];
 
   const startScores = [167, 167]; //white, black
@@ -115,8 +115,8 @@ const GameScr = () => {
   };
 
   const runGame = (game: Game) => {
-    game.updateDistances();
-    updateScores();
+    const distances = game.getDistances();
+    updateScores(distances.distBlack, distances.distWhite);
     if (game.isGameOver()) {
       return;
     }
@@ -134,15 +134,15 @@ const GameScr = () => {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
       setmoveIsOver(game.movesLeft.length === 0);
-      game.updateDistances();
-      updateScores();
+      const distances = game.getDistances();
+      updateScores(distances.distBlack, distances.distWhite);
       return success;
     }
     return false;
   };
 
-  const updateScores = () => {
-    setScores([game?.totalDistanceWhite!, game?.totalDistanceBlack!]);
+  const updateScores = (distBlack: number, distWhite: number) => {
+    setScores([distWhite, distBlack]);
   };
 
   return (

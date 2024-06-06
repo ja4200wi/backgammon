@@ -1,4 +1,4 @@
-const BOARD_SIZE = 24;
+const BOARD_SIZE = 26;
 const HOME_AREA_SIZE = 6;
 const TOTAL_STONES = 15;
 
@@ -6,38 +6,30 @@ export class Game {
   private board: (Stone[] | null)[];
   private finishWhite: number = 0;
   private finishBlack: number = 0;
-  private prisonWhite: Stone[];
-  private prisonBlack: Stone[];
   public currentPlayer: string;
   public dice: [number, number];
   public movesLeft: number[];
-  public totalDistanceWhite: number;
-  public totalDistanceBlack: number;
 
   // Single implementation of the constructor
   constructor() {
-    this.board = new Array(24).fill(null).map(() => []);
+    this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
     this.finishWhite = 0;
     this.finishBlack = 0;
-    this.prisonWhite = [];
-    this.prisonBlack = [];
     this.currentPlayer = 'black';
-    this.dice = [1, 1]; // Initialize with a default roll
+    this.dice = [1, 1];
     this.movesLeft = [];
-    this.totalDistanceWhite = 167;
-    this.totalDistanceBlack = 167;
     this.setupDefaultBoard();
   }
 
   private setupDefaultBoard() {
-    this.board[0] = this.createStones(2, 'white');
-    this.board[11] = this.createStones(5, 'white');
-    this.board[16] = this.createStones(3, 'white');
-    this.board[18] = this.createStones(5, 'white');
-    this.board[23] = this.createStones(2, 'black');
-    this.board[12] = this.createStones(5, 'black');
-    this.board[7] = this.createStones(3, 'black');
-    this.board[5] = this.createStones(5, 'black');
+    this.board[1] = this.createStones(2, 'white');
+    this.board[12] = this.createStones(5, 'white');
+    this.board[17] = this.createStones(3, 'white');
+    this.board[19] = this.createStones(5, 'white');
+    this.board[24] = this.createStones(2, 'black');
+    this.board[13] = this.createStones(5, 'black');
+    this.board[8] = this.createStones(3, 'black');
+    this.board[6] = this.createStones(5, 'black');
   }
 
   private createStones(count: number, color: string): Stone[] {
@@ -50,7 +42,7 @@ export class Game {
 
   public moveStone(from: number, to: number): boolean {
     // Black player moves from prison
-    if (from === -1 && this.currentPlayer === 'black') from = 24;
+    if (from === 0 && this.currentPlayer === 'black') from = 25;
     let steps = this.currentPlayer === 'white' ? to - from : from - to;
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
@@ -61,12 +53,7 @@ export class Game {
       return false;
     }
 
-    const stone =
-      from === -1
-        ? this.prisonWhite.pop()
-        : from === 24
-        ? this.prisonBlack.pop()
-        : this.board[from]?.pop();
+    const stone = this.board[from]?.pop();
 
     if (!stone) {
       return false;
@@ -78,9 +65,9 @@ export class Game {
     ) {
       const enemyStone = this.board[to]?.pop();
       if (enemyStone && this.currentPlayer === 'white') {
-        this.prisonBlack.push(enemyStone);
+        this.board[25]?.push(enemyStone);
       } else if (enemyStone) {
-        this.prisonWhite.push(enemyStone);
+        this.board[0]?.push(enemyStone);
       }
     }
     this.board[to]?.push(stone);
@@ -108,49 +95,54 @@ export class Game {
   }
 
   private isValidMove(from: number, to: number): boolean {
-    // Check if source is on board
-    if (from < -1 || from > 24) return false;
-    // Check if source has checkers at all
-    if (!this.board[from] || this.board[from]?.length === 0) return false;
-    // Check if white target is on board or can finish or has prisoner
-    if (this.currentPlayer === 'white') {
-      if (this.prisonWhite.length > 0) return false; //TODO: if source is not Prison
-      if (to < 0) return false;
-      if (to > 23 && !this.allCheckersHome('white')) {
-        return false;
-      }
-    } // Check if black target is on board or can finish or has prisoner
-    else if (this.currentPlayer === 'black') {
-      if (this.prisonBlack.length > 0) return false; //TODO: if source is not Prison
-      if (to > 23) return false;
-      if (to < 0 && !this.allCheckersHome('black')) return false;
+    //source is valid
+    if (from < 0 || from > 25) {
+      return false;
     }
-
-    // Check source tile for correct color and existence
-    const stone = this.board[from]?.[0];
-    if (!stone || stone.color !== this.currentPlayer) return false;
-    //Check destination for eligibility
-    const destinationStones = this.board[to];
-    if (destinationStones && destinationStones.length > 0) {
-      if (
-        destinationStones[0].color !== this.currentPlayer &&
-        destinationStones.length > 1
-      ) {
+    //target is valid
+    if (to < 1 || (to > 24 && to < 99) || to > 100) {
+      if (to !== 100) {
         return false;
       }
     }
-
+    //check if source exists
+    if (this.board[from] === null) {
+      return false;
+    }
+    const sourcecount = this.board[from]?.length!;
+    if (sourcecount < 0) {
+      return false;
+    }
+    //check if prison move is necessary
+    const prison =
+      this.currentPlayer === 'white' ? this.board[0] : this.board[25];
+    if (prison?.length! > 0 && (from === 0 || from === 25)) {
+      return false;
+    }
+    //check if player is allowed to move home
+    if (to === 100 && !this.allCheckersHome) {
+      return false;
+    }
+    //check if to is not occupied by more than 2 checkers of opponent
+    if (
+      this.board[to] !== null &&
+      this.board[to]!.length > 1 &&
+      this.board[to]![0].color !== this.currentPlayer
+    ) {
+      return false;
+    }
+    //Move is valid
     return true;
   }
 
   public allCheckersHome(color: string): boolean {
-    let startIndex = color === 'white' ? 18 : 0;
+    let startIndex = color === 'white' ? 19 : 1;
     const checkersInBoard =
       15 - (color === 'white' ? this.finishWhite : this.finishBlack);
     if (color === 'white') {
-      if (this.prisonWhite.length > 0) return false;
+      if (this.board[0]!.length > 0) return false;
     } else if ((color = 'black')) {
-      if (this.prisonBlack.length > 0) return false;
+      if (this.board[25]!.length > 0) return false;
     }
     let countCheckersInHome = 0;
     for (let i = 0; i < 6; i++) {
@@ -198,7 +190,7 @@ export class Game {
             if (color === 'white') {
               totalDistance += 24 - i;
             } else if (color === 'black') {
-              totalDistance += i + 1;
+              totalDistance += i;
             }
           }
         }
@@ -222,26 +214,14 @@ export class Game {
         positions.push({index: i, color, count});
       }
     }
-    if (this.prisonWhite.length > 0) {
-      positions.push({
-        index: -1,
-        color: 'white',
-        count: this.prisonWhite.length,
-      });
-    }
-    if (this.prisonBlack.length > 0) {
-      positions.push({
-        index: -1,
-        color: 'black',
-        count: this.prisonBlack.length,
-      });
-    }
     return positions;
   }
 
-  public updateDistances() {
-    this.totalDistanceBlack = this.calculateTotalDistance('black');
-    this.totalDistanceWhite = this.calculateTotalDistance('white');
+  public getDistances(): {distBlack: number; distWhite: number} {
+    return {
+      distBlack: this.calculateTotalDistance('black'),
+      distWhite: this.calculateTotalDistance('white'),
+    };
   }
 }
 

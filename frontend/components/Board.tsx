@@ -44,7 +44,7 @@ const Board: React.FC<BoardProps> = ({
   const spikeWidth = width / 13;
   const spikeHeight = height / 3;
 
-  const initialSpikes = Array.from({length: 24}, (_, index) => ({
+  const initialSpikes = Array.from({length: 26}, (_, index) => ({
     height: spikeHeight,
     color: index % 2 === 0 ? colors.primary : colors.secondary,
     width: spikeWidth,
@@ -70,6 +70,7 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const moveChecker = async (sourceIndex: number, targetIndex: number) => {
+    console.log('Moving checker from ', sourceIndex, ' to ', targetIndex);
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
       const moveDistance = Math.abs(targetIndex - sourceIndex);
@@ -99,16 +100,17 @@ const Board: React.FC<BoardProps> = ({
    */
 
   const distributeCheckers = () => {
-    const newSpikes = Array.from({length: 24}, (_, index) => ({
+    const newSpikes = Array.from({length: 26}, (_, index) => ({
       height: spikeHeight,
       color: index % 2 === 0 ? colors.primary : colors.secondary,
       width: spikeWidth,
-      invert: index >= 12 ? true : false,
+      invert: index >= 13 ? true : false,
       checkers: [] as React.ReactElement[],
       onPress: handleSpikePress,
     }));
 
     const prisonCheckers: React.ReactElement[] = [];
+    console.log(positions);
 
     positions.forEach(position => {
       const {index, color, count} = position;
@@ -121,7 +123,7 @@ const Board: React.FC<BoardProps> = ({
             height={spikeWidth}
           />
         );
-        if (index < 0) {
+        if (index === 0 || index === 25) {
           prisonCheckers.push(checker);
         } else {
           newSpikes[index].checkers.push(checker);
@@ -142,8 +144,9 @@ const Board: React.FC<BoardProps> = ({
     });
     const possibleMoves = remainingMoves
       .map(move => sourceIndex + move)
-      .filter(target => target < 24 && target >= 0);
+      .filter(target => target < 25 && target >= 1);
     setPossibleMoves(possibleMoves);
+    console.log('Possible moves: ', possibleMoves);
   };
 
   useEffect(() => {
@@ -171,7 +174,7 @@ const Board: React.FC<BoardProps> = ({
           invert={spike.invert}
           isHighlighted={possibleMoves.includes(startIndex + idx)}
           checkers={spike.checkers}
-          onPress={() => handleSpikePress(startIndex + idx)} // Pass correct index here
+          onPress={() => handleSpikePress(startIndex + idx)}
         />
       ))}
     </>
@@ -184,7 +187,7 @@ const Board: React.FC<BoardProps> = ({
         {backgroundColor: colors.background, width: width, height: height},
       ]}>
       <View style={[styles.boardHalf]}>
-        <View style={[styles.reverse]}>{SixSpikes(6)}</View>
+        <View style={[styles.reverse]}>{SixSpikes(7)}</View>
         <View style={{height: spikeHeight, justifyContent: 'center'}}>
           {dice.color === 'white' && (
             <Dice
@@ -194,7 +197,7 @@ const Board: React.FC<BoardProps> = ({
             />
           )}
         </View>
-        <View style={[styles.sixSpikes]}>{SixSpikes(12)}</View>
+        <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
       </View>
       <Prison
         backgroundColor={colors.tertiary}
@@ -204,7 +207,7 @@ const Board: React.FC<BoardProps> = ({
         onPress={handlePrisonPress}
       />
       <View style={[styles.boardHalf]}>
-        <View style={[styles.reverse]}>{SixSpikes(0)}</View>
+        <View style={[styles.reverse]}>{SixSpikes(1)}</View>
         <View style={{height: spikeHeight, justifyContent: 'center'}}>
           {dice.color === 'black' && (
             <Dice
@@ -214,7 +217,7 @@ const Board: React.FC<BoardProps> = ({
             />
           )}
         </View>
-        <View style={[styles.sixSpikes]}>{SixSpikes(18)}</View>
+        <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
       </View>
     </View>
   );
