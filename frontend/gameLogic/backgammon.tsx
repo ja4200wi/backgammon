@@ -191,7 +191,7 @@ export class Game {
         for (let stone of stones) {
           if (stone.color === color) {
             if (color === 'white') {
-              totalDistance += 24 - i;
+              totalDistance += 24 - i + 1;
             } else if (color === 'black') {
               totalDistance += i;
             }
