@@ -122,8 +122,8 @@ const GameScr = () => {
     }
     //case user clicked endmove
     if (game?.getMovesLeft.length === 0) {
-      setdice(game.getDice());
       game.switchPlayer();
+      setdice(game.getDice());
     }
   };
 
@@ -131,7 +131,7 @@ const GameScr = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
-      setmoveIsOver(game.getMovesLeft.length === 0);
+      setmoveIsOver(game.getMovesLeft().length === 0);
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       return success;

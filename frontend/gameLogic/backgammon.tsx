@@ -159,6 +159,7 @@ export class Game {
   }
 
   public switchPlayer() {
+    this.dice = this.rollDice();
     this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
   }
 
