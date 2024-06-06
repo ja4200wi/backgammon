@@ -54,14 +54,10 @@ export class Game {
     let steps = this.currentPlayer === 'white' ? to - from : from - to;
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
-      console.log(
-        `Invalid move: ${steps} is not a valid step based on the dice roll.`,
-      );
       return false;
     }
     // Prevent invalid moves
     if (!this.isValidMove(from, to)) {
-      console.log(`Invalid move from ${from + 1} to ${to + 1}`);
       return false;
     }
 
@@ -73,7 +69,6 @@ export class Game {
         : this.board[from]?.pop();
 
     if (!stone) {
-      console.log(`No stone at position ${from + 1}`);
       return false;
     }
     // Remove enemy stone from target if alone
@@ -88,18 +83,7 @@ export class Game {
         this.prisonWhite.push(enemyStone);
       }
     }
-
-    console.log('Move tried to to ', to, this.board[to]);
-    // Check if only legal finish moves are handled by this
-    if (this.board[to] === null) {
-      this.board[to] = [];
-    }
     this.board[to]?.push(stone);
-
-    if (this.board[from]?.length === 0) {
-      this.board[from] = null;
-    }
-
     // Remove only one move
     const indexOfMove = this.movesLeft.indexOf(steps);
     if (indexOfMove !== -1) {
@@ -108,14 +92,6 @@ export class Game {
 
     this.movesLeft.splice(steps, 1);
     return true;
-  }
-
-  private calculateDestination(from: number, steps: number): number {
-    if (this.currentPlayer === 'white') {
-      return from + steps;
-    } else {
-      return from - steps;
-    }
   }
 
   public isGameOver(): boolean {
@@ -131,71 +107,23 @@ export class Game {
     return 'no one';
   }
 
-  //TODO test this method
-  public isMovePossible(dice1: number, dice2: number): boolean {
-    // Get the list of possible dice moves
-    const possibleMoves =
-      dice1 === dice2 ? [dice1, dice1, dice1, dice1] : [dice1, dice2];
-
-    // Check for the current player's prison status
-    const prison =
-      this.currentPlayer === 'white' ? this.prisonWhite : this.prisonBlack;
-    if (prison.length > 0) {
-      // If the player has stones in prison, they must move them out first
-      for (let move of possibleMoves) {
-        const to = this.calculateDestination(-1, move);
-        if (this.isValidMove(-1, to)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    // Iterate through each tile on the board
-    for (let i = 0; i < this.board.length; i++) {
-      const stones = this.board[i];
-      if (
-        stones &&
-        stones.length > 0 &&
-        stones[0].color === this.currentPlayer
-      ) {
-        for (let move of possibleMoves) {
-          const to = this.calculateDestination(i, move);
-          if (this.isValidMove(i, to)) {
-            return true;
-          }
-        }
-      }
-    }
-
-    // No valid moves found
-    return false;
-  }
-
   private isValidMove(from: number, to: number): boolean {
-    // First check prison moves
-    if (from === -1 && this.prisonWhite.length != 0) return true;
-    if (from === 24 && this.prisonBlack.length != 0) return true;
     // Check if source is on board
-    if (from < 0 || from > 23) return false;
-    // Check if source has coins at all
+    if (from < -1 || from > 24) return false;
+    // Check if source has checkers at all
     if (!this.board[from] || this.board[from]?.length === 0) return false;
     // Check if white target is on board or can finish or has prisoner
     if (this.currentPlayer === 'white') {
       if (this.prisonWhite.length > 0) return false; //TODO: if source is not Prison
       if (to < 0) return false;
-      if (to > 23 && !this.allCoinsHome('white')) {
-        console.log(
-          'We tried to check if this is a valid move to finish this coin',
-          this.allCoinsHome('white'),
-        );
+      if (to > 23 && !this.allCheckersHome('white')) {
         return false;
       }
     } // Check if black target is on board or can finish or has prisoner
     else if (this.currentPlayer === 'black') {
       if (this.prisonBlack.length > 0) return false; //TODO: if source is not Prison
       if (to > 23) return false;
-      if (to < 0 && !this.allCoinsHome('black')) return false;
+      if (to < 0 && !this.allCheckersHome('black')) return false;
     }
 
     // Check source tile for correct color and existence
@@ -215,27 +143,24 @@ export class Game {
     return true;
   }
 
-  public allCoinsHome(color: string): boolean {
+  public allCheckersHome(color: string): boolean {
     let startIndex = color === 'white' ? 18 : 0;
-    const coinsInBoard =
+    const checkersInBoard =
       15 - (color === 'white' ? this.finishWhite : this.finishBlack);
     if (color === 'white') {
       if (this.prisonWhite.length > 0) return false;
     } else if ((color = 'black')) {
       if (this.prisonBlack.length > 0) return false;
     }
-    let countCoinsInHome = 0;
+    let countCheckersInHome = 0;
     for (let i = 0; i < 6; i++) {
-      countCoinsInHome += this.countCoins(color, startIndex + i);
+      countCheckersInHome += this.countCheckers(color, startIndex + i);
     }
-    console.log(
-      `Coins in board: ${coinsInBoard} and coins counted: ${countCoinsInHome}`,
-    );
-    if (coinsInBoard != countCoinsInHome) return false;
+    if (checkersInBoard != countCheckersInHome) return false;
     return true;
   }
 
-  public countCoins(color: string, index: number): number {
+  public countCheckers(color: string, index: number): number {
     if (index < 0 || index >= 24 || !this.board[index]) {
       return -1;
     }
@@ -282,6 +207,7 @@ export class Game {
 
     return totalDistance;
   }
+
   public getCurrentPositions(): {
     index: number;
     color: string;
@@ -312,53 +238,10 @@ export class Game {
     }
     return positions;
   }
+
   public updateDistances() {
     this.totalDistanceBlack = this.calculateTotalDistance('black');
     this.totalDistanceWhite = this.calculateTotalDistance('white');
-  }
-
-  public displayBoard() {
-    console.log(`Current Player: ${this.currentPlayer}`);
-    this.updateDistances();
-
-    const formatTile = (tile: string): string => tile.padEnd(3, ' ');
-
-    const topRow = this.board
-      .slice(0, 12)
-      .map(this.formatPoint)
-      .map(formatTile)
-      .join(' ');
-    const bottomRow = this.board
-      .slice(12)
-      .map(this.formatPoint)
-      .reverse()
-      .map(formatTile)
-      .join(' ');
-
-    console.log(`[${topRow}]`);
-    console.log(`[${bottomRow}]`);
-    console.log(
-      `White Prison: ${this.prisonWhite.length} stones\t\t\tBlack Prison: ${this.prisonBlack.length} stones`,
-    );
-    console.log(
-      `Coins Finished: White = ${this.finishWhite}\t\tBlack = ${this.finishBlack}`,
-    );
-    console.log(
-      `Total Distance: White = ${this.totalDistanceWhite} steps\tBlack = ${this.totalDistanceBlack} steps`,
-    );
-    console.log(
-      `Dice Roll: ${this.dice[0]}, ${
-        this.dice[1]
-      }\t\t\t\tMoves Left: ${this.movesLeft.join(', ')}`,
-    );
-  }
-
-  private formatPoint(point: Stone[] | null, index: number): string {
-    if (!point || point.length === 0) {
-      return '0';
-    }
-    const color = point[0].color.charAt(0).toUpperCase();
-    return `${point.length}${color}`;
   }
 }
 

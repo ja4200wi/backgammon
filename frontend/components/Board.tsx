@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
 import Dice from './Dice';
@@ -81,7 +81,6 @@ const Board: React.FC<BoardProps> = ({
       setSelectedSource(null);
     } else {
       setSelectedSource(null);
-      Alert.alert('Invalid move');
     }
   };
 
