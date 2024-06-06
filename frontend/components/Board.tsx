@@ -70,7 +70,6 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const moveChecker = async (sourceIndex: number, targetIndex: number) => {
-    console.log('Moving checker from ', sourceIndex, ' to ', targetIndex);
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
       const moveDistance = Math.abs(targetIndex - sourceIndex);
@@ -87,7 +86,11 @@ const Board: React.FC<BoardProps> = ({
 
   const handlePrisonPress = (index: number) => {
     if (selectedSource === null && prisonCheckers.length > 0) {
-      setSelectedSource(-1);
+      if(currentPlayer === 'white') {
+        setSelectedSource(0)
+      } else {
+        setSelectedSource(25)
+      }
     } else if (selectedSource !== null) {
       moveChecker(selectedSource, index);
     }
@@ -110,7 +113,6 @@ const Board: React.FC<BoardProps> = ({
     }));
 
     const prisonCheckers: React.ReactElement[] = [];
-    console.log(positions);
 
     positions.forEach(position => {
       const {index, color, count} = position;
@@ -146,7 +148,6 @@ const Board: React.FC<BoardProps> = ({
       .map(move => sourceIndex + move)
       .filter(target => target < 25 && target >= 1);
     setPossibleMoves(possibleMoves);
-    console.log('Possible moves: ', possibleMoves);
   };
 
   useEffect(() => {

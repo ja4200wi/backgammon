@@ -1,3 +1,5 @@
+import { ContinousBaseGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/gesture";
+
 const BOARD_SIZE = 26;
 const HOME_AREA_SIZE = 6;
 const TOTAL_STONES = 15;
@@ -41,9 +43,10 @@ export class Game {
   }
 
   public moveStone(from: number, to: number): boolean {
-    // Black player moves from prison
-    if (from === 0 && this.currentPlayer === 'black') from = 25;
     let steps = this.currentPlayer === 'white' ? to - from : from - to;
+    console.log('From', from)
+    console.log('to', to)
+    console.log(steps)
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
       return false;
@@ -52,6 +55,8 @@ export class Game {
     if (!this.isValidMove(from, to)) {
       return false;
     }
+
+    console.log('move was valid')
 
     const stone = this.board[from]?.pop();
 
@@ -77,7 +82,6 @@ export class Game {
       this.movesLeft.splice(indexOfMove, 1);
     }
 
-    this.movesLeft.splice(steps, 1);
     return true;
   }
 
@@ -116,7 +120,8 @@ export class Game {
     //check if prison move is necessary
     const prison =
       this.currentPlayer === 'white' ? this.board[0] : this.board[25];
-    if (prison?.length! > 0 && (from === 0 || from === 25)) {
+    if (prison?.length! > 0 && (from !== 0 && from !== 25)) {
+      console.log('prison error')
       return false;
     }
     //check if player is allowed to move home
