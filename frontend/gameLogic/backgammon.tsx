@@ -6,9 +6,9 @@ export class Game {
   private board: (Stone[] | null)[];
   private finishWhite: number = 0;
   private finishBlack: number = 0;
-  public currentPlayer: string;
-  public dice: [number, number];
-  public movesLeft: number[];
+  private currentPlayer: string;
+  private dice: [number, number];
+  private movesLeft: number[];
 
   // Single implementation of the constructor
   constructor() {
@@ -132,7 +132,7 @@ export class Game {
     return true;
   }
 
-  public allCheckersHome(color: string): boolean {
+  private allCheckersHome(color: string): boolean {
     let startIndex = color === 'white' ? 19 : 1;
     const checkersInBoard =
       15 - (color === 'white' ? this.finishWhite : this.finishBlack);
@@ -149,7 +149,7 @@ export class Game {
     return true;
   }
 
-  public countCheckers(color: string, index: number): number {
+  private countCheckers(color: string, index: number): number {
     if (index < 0 || index >= 24 || !this.board[index]) {
       return -1;
     }
@@ -162,7 +162,7 @@ export class Game {
     this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
   }
 
-  public rollDice(): [number, number] {
+  private rollDice(): [number, number] {
     this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
@@ -176,7 +176,7 @@ export class Game {
     return Math.floor(Math.random() * 6) + 1;
   }
 
-  public calculateTotalDistance(color: string): number {
+  private calculateTotalDistance(color: string): number {
     let totalDistance = 0;
 
     for (let i = 0; i < this.board.length; i++) {
@@ -219,6 +219,18 @@ export class Game {
       distBlack: this.calculateTotalDistance('black'),
       distWhite: this.calculateTotalDistance('white'),
     };
+  }
+
+  public getDice(): [number, number] {
+    return this.dice;
+  }
+
+  public getMovesLeft(): number[] {
+    return this.movesLeft;
+  }
+
+  public getCurrentPlayer(): string {
+    return this.currentPlayer;
   }
 }
 

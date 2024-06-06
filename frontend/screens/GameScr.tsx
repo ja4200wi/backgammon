@@ -121,11 +121,9 @@ const GameScr = () => {
       return;
     }
     //case user clicked endmove
-    if (game?.movesLeft.length === 0) {
-      game.rollDice();
-      setdice([...game.dice]);
-      game.currentPlayer =
-        game.currentPlayer === COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+    if (game?.getMovesLeft.length === 0) {
+      setdice(game.getDice());
+      game.switchPlayer();
     }
   };
 
@@ -133,7 +131,7 @@ const GameScr = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
-      setmoveIsOver(game.movesLeft.length === 0);
+      setmoveIsOver(game.getMovesLeft.length === 0);
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       return success;
@@ -158,8 +156,12 @@ const GameScr = () => {
         width={boardWidth}
         height={boardHeight}
         positions={positions}
-        currentPlayer={game?.currentPlayer!}
-        dice={{diceOne: dice[0], diceTwo: dice[1], color: game?.currentPlayer!}}
+        currentPlayer={game?.getCurrentPlayer()!}
+        dice={{
+          diceOne: dice[0],
+          diceTwo: dice[1],
+          color: game?.getCurrentPlayer()!,
+        }}
         onMoveChecker={onMoveChecker}></Board>
       <PipCount color="black" count={scores[1]} />
     </View>

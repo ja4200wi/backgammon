@@ -86,10 +86,10 @@ const Board: React.FC<BoardProps> = ({
 
   const handlePrisonPress = (index: number) => {
     if (selectedSource === null && prisonCheckers.length > 0) {
-      if(currentPlayer === 'white') {
-        setSelectedSource(0)
+      if (currentPlayer === 'white') {
+        setSelectedSource(0);
       } else {
-        setSelectedSource(25)
+        setSelectedSource(25);
       }
     } else if (selectedSource !== null) {
       moveChecker(selectedSource, index);
@@ -161,6 +161,9 @@ const Board: React.FC<BoardProps> = ({
   useEffect(() => {
     if (selectedSource !== null) {
       calculatePossibleMoves(selectedSource);
+    }
+    if (selectedSource === null) {
+      setPossibleMoves([]);
     }
   }, [selectedSource]);
 
