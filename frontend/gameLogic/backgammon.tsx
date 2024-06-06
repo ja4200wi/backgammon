@@ -42,9 +42,6 @@ export class Game {
 
   public moveStone(from: number, to: number): boolean {
     let steps = this.currentPlayer === 'white' ? to - from : from - to;
-    console.log('From', from);
-    console.log('to', to);
-    console.log(steps);
     // Prevent taking steps that haven't been rolled with dice
     if (!this.movesLeft.includes(steps)) {
       return false;
@@ -53,8 +50,6 @@ export class Game {
     if (!this.isValidMove(from, to)) {
       return false;
     }
-
-    console.log('move was valid');
 
     const stone = this.board[from]?.pop();
 
@@ -119,7 +114,6 @@ export class Game {
     const prison =
       this.currentPlayer === 'white' ? this.board[0] : this.board[25];
     if (prison?.length! > 0 && from !== 0 && from !== 25) {
-      console.log('prison error');
       return false;
     }
     //check if player is allowed to move home
@@ -179,7 +173,7 @@ export class Game {
   }
 
   private getRandomDieRoll(): number {
-    return 2;
+    return Math.floor(Math.random() * 6) + 1;
   }
 
   public calculateTotalDistance(color: string): number {
