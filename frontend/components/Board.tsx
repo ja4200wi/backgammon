@@ -5,6 +5,7 @@ import Checker from './Checker';
 import Dice from './Dice';
 import {DiceProps} from './Dice';
 import Prison from './Prison';
+import { getValidMoves, DifficultyLevel } from './MoveConditions'; // Import the refactored logic
 
 export interface Position {
   index: number;
@@ -137,27 +138,16 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const calculatePossibleMoves = (sourceIndex: number) => {
-    if (spikes[sourceIndex].checkers.length === 0) return;
-    if (spikes[sourceIndex].checkers[0].props.color !== currentPlayer) return;
-    const direction = currentPlayer === COLORS.WHITE ? 1 : -1;
     const diceValues = [dice.diceOne, dice.diceTwo];
-    const remainingMoves = diceValues.flatMap(die => {
-      const maxUses = die === dice.diceOne && die === dice.diceTwo ? 4 : 1;
-      const used = usedDice[die] || 0;
-      return Array(maxUses - used).fill(die * direction);
-    });
-    const possibleMoves = remainingMoves
-      .map(move => sourceIndex + move)
-      .filter(target => {
-        if (target < 1 || target >= 25) return false; // ensure within board limits
-        const targetSpike = spikes[target];
-        // Check if the spike has more than two enemy checkers
-        const isEnemyTerritory =
-          targetSpike.checkers.length > 2 &&
-          targetSpike.checkers[0].props.color !== currentPlayer;
-        return !isEnemyTerritory;
-      });
-    setPossibleMoves(possibleMoves);
+    const validMoves = getValidMoves(
+      sourceIndex,
+      diceValues,
+      spikes,
+      currentPlayer,
+      usedDice,
+      DifficultyLevel.MEDIUM // Use the enum here // Adjust difficulty if needed
+    );
+    setPossibleMoves(validMoves);
   };
 
   useEffect(() => {
