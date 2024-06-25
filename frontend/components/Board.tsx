@@ -7,6 +7,7 @@ import {DiceProps} from './Dice';
 import Prison from './Prison';
 import { boardWidth } from '../screens/GameScr';
 import Home from '../components/Home';
+import PipCount from './PipCount';
 
 export interface Position {
   index: number;

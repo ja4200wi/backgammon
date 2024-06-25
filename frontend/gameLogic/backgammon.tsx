@@ -32,6 +32,7 @@ export class Game {
     this.board[6] = this.createStones(5, 'black');
   }
 
+
   private createStones(count: number, color: string): Stone[] {
     const stones: Stone[] = [];
     for (let i = 0; i < count; i++) {
@@ -41,11 +42,8 @@ export class Game {
   }
 
   public moveStone(from: number, to: number): boolean {
+    // logic not perfect here
     let steps = this.currentPlayer === 'white' ? to - from : from - to;
-    // Prevent taking steps that haven't been rolled with dice
-    if (!this.movesLeft.includes(steps)) {
-      return false;
-    }
     // Prevent invalid moves
     if (!this.isValidMove(from, to)) {
       return false;
@@ -70,9 +68,24 @@ export class Game {
     }
     this.board[to]?.push(stone);
     // Remove only one move
-    const indexOfMove = this.movesLeft.indexOf(steps);
+    // make sure dice gets removed if move to Home
+    if(to === 100) {
+      while (steps > 0) {
+        if (this.movesLeft.includes(steps)) {
+          const indexOfMove = this.movesLeft.indexOf(steps);
+          if (indexOfMove !== -1) {
+            this.movesLeft.splice(indexOfMove, 1);
+            steps = 0
+          }
+        } else {
+          steps--;
+        }
+      }
+    } else {
+      const indexOfMove = this.movesLeft.indexOf(steps);
     if (indexOfMove !== -1) {
       this.movesLeft.splice(indexOfMove, 1);
+    }
     }
 
     return true;
@@ -92,6 +105,7 @@ export class Game {
   }
 
   private isValidMove(from: number, to: number): boolean {
+    let steps = this.currentPlayer === 'white' ? to - from : from - to;
     //source is valid
     if (from < 0 || from > 25) {
       return false;
@@ -106,7 +120,7 @@ export class Game {
     if (this.board[from] === null) {
       return false;
     }
-    if (this.board[from][0].color !== this.currentPlayer) {
+    if (this.board[from]![0].color !== this.currentPlayer) {
       return false;
     }
     const sourcecount = this.board[from]?.length!;
@@ -121,6 +135,10 @@ export class Game {
     }
     //check if player is allowed to move home
     if (to === 100 && !this.allCheckersHome) {
+      return false;
+    }
+    //check if move is in movesLeft
+    if (!this.movesLeft.includes(steps)) {
       return false;
     }
     //check if to is not occupied by more than 2 checkers of opponent

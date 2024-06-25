@@ -122,9 +122,9 @@ const GameScr = () => {
       return;
     }
     //case user clicked endmove
-    if (game?.movesLeft.length === 0) {
+    if (game?.getMovesLeft().length === 0) {
       game.switchPlayer();
-      setdice(game.dice);
+      setdice(game.getDice());
     }
   };
 
@@ -132,7 +132,7 @@ const GameScr = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
-      setmoveIsOver(game.movesLeft.length === 0);
+      setmoveIsOver(game.getMovesLeft().length === 0);
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       return success;
@@ -157,11 +157,11 @@ const GameScr = () => {
         width={boardWidth}
         height={boardHeight}
         positions={positions}
-        currentPlayer={game?.currentPlayer!}
+        currentPlayer={game?.getCurrentPlayer()!}
         dice={{
           diceOne: dice[0],
           diceTwo: dice[1],
-          color: game?.currentPlayer!,
+          color: game?.getCurrentPlayer()!,
         }}
         onMoveChecker={onMoveChecker}></Board>
       <PipCount color="black" count={scores[1]} />

@@ -18,20 +18,21 @@ const Home: React.FC<HomeProps> = ({
   onPress,
 }) => {
   return (
-    <View
+    <TouchableOpacity
       style={{
         backgroundColor: backgroundColor,
         width: width,
         height: height,
         justifyContent: 'center',
         alignItems: 'center',
-      }}>
+      }}
+      onPress={() => onPress(100)}>
       {checkers.map((CheckerComponent, index) => (
-        <TouchableOpacity key={index} onPress={() => onPress(100)}>
+        <View key={index}>
           {CheckerComponent}
-        </TouchableOpacity>
+        </View>
       ))}
-    </View>
+    </TouchableOpacity>
   );
 };
 
