@@ -5,6 +5,8 @@ import Checker from './Checker';
 import Dice from './Dice';
 import {DiceProps} from './Dice';
 import Prison from './Prison';
+import { boardWidth } from '../screens/GameScr';
+import Home from '../components/Home';
 
 export interface Position {
   index: number;
@@ -58,6 +60,9 @@ const Board: React.FC<BoardProps> = ({
   const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
     [],
   );
+  const [homeCheckers, sethomeCheckers] = useState<React.ReactElement[]>(
+    [],
+  );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
   const [usedDice, setUsedDice] = useState<{[key: number]: number}>({});
 
@@ -96,6 +101,14 @@ const Board: React.FC<BoardProps> = ({
     }
   };
 
+  const handleHomePress = (index: number) => {
+    if (selectedSource === null) {
+      return
+    } else if (selectedSource !== null) {
+      moveChecker(selectedSource, index)
+    }
+  }
+
   /**
    * 1. Prevent moves from empty spikes
    * 2. Prevent moves to spikes with more than one opponent's checker
@@ -113,6 +126,7 @@ const Board: React.FC<BoardProps> = ({
     }));
 
     const prisonCheckers: React.ReactElement[] = [];
+    const homeCheckers: React.ReactElement[] = [];
 
     positions.forEach(position => {
       const {index, color, count} = position;
@@ -127,6 +141,8 @@ const Board: React.FC<BoardProps> = ({
         );
         if (index === 0 || index === 25) {
           prisonCheckers.push(checker);
+        } else if (index === 100) {
+          homeCheckers.push(checker);
         } else {
           newSpikes[index].checkers.push(checker);
         }
@@ -134,6 +150,7 @@ const Board: React.FC<BoardProps> = ({
     });
     setPrisonCheckers(prisonCheckers);
     setSpikes(newSpikes);
+    sethomeCheckers(homeCheckers);
   };
 
   const calculatePossibleMoves = (sourceIndex: number) => {
@@ -195,6 +212,7 @@ const Board: React.FC<BoardProps> = ({
   );
 
   return (
+    <View>
     <View
       style={[
         styles.board,
@@ -233,6 +251,16 @@ const Board: React.FC<BoardProps> = ({
         </View>
         <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
       </View>
+    </View>
+    <View>
+    <Home
+        backgroundColor={'brown'}
+        width = {boardWidth*0.5}
+        height={30}
+        checkers={homeCheckers}
+        onPress = {handleHomePress}
+      ></Home>
+    </View>
     </View>
   );
 };

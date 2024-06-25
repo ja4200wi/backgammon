@@ -5,10 +5,11 @@ import PipCount from '../components/PipCount';
 import Board from '../components/Board';
 import {Game} from '../gameLogic/backgammon';
 import {COLORS} from '../components/Board';
+import Home from '../components/Home';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const boardWidth = screenWidth * 0.95;
+export const boardWidth = screenWidth * 0.95;
 const boardHeight = screenHeight * 0.7;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 2 - 30;
@@ -121,9 +122,9 @@ const GameScr = () => {
       return;
     }
     //case user clicked endmove
-    if (game?.getMovesLeft.length === 0) {
+    if (game?.movesLeft.length === 0) {
       game.switchPlayer();
-      setdice(game.getDice());
+      setdice(game.dice);
     }
   };
 
@@ -131,7 +132,7 @@ const GameScr = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setpositions(game.getCurrentPositions());
-      setmoveIsOver(game.getMovesLeft().length === 0);
+      setmoveIsOver(game.movesLeft.length === 0);
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       return success;
@@ -156,11 +157,11 @@ const GameScr = () => {
         width={boardWidth}
         height={boardHeight}
         positions={positions}
-        currentPlayer={game?.getCurrentPlayer()!}
+        currentPlayer={game?.currentPlayer!}
         dice={{
           diceOne: dice[0],
           diceTwo: dice[1],
-          color: game?.getCurrentPlayer()!,
+          color: game?.currentPlayer!,
         }}
         onMoveChecker={onMoveChecker}></Board>
       <PipCount color="black" count={scores[1]} />
