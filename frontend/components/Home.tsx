@@ -1,45 +1,38 @@
 import React from 'react';
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
 import Checker from './Checker';
 
 interface HomeProps {
-  backgroundColor: string;
-  width: number;
-  height: number;
-  checkers: React.ReactElement[];
   onPress: (index: number) => void;
+  count: number;
 }
 
 const Home: React.FC<HomeProps> = ({
-  backgroundColor,
-  width,
-  height,
-  checkers,
   onPress,
+  count
 }) => {
   return (
     <TouchableOpacity
-      style={{
-        backgroundColor: backgroundColor,
-        width: width,
-        height: height,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
+      style={styles.container}
       onPress={() => onPress(100)}>
-      {checkers.map((CheckerComponent, index) => (
-        <View key={index}>
-          {CheckerComponent}
-        </View>
-      ))}
+      <Text style={styles.textstyle}>Home: {count}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
+    backgroundColor: 'brown',
+    borderRadius: 5,
+    marginVertical: 5,
+    height: 30,
+    width: 150,
     alignItems: 'center',
+  },
+  textstyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
 });
 

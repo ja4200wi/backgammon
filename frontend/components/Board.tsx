@@ -30,6 +30,8 @@ interface BoardProps {
   };
   width: number;
   currentPlayer: string;
+  pipCount: number[];
+  homeCount: number[];
   height: number;
   dice: DiceProps;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
@@ -43,6 +45,8 @@ const Board: React.FC<BoardProps> = ({
   currentPlayer,
   positions,
   onMoveChecker,
+  pipCount,
+  homeCount,
 }) => {
   const spikeWidth = width / 13;
   const spikeHeight = height / 3;
@@ -186,6 +190,7 @@ const Board: React.FC<BoardProps> = ({
     setUsedDice([]);
   }, [currentPlayer]);
 
+
   useEffect(() => {
     if (selectedSource !== null) {
       calculatePossibleMoves(selectedSource);
@@ -214,6 +219,10 @@ const Board: React.FC<BoardProps> = ({
 
   return (
     <View>
+      <View style={styles.row}>
+        <PipCount color="black" count={pipCount[1]} />
+        <Home onPress={handleHomePress} count= {homeCount[1]} />
+    </View>
     <View
       style={[
         styles.board,
@@ -253,14 +262,9 @@ const Board: React.FC<BoardProps> = ({
         <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
       </View>
     </View>
-    <View>
-    <Home
-        backgroundColor={'brown'}
-        width = {boardWidth*0.5}
-        height={30}
-        checkers={homeCheckers}
-        onPress = {handleHomePress}
-      ></Home>
+    <View style={styles.row}>
+        <PipCount color="white" count={pipCount[0]} />
+        <Home onPress={handleHomePress} count= {homeCount[0]} />
     </View>
     </View>
   );
@@ -283,6 +287,11 @@ const styles = StyleSheet.create({
   reverse: {
     flexDirection: 'row-reverse',
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  }
 });
 
 export default Board;

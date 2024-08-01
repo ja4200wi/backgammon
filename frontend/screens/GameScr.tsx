@@ -1,11 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet, Dimensions, Alert} from 'react-native';
 import Checker from '../components/Checker';
 import PipCount from '../components/PipCount';
 import Board from '../components/Board';
 import {Game} from '../gameLogic/backgammon';
 import {COLORS} from '../components/Board';
 import Home from '../components/Home';
+import 'react-native-gesture-handler';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+
+
+interface GameScrProps {
+  navigation: NavigationProp<ParamListBase>;
+}
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -80,7 +87,7 @@ const distributeCheckers = (spikes: React.ReactElement[][]) => {
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckers(initialSpikesSetup);
 
-const GameScr = () => {
+const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
   const startingPositions = [
     {index: 1, color: 'white', count: 2},
     {index: 12, color: 'white', count: 5},
@@ -98,12 +105,13 @@ const GameScr = () => {
   const [game, setGame] = useState<Game | null>(null);
   const [positions, setpositions] = useState(startingPositions);
   const [scores, setScores] = useState(startScores);
+  const [homeCheckers, sethomeCheckers] = useState([0,0])
 
   useEffect(() => {
     if (game && moveIsOver) {
       runGame(game);
     }
-  }, [moveIsOver, game]);
+  }, [moveIsOver, game, dice]);
 
   useEffect(() => {
     startGame();
@@ -112,16 +120,23 @@ const GameScr = () => {
   const startGame = () => {
     let newgame = new Game();
     setGame(newgame);
+    setpositions(newgame.getCurrentPositions());
     runGame(newgame);
   };
 
-  const runGame = (game: Game) => {
+  const runGame = async (game: Game) => {
     const distances = game.getDistances();
     updateScores(distances.distBlack, distances.distWhite);
     if (game.isGameOver()) {
       return;
     }
-    //case user clicked endmove
+    //check if player has legal move, if not wait 3 sec and roll for switched player
+    if(!game.hasLegalMove()) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      game.switchPlayer();
+      setdice(game.getDice());
+    }
+    //check if player has moves left
     if (game?.getMovesLeft().length === 0) {
       game.switchPlayer();
       setdice(game.getDice());
@@ -135,6 +150,39 @@ const GameScr = () => {
       setmoveIsOver(game.getMovesLeft().length === 0);
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
+      sethomeCheckers([game.getHomeCheckers().homeWhite, game.getHomeCheckers().homeBlack]);
+      if (game.isGameOver()) {
+        const winner = game.whoIsWinner()
+        Alert.alert(
+          `${winner} wins the Game`,
+          "What would you like to do?",
+          [
+            {
+              text: "Restart",
+              onPress: () => {
+                startGame(); // Call the function to restart the game
+              },
+              style: "cancel"
+            },
+            {
+              text: "Go to Home",
+              onPress: () => {
+                navigation.navigate('Home'); // Navigate back to Home screen
+              },
+              style: "default",
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+  
+      // Check for legal moves after making a move
+      if (!game.hasLegalMove()) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        game.switchPlayer();
+        setdice(game.getDice());
+      }
+  
       return success;
     }
     return false;
@@ -146,7 +194,6 @@ const GameScr = () => {
 
   return (
     <View style={[styles.container, {backgroundColor: secondBackgroundColor}]}>
-      <PipCount color="white" count={scores[0]} />
       <Board
         colors={{
           background: backgroundColor,
@@ -158,13 +205,15 @@ const GameScr = () => {
         height={boardHeight}
         positions={positions}
         currentPlayer={game?.getCurrentPlayer()!}
+        pipCount={scores}
+        homeCount={homeCheckers}
         dice={{
           diceOne: dice[0],
           diceTwo: dice[1],
           color: game?.getCurrentPlayer()!,
         }}
-        onMoveChecker={onMoveChecker}></Board>
-      <PipCount color="black" count={scores[1]} />
+        onMoveChecker={onMoveChecker}>
+      </Board>
     </View>
   );
 };
@@ -185,6 +234,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     rowGap: boardHeight - spikeHeight * 2,
     flexWrap: 'wrap',
+  },
+  row: {
+    flexDirection: 'row',
+    //justifyContent: 'flex-start', // or 'center' or 'flex-start', depending on your needs
+    //alignItems: 'flex-start', // or 'flex-start' or 'flex-end', depending on your needs
+    //padding: 10, // optional, to add some spacing around the components
   },
 });
 

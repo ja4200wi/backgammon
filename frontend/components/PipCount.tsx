@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Dimensions} from 'react-native';
 
 interface PipCountProps {
   color: string;
   count: number;
 }
-
+const screenWidth = Dimensions.get('window').width;
 const PipCount: React.FC<PipCountProps> = ({color, count}) => {
   return (
     <View style={styles.container}>
@@ -23,8 +23,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     height: 30,
     width: 150,
-    marginRight: '60%',
-    justifyContent: 'center',
     alignItems: 'center',
   },
   textstyle: {

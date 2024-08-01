@@ -70,15 +70,16 @@ export class Game {
     // Remove only one move
     // make sure dice gets removed if move to Home
     if(to === 100) {
-      while (steps > 0) {
+      steps = this.currentPlayer === 'white' ? 25-from : from
+      while (steps <= 6) {
         if (this.movesLeft.includes(steps)) {
           const indexOfMove = this.movesLeft.indexOf(steps);
           if (indexOfMove !== -1) {
             this.movesLeft.splice(indexOfMove, 1);
-            steps = 0
+            steps = 22
           }
         } else {
-          steps--;
+          steps++;
         }
       }
     } else {
@@ -87,10 +88,69 @@ export class Game {
       this.movesLeft.splice(indexOfMove, 1);
     }
     }
+    if(to === 100) {
+      if(this.currentPlayer === 'white') {
+        this.finishWhite++
+      } else {
+        this.finishBlack++
+      }
+    }
 
     return true;
   }
 
+  private checkForLegalMove(): boolean {
+    // Get the list of positions of the current player's stones
+    const playerColor = this.currentPlayer;
+    const movesLeft = this.movesLeft;
+  
+    if (movesLeft.length === 0) {
+      return true;
+    }
+  
+    const positions = this.getCurrentPositions();
+  
+    // Check if the current player has any stones in prison
+    const prisonIndex = playerColor === 'white' ? 0 : 25;
+    const hasPrisonStone = this.board[prisonIndex]?.some(stone => stone.color === playerColor);
+  
+    // If the player has stones in prison, they must move them first
+    if (hasPrisonStone) {
+      for (const move of movesLeft) {
+        const targetIndex = playerColor === 'white' ? move : prisonIndex - move;
+        if (this.isValidMove(prisonIndex, targetIndex)) {
+          return true;
+        }
+      }
+      return false; // No valid moves for prison stones
+    }
+  
+    // If there are no stones in prison, check all stones on the board
+    for (const position of positions) {
+      if (position.color === playerColor) {
+        for (const move of movesLeft) {
+          const from = position.index;
+          const to = playerColor === 'white' ? from + move : from - move;
+  
+          // Regular move check
+          if (this.isValidMove(from, to)) {
+            return true;
+          }
+  
+          // Check for bearing off
+          if (this.isValidMove(from, 100)) {
+            return true;
+          }
+        }
+      }
+    }
+    //no valid moves
+    return false;
+  }
+  
+  public hasLegalMove(): boolean {
+    return this.checkForLegalMove()
+  }
   public isGameOver(): boolean {
     if (this.finishBlack === 15 || this.finishWhite === 15) {
       return true;
@@ -99,79 +159,121 @@ export class Game {
   }
 
   public whoIsWinner(): string {
-    if (this.finishBlack === 15) return 'black';
-    if (this.finishWhite === 15) return 'white';
+    if (this.finishBlack === 15) return 'Black';
+    if (this.finishWhite === 15) return 'White';
     return 'no one';
   }
 
   private isValidMove(from: number, to: number): boolean {
-    let steps = this.currentPlayer === 'white' ? to - from : from - to;
-    //source is valid
+    const currentPlayer = this.currentPlayer;
+    let steps = currentPlayer === 'white' ? to - from : from - to;
+    const directionMultiplier = currentPlayer === 'white' ? 1 : -1;
+  
+    (`Checking isValidMove from ${from} to ${to} for ${currentPlayer}`);
+  
+    // Source is valid
     if (from < 0 || from > 25) {
       return false;
     }
-    //target is valid
+  
+    // Target is valid
     if (to < 1 || (to > 24 && to < 99) || to > 100) {
       if (to !== 100) {
         return false;
       }
     }
-    //check if source exists
-    if (this.board[from] === null) {
+  
+    // Check if source exists
+    if (this.board[from] === null || this.board[from]!.length === 0) {
       return false;
     }
-    if (this.board[from]![0].color !== this.currentPlayer) {
+  
+    // Check if the stone belongs to the current player
+    if (this.board[from]![0].color !== this.currentPlayer) {;
       return false;
     }
-    const sourcecount = this.board[from]?.length!;
-    if (sourcecount < 0) {
-      return false;
-    }
-    //check if prison move is necessary
-    const prison =
-      this.currentPlayer === 'white' ? this.board[0] : this.board[25];
+  
+    // Check if prison move is necessary
+    const prison = currentPlayer === 'white' ? this.board[0] : this.board[25];
     if (prison?.length! > 0 && from !== 0 && from !== 25) {
       return false;
     }
-    //check if player is allowed to move home
-    if (to === 100 && !this.allCheckersHome) {
+  
+    // Logic for bearing off
+    if (to === 100) {
+      if (!this.allCheckersHome(currentPlayer)) {
+        return false;
+      }
+      steps = currentPlayer === 'white' ? 25-from : from
+      // check if from is included in moves left
+      if(!this.movesLeft.includes(steps)) {
+        //check if there is a dice larger then the steps
+        if(!this.movesLeft.some(item => item > steps)) {
+          return false
+        } else {
+          let largercheckers = 0
+          if(currentPlayer === 'white'){
+            for(let i = from-1; i >= 19; i--) {
+              largercheckers+= this.countCheckers(currentPlayer,i)
+            }
+          } else {
+            for(let i = from + 1; i <=6; i++) {
+              largercheckers+= this.countCheckers(currentPlayer,i)
+             }
+          }
+          if (largercheckers !== 0){
+            return false
+          }
+        }
+      }
+    }
+  
+    // Check if the move is in movesLeft
+    if (!this.movesLeft.includes(steps) && to !== 100) {
       return false;
     }
-    //check if move is in movesLeft
-    if (!this.movesLeft.includes(steps)) {
-      return false;
-    }
-    //check if to is not occupied by more than 2 checkers of opponent
+  
+    // Check if the target position is not occupied by more than 1 opponent checker
     if (
+      to !== 100 &&
       this.board[to] !== null &&
       this.board[to]!.length > 1 &&
       this.board[to]![0].color !== this.currentPlayer
     ) {
       return false;
     }
-    //Move is valid
+  
+    // Move is valid
     return true;
   }
+  
+  
 
   private allCheckersHome(color: string): boolean {
     let startIndex = color === 'white' ? 19 : 1;
     const checkersInBoard =
       15 - (color === 'white' ? this.finishWhite : this.finishBlack);
+  
+    // Check for stones in prison
     if (color === 'white') {
       if (this.board[0]!.length > 0) return false;
-    } else if ((color = 'black')) {
+    } else if (color === 'black') { // Corrected comparison
       if (this.board[25]!.length > 0) return false;
     }
+  
+    // Count checkers in the home board
     let countCheckersInHome = 0;
     for (let i = 0; i < 6; i++) {
       countCheckersInHome += this.countCheckers(color, startIndex + i);
     }
-    if (checkersInBoard != countCheckersInHome) return false;
+  
+    // Check if all checkers are in the home board
+    if (checkersInBoard !== countCheckersInHome) return false;
     return true;
   }
-
+  
   private countCheckers(color: string, index: number): number {
-    if (index < 0 || index >= 24 || !this.board[index]) {
+    if (index < 0 || index > 24 || !this.board[index]) {
       return -1;
     }
     return (
@@ -219,6 +321,7 @@ export class Game {
     return totalDistance;
   }
 
+  
   public getCurrentPositions(): {
     index: number;
     color: string;
@@ -242,7 +345,13 @@ export class Game {
       distWhite: this.calculateTotalDistance('white'),
     };
   }
-
+  
+  public getHomeCheckers(): {homeWhite: number; homeBlack: number} {
+    return {
+      homeWhite: this.finishWhite,
+      homeBlack: this.finishBlack,
+    };
+  }
   public getDice(): [number, number] {
     return this.dice;
   }
