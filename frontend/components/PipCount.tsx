@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, StyleSheet, Text, Dimensions} from 'react-native';
+import { PLAYER_COLORS } from '../utils/constants';
 
 interface PipCountProps {
-  color: string;
+  color: PLAYER_COLORS;
   count: number;
 }
 const screenWidth = Dimensions.get('window').width;

@@ -6,11 +6,12 @@ import {
   ImageSourcePropType,
   Animated,
 } from 'react-native';
+import { DICE_COLORS } from '../utils/constants';
 
 export interface DiceProps {
   diceOne: number;
   diceTwo: number;
-  color: string;
+  color: DICE_COLORS;
 }
 
 const WHITE_DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
@@ -33,7 +34,7 @@ const BLACK_DICE_IMAGES: {[key: number]: ImageSourcePropType} = {
 
 const Dice: React.FC<DiceProps> = ({diceOne, diceTwo, color}) => {
   const [curDice, setDice] =
-    color == 'white'
+    color == DICE_COLORS.WHITE
       ? useState([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]])
       : useState([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
   const [shakeAnimation] = useState(new Animated.Value(0));
@@ -55,7 +56,7 @@ const Dice: React.FC<DiceProps> = ({diceOne, diceTwo, color}) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      if (color == 'white') {
+      if (color == DICE_COLORS.WHITE) {
         setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
       } else {
         setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);

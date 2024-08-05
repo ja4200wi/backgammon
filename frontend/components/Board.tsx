@@ -5,31 +5,26 @@ import Checker from './Checker';
 import Dice from './Dice';
 import {DiceProps} from './Dice';
 import Prison from './Prison';
-import { boardWidth } from '../screens/GameScr';
 import Home from '../components/Home';
 import PipCount from './PipCount';
+import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../utils/constants';
 
 export interface Position {
   index: number;
-  color: string;
+  color: PLAYER_COLORS;
   count: number;
-}
-
-export enum COLORS {
-  WHITE = 'white',
-  BLACK = 'black',
 }
 
 interface BoardProps {
   positions: Position[];
   colors: {
-    background: string;
-    primary: string;
-    secondary: string;
-    tertiary: string;
+    backgroundColor: string;
+    spikeLightColor: string;
+    spikeDarkColor: string;
+    prisonColor: string;
   };
   width: number;
-  currentPlayer: string;
+  currentPlayer: PLAYER_COLORS;
   pipCount: number[];
   homeCount: number[];
   height: number;
@@ -48,13 +43,11 @@ const Board: React.FC<BoardProps> = ({
   pipCount,
   homeCount,
 }) => {
-  const spikeWidth = width / 13;
-  const spikeHeight = height / 3;
 
   const initialSpikes = Array.from({length: 26}, (_, index) => ({
-    height: spikeHeight,
-    color: index % 2 === 0 ? colors.primary : colors.secondary,
-    width: spikeWidth,
+    height: DIMENSIONS.spikeHeight,
+    color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
+    width: DIMENSIONS.spikeWidth,
     invert: index >= 12 ? true : false,
     checkers: [] as React.ReactElement[],
     onPress: handleSpikePress,
@@ -96,7 +89,7 @@ const Board: React.FC<BoardProps> = ({
 
   const handlePrisonPress = (index: number) => {
     if (selectedSource === null && prisonCheckers.length > 0) {
-      if (currentPlayer === 'white') {
+      if (currentPlayer === PLAYER_COLORS.WHITE) {
         setSelectedSource(0);
       } else {
         setSelectedSource(25);
@@ -122,9 +115,9 @@ const Board: React.FC<BoardProps> = ({
 
   const distributeCheckers = () => {
     const newSpikes = Array.from({length: 26}, (_, index) => ({
-      height: spikeHeight,
-      color: index % 2 === 0 ? colors.primary : colors.secondary,
-      width: spikeWidth,
+      height: DIMENSIONS.spikeHeight,
+      color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
+      width: DIMENSIONS.spikeWidth,
       invert: index >= 13 ? true : false,
       checkers: [] as React.ReactElement[],
       onPress: handleSpikePress,
@@ -140,8 +133,8 @@ const Board: React.FC<BoardProps> = ({
           <Checker
             key={`${color}-${index}-${i}`}
             color={color}
-            width={spikeWidth}
-            height={spikeWidth}
+            width={DIMENSIONS.spikeWidth}
+            height={DIMENSIONS.spikeWidth}
           />
         );
         if (index === 0 || index === 25) {
@@ -161,7 +154,7 @@ const Board: React.FC<BoardProps> = ({
   const calculatePossibleMoves = (sourceIndex: number) => {
     if (spikes[sourceIndex].checkers.length === 0) return;
     if (spikes[sourceIndex].checkers[0].props.color !== currentPlayer) return;
-    const direction = currentPlayer === COLORS.WHITE ? 1 : -1;
+    const direction = currentPlayer === PLAYER_COLORS.WHITE? 1 : -1;
     const diceValues = [dice.diceOne, dice.diceTwo];
     const remainingMoves = diceValues.flatMap(die => {
       const maxUses = die === dice.diceOne && die === dice.diceTwo ? 4 : 1;
@@ -220,18 +213,18 @@ const Board: React.FC<BoardProps> = ({
   return (
     <View>
       <View style={styles.row}>
-        <PipCount color="black" count={pipCount[1]} />
+        <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
         <Home onPress={handleHomePress} count= {homeCount[1]} />
     </View>
     <View
       style={[
         styles.board,
-        {backgroundColor: colors.background, width: width, height: height},
+        {backgroundColor: colors.backgroundColor, width: width, height: height},
       ]}>
       <View style={[styles.boardHalf]}>
         <View style={[styles.reverse]}>{SixSpikes(7)}</View>
-        <View style={{height: spikeHeight, justifyContent: 'center'}}>
-          {dice.color === 'white' && (
+        <View style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
+          {dice.color === DICE_COLORS.WHITE && (
             <Dice
               diceOne={dice.diceOne}
               diceTwo={dice.diceTwo}
@@ -242,16 +235,16 @@ const Board: React.FC<BoardProps> = ({
         <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
       </View>
       <Prison
-        backgroundColor={colors.tertiary}
-        width={spikeWidth}
+        backgroundColor={colors.prisonColor}
+        width={DIMENSIONS.spikeWidth}
         height={height}
         checkers={prisonCheckers}
         onPress={handlePrisonPress}
       />
       <View style={[styles.boardHalf]}>
         <View style={[styles.reverse]}>{SixSpikes(1)}</View>
-        <View style={{height: spikeHeight, justifyContent: 'center'}}>
-          {dice.color === 'black' && (
+        <View style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
+          {dice.color === DICE_COLORS.BLACK && (
             <Dice
               diceOne={dice.diceOne}
               diceTwo={dice.diceTwo}
@@ -263,7 +256,7 @@ const Board: React.FC<BoardProps> = ({
       </View>
     </View>
     <View style={styles.row}>
-        <PipCount color="white" count={pipCount[0]} />
+        <PipCount color={PLAYER_COLORS.WHITE} count={pipCount[0]} />
         <Home onPress={handleHomePress} count= {homeCount[0]} />
     </View>
     </View>
