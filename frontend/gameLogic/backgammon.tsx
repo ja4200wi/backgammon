@@ -244,7 +244,7 @@ export class Game {
   private allCheckersHome(color: PLAYER_COLORS): boolean {
     let startIndex = color === PLAYER_COLORS.WHITE ? HOME_AREA_START_INDEX['WHITE'] : HOME_AREA_START_INDEX['BLACK'] - 5;
     const checkersInBoard =
-      15 - (color === PLAYER_COLORS.WHITE ? this.finishWhite : this.finishBlack);
+      TOTAL_STONES - (color === PLAYER_COLORS.WHITE ? this.finishWhite : this.finishBlack);
   
     // Check for stones in prison
     if (color === PLAYER_COLORS.WHITE) {
@@ -359,15 +359,15 @@ export class Game {
   }
 
   public isGameOver(): boolean {
-    if (this.finishBlack === 15 || this.finishWhite === 15) {
+    if (this.finishBlack === TOTAL_STONES || this.finishWhite === TOTAL_STONES) {
       return true;
     }
     return false;
   }
 
   public whoIsWinner(): string {
-    if (this.finishBlack === 15) return PLAYER_COLORS.BLACK;
-    if (this.finishWhite === 15) return PLAYER_COLORS.WHITE;
+    if (this.finishBlack === TOTAL_STONES) return PLAYER_COLORS.BLACK;
+    if (this.finishWhite === TOTAL_STONES) return PLAYER_COLORS.WHITE;
     return 'no one';
   }
   

@@ -33,6 +33,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
     onMoveChecker,
     startGame,
     runGame,
+    hasMovesLeft,
+    updateMoveIsOver,
   } = useGameLogic();
 
   useEffect(() => {
@@ -87,6 +89,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
           color: game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE ? DICE_COLORS.WHITE : DICE_COLORS.BLACK,
         }}
         onMoveChecker={handleMoveChecker}
+        noMovesLeft={hasMovesLeft(game!)}
+        onAcceptMove={updateMoveIsOver}
       />
     </View>
   );

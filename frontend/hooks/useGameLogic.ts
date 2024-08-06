@@ -33,7 +33,8 @@ export const useGameLogic = () => {
       setDice(currentGame.getDice());
     }
     
-    if (currentGame.getMovesLeft().length === 0) {
+    if (currentGame.getMovesLeft().length === 0 && moveIsOver) {
+      setMoveIsOver(false)
       currentGame.switchPlayer();
       setDice(currentGame.getDice());
     }
@@ -43,7 +44,6 @@ export const useGameLogic = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       setPositions(game.getCurrentPositions());
-      setMoveIsOver(game.getMovesLeft().length === 0);
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       setHomeCheckers([game.getHomeCheckers().homeWhite, game.getHomeCheckers().homeBlack]);
@@ -53,9 +53,17 @@ export const useGameLogic = () => {
     return false;
   };
 
+  const hasMovesLeft = (currentGame: Game) =>  {
+    if (game === null) {return false}
+    return !(currentGame.getMovesLeft().length === 0)
+  }
+
   const updateScores = (distBlack: number, distWhite: number) => {
     setScores([distWhite, distBlack]);
   };
+  const updateMoveIsOver = () => {
+    setMoveIsOver(true)
+  }
 
   return {
     game,
@@ -67,5 +75,7 @@ export const useGameLogic = () => {
     onMoveChecker,
     startGame,
     runGame,
+    hasMovesLeft,
+    updateMoveIsOver,
   };
 };

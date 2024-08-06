@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
+import { PLAYER_COLORS } from '../utils/constants';
 
 interface CheckerProps {
-  color: string;
+  color: PLAYER_COLORS;
   width: number;
   height: number;
   style?: any;

@@ -6,6 +6,8 @@ export const APP_COLORS = {
     primaryColor: '#283618',
     secondaryColor: '#fefae0',
     tertiaryColor: '#bc6c25',
+    buttonBlueFontColor: '#007AFF',
+    buttonDisabledFontColor: '#808080',
   };
   //change colors for different look
   export enum PLAYER_COLORS {

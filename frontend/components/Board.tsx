@@ -8,6 +8,9 @@ import Prison from './Prison';
 import Home from '../components/Home';
 import PipCount from './PipCount';
 import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../utils/constants';
+import AcceptMoveButton from './AcceptMoveButton';
+import DoubleButton from './DoulbeButton';
+import UndoMoveButton from './UndoMoveButton';
 
 export interface Position {
   index: number;
@@ -29,7 +32,9 @@ interface BoardProps {
   homeCount: number[];
   height: number;
   dice: DiceProps;
+  noMovesLeft: boolean;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
+  onAcceptMove: () => void;
 }
 
 const Board: React.FC<BoardProps> = ({
@@ -40,8 +45,10 @@ const Board: React.FC<BoardProps> = ({
   currentPlayer,
   positions,
   onMoveChecker,
+  onAcceptMove,
   pipCount,
   homeCount,
+  noMovesLeft,
 }) => {
 
   const initialSpikes = Array.from({length: 26}, (_, index) => ({
@@ -105,6 +112,9 @@ const Board: React.FC<BoardProps> = ({
     } else if (selectedSource !== null) {
       moveChecker(selectedSource, index)
     }
+  }
+  const handleAcceptMovePress = () => {
+    onAcceptMove()
   }
 
   /**
@@ -223,15 +233,21 @@ const Board: React.FC<BoardProps> = ({
       ]}>
       <View style={[styles.boardHalf]}>
         <View style={[styles.reverse]}>{SixSpikes(7)}</View>
-        <View style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
-          {dice.color === DICE_COLORS.WHITE && (
+        <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
+          {dice.color === DICE_COLORS.WHITE ? (
             <Dice
               diceOne={dice.diceOne}
               diceTwo={dice.diceTwo}
               color={dice.color}
-            />
-          )}
-        </View>
+         />
+        ) : (
+       <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'row' }}>
+          <AcceptMoveButton onPress={handleAcceptMovePress} disabled={noMovesLeft} />
+          <UndoMoveButton onPress={() => {}} disabled={true} />
+          <DoubleButton onPress={() => {}} disabled={true} />
+    </View>
+  )}
+</View>
         <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
       </View>
       <Prison
@@ -243,15 +259,21 @@ const Board: React.FC<BoardProps> = ({
       />
       <View style={[styles.boardHalf]}>
         <View style={[styles.reverse]}>{SixSpikes(1)}</View>
-        <View style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
-          {dice.color === DICE_COLORS.BLACK && (
+        <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
+          {dice.color === DICE_COLORS.BLACK ? (
             <Dice
               diceOne={dice.diceOne}
               diceTwo={dice.diceTwo}
               color={dice.color}
-            />
-          )}
-        </View>
+         />
+        ) : (
+       <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'row' }}>
+          <AcceptMoveButton onPress={handleAcceptMovePress} disabled={noMovesLeft} />
+          <UndoMoveButton onPress={() => {}} disabled={true} />
+          <DoubleButton onPress={() => {}} disabled={true} />
+    </View>
+  )}
+</View>
         <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
       </View>
     </View>
