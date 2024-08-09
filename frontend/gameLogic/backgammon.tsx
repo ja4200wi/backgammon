@@ -9,8 +9,6 @@ const HOME_AREA_SIZE = 6;
 
 export class Game {
   private board: (Stone[] | null)[];
-  private finishWhite: number = 0;
-  private finishBlack: number = 0;
   private currentPlayer: PLAYER_COLORS;
   private dice: [number, number];
   private movesLeft: number[];
@@ -19,8 +17,6 @@ export class Game {
   // Single implementation of the constructor
   constructor() {
     this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-    this.finishWhite = 0;
-    this.finishBlack = 0;
     this.currentPlayer = PLAYER_COLORS.BLACK;
     this.dice = [1, 1];
     this.movesLeft = [];
@@ -37,6 +33,21 @@ export class Game {
     this.board[13] = this.createStones(5, PLAYER_COLORS.BLACK);
     this.board[8] = this.createStones(3, PLAYER_COLORS.BLACK);
     this.board[6] = this.createStones(5, PLAYER_COLORS.BLACK);
+  }
+  private setupBearingOffBoard () {
+    this.board[1] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[2] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[4] = this.createStones(3, PLAYER_COLORS.BLACK);
+    this.board[5] = this.createStones(3, PLAYER_COLORS.BLACK);
+    this.board[6] = this.createStones(3, PLAYER_COLORS.BLACK);
+    this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[22] = this.createStones(2, PLAYER_COLORS.WHITE);
+    this.board[23] = this.createStones(2, PLAYER_COLORS.WHITE);
+    this.board[24] = this.createStones(2, PLAYER_COLORS.WHITE);
+
   }
   /**
    * Creates a list of stones for a player.
@@ -55,6 +66,7 @@ export class Game {
    */
   private handleMoveStone(from: number, to: number): boolean {
     let steps = this.currentPlayer === PLAYER_COLORS.WHITE ? to - from : from - to;
+    if(to === BEARING_OFF_INDEX) steps = this.currentPlayer === PLAYER_COLORS.WHITE ? PRISON_INDEX['BLACK'] - from : from;
 
     if (!this.isValidMove(from, to)) {
       return false;
@@ -70,10 +82,6 @@ export class Game {
     this.board[to]?.push(stone);
 
     this.updateMovesLeft(steps,from,to)
-
-    if(to === BEARING_OFF_INDEX) {
-      this.handleBearingOff()
-    }
 
     return true;
   }
@@ -98,13 +106,6 @@ export class Game {
         const prisonIndex = this.currentPlayer === PLAYER_COLORS.WHITE ? PRISON_INDEX.BLACK : PRISON_INDEX.WHITE;
         this.board[prisonIndex]?.push(enemyStone);
       }
-    }
-  }
-  private handleBearingOff(): void {
-    if (this.currentPlayer === PLAYER_COLORS.WHITE) {
-      this.finishWhite++;
-    } else {
-      this.finishBlack++;
     }
   }
   private updateMovesLeft(steps: number, from: number, to:number): void {
@@ -188,7 +189,9 @@ export class Game {
 
   private isValidMove(from: number, to: number): boolean {
     const currentPlayer = this.currentPlayer;
-    let steps = currentPlayer === PLAYER_COLORS.WHITE ? to - from : from - to;
+    let steps = this.currentPlayer === PLAYER_COLORS.WHITE ? to - from : from - to;
+    if(to === BEARING_OFF_INDEX) steps = this.currentPlayer === PLAYER_COLORS.WHITE ? PRISON_INDEX['BLACK'] - from : from;
+    console.log('steps:',steps)
     const directionMultiplier = currentPlayer === PLAYER_COLORS.WHITE ? 1 : -1;
   
     (`Checking isValidMove from ${from} to ${to} for ${currentPlayer}`);
@@ -224,13 +227,15 @@ export class Game {
     // Check if Bearing off is correct
     if (to === BEARING_OFF_INDEX) {
       if (!this.allCheckersHome(currentPlayer)) {
+        console.log('not all checkers home:')
         return false;
       }
-      steps = currentPlayer === PLAYER_COLORS.WHITE ? PRISON_INDEX['WHITE'] - from : from
       // check if from is included in moves left
+      console.log(steps)
       if(!this.movesLeft.includes(steps)) {
         //check if there is a dice larger then the steps
         if(!this.movesLeft.some(item => item > steps)) {
+          console.log('larger checker found')
           return false
         } else {
           let largercheckers = 0
@@ -244,6 +249,7 @@ export class Game {
              }
           }
           if (largercheckers !== 0){
+            console.log('larger checker found')
             return false
           }
         }
@@ -268,12 +274,23 @@ export class Game {
     // Move is valid
     return true;
   }
-
+  private finishedCheckers(color: PLAYER_COLORS): number {
+      let stoneCount = 0;
+  
+      for (let i = 0; i < this.board.length; i++) {
+          const stonesAtPosition = this.board[i];
+          if(stonesAtPosition) {
+            stoneCount += stonesAtPosition.filter(stone => stone.color === color).length;
+          }
+      }
+  
+      return (TOTAL_STONES - stoneCount)
+  }
   private allCheckersHome(color: PLAYER_COLORS): boolean {
     let startIndex = color === PLAYER_COLORS.WHITE ? HOME_AREA_START_INDEX['WHITE'] : HOME_AREA_START_INDEX['BLACK'] - 5;
-    const checkersInBoard =
-      TOTAL_STONES - (color === PLAYER_COLORS.WHITE ? this.finishWhite : this.finishBlack);
-  
+    const checkersInBoard = TOTAL_STONES - this.finishedCheckers(color)
+    console.log('checkers in board/allcheckershome:',checkersInBoard)
+    console.log('finished white',this.finishedCheckers(color))
     // Check for stones in prison
     if (color === PLAYER_COLORS.WHITE) {
       if (this.board[PRISON_INDEX['WHITE']]!.length > 0) return false;
@@ -365,8 +382,8 @@ export class Game {
   
   public getHomeCheckers(): {homeWhite: number; homeBlack: number} {
     return {
-      homeWhite: this.finishWhite,
-      homeBlack: this.finishBlack,
+      homeWhite: this.finishedCheckers(PLAYER_COLORS.WHITE),
+      homeBlack: this.finishedCheckers(PLAYER_COLORS.BLACK)
     };
   }
 
@@ -387,7 +404,7 @@ export class Game {
   }
 
   public isGameOver(): boolean {
-    if (this.finishBlack === TOTAL_STONES || this.finishWhite === TOTAL_STONES) {
+    if (this.finishedCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES || this.finishedCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES) {
       return true;
     }
     return false;
@@ -396,8 +413,8 @@ export class Game {
     return this.lastMoves
   }
   public whoIsWinner(): string {
-    if (this.finishBlack === TOTAL_STONES) return PLAYER_COLORS.BLACK;
-    if (this.finishWhite === TOTAL_STONES) return PLAYER_COLORS.WHITE;
+    if (this.finishedCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES) return PLAYER_COLORS.BLACK;
+    if (this.finishedCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES) return PLAYER_COLORS.WHITE;
     return 'no one';
   }
 
