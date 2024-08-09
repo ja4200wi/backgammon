@@ -33,8 +33,11 @@ interface BoardProps {
   height: number;
   dice: DiceProps;
   noMovesLeft: boolean;
+  hasDoneMove: boolean;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
   onAcceptMove: () => void;
+  onUndoMove: () => void;
+  legalMovesFrom: (sourceIndex :number) => number[];
 }
 
 const Board: React.FC<BoardProps> = ({
@@ -46,9 +49,12 @@ const Board: React.FC<BoardProps> = ({
   positions,
   onMoveChecker,
   onAcceptMove,
+  onUndoMove,
   pipCount,
   homeCount,
   noMovesLeft,
+  hasDoneMove,
+  legalMovesFrom,
 }) => {
 
   const initialSpikes = Array.from({length: 26}, (_, index) => ({
@@ -62,14 +68,10 @@ const Board: React.FC<BoardProps> = ({
 
   const [spikes, setSpikes] = useState(initialSpikes);
   const [selectedSource, setSelectedSource] = useState<number | null>(null);
-  const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
-    [],
-  );
-  const [homeCheckers, sethomeCheckers] = useState<React.ReactElement[]>(
-    [],
-  );
+  const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>([],);
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
-  const [usedDice, setUsedDice] = useState<{[key: number]: number}>({});
+  const [usedDice, setUsedDice] = useState<{[key: number]: number}>({}); //
+  const [diceStack, setDiceStack] = useState<number[]>([])
 
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
@@ -116,6 +118,9 @@ const Board: React.FC<BoardProps> = ({
   const handleAcceptMovePress = () => {
     onAcceptMove()
   }
+  const handleUndoMovePress = () => {
+    onUndoMove()
+  }
 
   /**
    * 1. Prevent moves from empty spikes
@@ -158,32 +163,11 @@ const Board: React.FC<BoardProps> = ({
     });
     setPrisonCheckers(prisonCheckers);
     setSpikes(newSpikes);
-    sethomeCheckers(homeCheckers);
   };
-
   const calculatePossibleMoves = (sourceIndex: number) => {
-    if (spikes[sourceIndex].checkers.length === 0) return;
-    if (spikes[sourceIndex].checkers[0].props.color !== currentPlayer) return;
-    const direction = currentPlayer === PLAYER_COLORS.WHITE? 1 : -1;
-    const diceValues = [dice.diceOne, dice.diceTwo];
-    const remainingMoves = diceValues.flatMap(die => {
-      const maxUses = die === dice.diceOne && die === dice.diceTwo ? 4 : 1;
-      const used = usedDice[die] || 0;
-      return Array(maxUses - used).fill(die * direction);
-    });
-    const possibleMoves = remainingMoves
-      .map(move => sourceIndex + move)
-      .filter(target => {
-        if (target < 1 || target >= 25) return false; // ensure within board limits
-        const targetSpike = spikes[target];
-        // Check if the spike has more than two enemy checkers
-        const isEnemyTerritory =
-          targetSpike.checkers.length > 2 &&
-          targetSpike.checkers[0].props.color !== currentPlayer;
-        return !isEnemyTerritory;
-      });
-    setPossibleMoves(possibleMoves);
-  };
+    const possibleMovesFrom = legalMovesFrom(sourceIndex)
+    setPossibleMoves(possibleMovesFrom)
+  }
 
   useEffect(() => {
     distributeCheckers();
@@ -224,7 +208,7 @@ const Board: React.FC<BoardProps> = ({
     <View>
       <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-        <Home onPress={handleHomePress} count= {homeCount[1]} />
+        <Home onPress={handleHomePress} count= {homeCount[1]}/>
     </View>
     <View
       style={[
@@ -243,7 +227,7 @@ const Board: React.FC<BoardProps> = ({
         ) : (
        <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'row' }}>
           <AcceptMoveButton onPress={handleAcceptMovePress} disabled={noMovesLeft} />
-          <UndoMoveButton onPress={() => {}} disabled={true} />
+          <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
           <DoubleButton onPress={() => {}} disabled={true} />
     </View>
   )}
@@ -269,7 +253,7 @@ const Board: React.FC<BoardProps> = ({
         ) : (
        <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'row' }}>
           <AcceptMoveButton onPress={handleAcceptMovePress} disabled={noMovesLeft} />
-          <UndoMoveButton onPress={() => {}} disabled={true} />
+          <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
           <DoubleButton onPress={() => {}} disabled={true} />
     </View>
   )}

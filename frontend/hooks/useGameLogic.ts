@@ -46,7 +46,6 @@ export const useGameLogic = () => {
       setPositions(game.getCurrentPositions());
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
-      setHomeCheckers([game.getHomeCheckers().homeWhite, game.getHomeCheckers().homeBlack]);
 
       return success;
     }
@@ -54,8 +53,12 @@ export const useGameLogic = () => {
   };
 
   const hasMovesLeft = (currentGame: Game) =>  {
-    if (game === null) {return false}
+    if (game === null) {return true}
     return !(currentGame.getMovesLeft().length === 0)
+  }
+  const undoMoveButtonState = (currentGame: Game) =>  {
+    if (game === null) {return true}
+    return (currentGame.getLastMoves().length === 0)
   }
 
   const updateScores = (distBlack: number, distWhite: number) => {
@@ -64,6 +67,17 @@ export const useGameLogic = () => {
   const updateMoveIsOver = () => {
     setMoveIsOver(true)
   }
+
+  const undoMove = () => {
+    game?.undoMove()
+    setPositions(game!.getCurrentPositions());
+    const distances = game!.getDistances();
+    updateScores(distances.distBlack, distances.distWhite);
+  }
+
+  const legalMovesFrom = (from: number): number[] => {
+    return (game?.getLegalMovesFrom(from) ?? []);
+  };
 
   return {
     game,
@@ -77,5 +91,8 @@ export const useGameLogic = () => {
     runGame,
     hasMovesLeft,
     updateMoveIsOver,
+    undoMoveButtonState,
+    undoMove,
+    legalMovesFrom
   };
 };

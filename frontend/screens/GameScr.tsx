@@ -35,6 +35,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
     runGame,
     hasMovesLeft,
     updateMoveIsOver,
+    undoMoveButtonState,
+    undoMove,
+    legalMovesFrom,
   } = useGameLogic();
 
   useEffect(() => {
@@ -42,7 +45,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
       runGame(game);
     }
   }, [moveIsOver, game, dice]);
-
+ 
   const handleMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success && game?.isGameOver()) {
@@ -91,6 +94,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         onMoveChecker={handleMoveChecker}
         noMovesLeft={hasMovesLeft(game!)}
         onAcceptMove={updateMoveIsOver}
+        hasDoneMove={undoMoveButtonState(game!)}
+        onUndoMove={undoMove}
+        legalMovesFrom={legalMovesFrom}
       />
     </View>
   );

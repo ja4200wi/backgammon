@@ -14,6 +14,7 @@ export class Game {
   private currentPlayer: PLAYER_COLORS;
   private dice: [number, number];
   private movesLeft: number[];
+  private lastMoves: [(Stone[] | null)[],number[]][]
 
   // Single implementation of the constructor
   constructor() {
@@ -23,6 +24,7 @@ export class Game {
     this.currentPlayer = PLAYER_COLORS.BLACK;
     this.dice = [1, 1];
     this.movesLeft = [];
+    this.lastMoves = []
     this.setupDefaultBoard();
   }
 
@@ -57,7 +59,7 @@ export class Game {
     if (!this.isValidMove(from, to)) {
       return false;
     }
-
+    this.safeMoves()
     const stone = this.board[from]?.pop();
     if (!stone) {
       return false;
@@ -74,6 +76,20 @@ export class Game {
     }
 
     return true;
+  }
+  private safeMoves() {
+    const currentBoard = this.board.map(position => position ? [...position] : null);
+    const currentDice = [...this.movesLeft];
+    this.lastMoves.push([currentBoard, currentDice]);
+  }
+  private handleUndoMove(): void {
+    if (this.lastMoves.length === 0) return;
+  
+    const [board, movesLeft] = this.lastMoves.pop()!;
+  
+    this.board = board.map(position => position ? [...position] : null);
+
+    this.movesLeft = [...movesLeft];
   }
   private handleCapture(to: number): void {
     if (this.board[to]?.length === 1 && this.board[to]?.[0].color !== this.currentPlayer) {
@@ -152,6 +168,18 @@ export class Game {
     }
     //no valid moves
     return false;
+  }
+
+  private legalMovesFrom(from: number): number[] {
+    const uniqueMovesLeft = [...new Set(this.movesLeft)];
+    const legalMoves:number[] = []
+    const playerMultiplier = this.currentPlayer === PLAYER_COLORS['WHITE'] ? 1 : -1
+    for (const dice of uniqueMovesLeft) {
+      const to = from + dice * playerMultiplier
+      if(this.isValidMove(from,to)) legalMoves.push(from + dice * playerMultiplier)
+    }
+    if(this.isValidMove(from,BEARING_OFF_INDEX)) legalMoves.push(BEARING_OFF_INDEX)
+   return legalMoves 
   }
 
   private hasPrisonChecker(): boolean {
@@ -364,16 +392,27 @@ export class Game {
     }
     return false;
   }
-
+  public getLastMoves() {
+    return this.lastMoves
+  }
   public whoIsWinner(): string {
     if (this.finishBlack === TOTAL_STONES) return PLAYER_COLORS.BLACK;
     if (this.finishWhite === TOTAL_STONES) return PLAYER_COLORS.WHITE;
     return 'no one';
   }
+
+  public getLegalMovesFrom(from: number): number[] {
+    return this.legalMovesFrom(from)
+  }
+
+  public undoMove() {
+    this.handleUndoMove()
+  }
   
   public switchPlayer() {
     this.dice = this.rollDice();
     this.currentPlayer = this.currentPlayer === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE;
+    this.lastMoves = []
   }
 }
 
