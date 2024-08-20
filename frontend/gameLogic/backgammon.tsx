@@ -21,7 +21,7 @@ export class Game {
     this.dice = [1, 1];
     this.movesLeft = [];
     this.lastMoves = []
-    this.setupDefaultBoard();
+    this.setupBearingOffBoard();
   }
 
   private setupDefaultBoard() {
@@ -40,7 +40,8 @@ export class Game {
     this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[4] = this.createStones(3, PLAYER_COLORS.BLACK);
     this.board[5] = this.createStones(3, PLAYER_COLORS.BLACK);
-    this.board[6] = this.createStones(3, PLAYER_COLORS.BLACK);
+    this.board[6] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[25] = this.createStones(1, PLAYER_COLORS.BLACK);
     this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
@@ -130,7 +131,10 @@ export class Game {
     }
   }
   private checkForLegalMove(): boolean {
-    if (this.movesLeft.length === 0) return true;
+    console.log('checking for leagl move')
+    if (this.movesLeft.length === 0) {
+      console.log('movesleft is 0 returning true',this.movesLeft)
+      return true;}
     const playerColor = this.currentPlayer;
     const movesLeft = this.movesLeft;
   
@@ -142,9 +146,11 @@ export class Game {
       for (const move of movesLeft) {
         const targetIndex = playerColor === PLAYER_COLORS.WHITE ? move : prisonIndex - move;
         if (this.isValidMove(prisonIndex, targetIndex)) {
+          console.log('has valid prison move')
           return true;
         }
       }
+      console.log('no valid moves for prison stone - returning false')
       return false; // No valid moves for prison stones
     }
 
@@ -157,17 +163,20 @@ export class Game {
   
           // Regular move check
           if (this.isValidMove(from, to)) {
+            console.log('has valid regular move')
             return true;
           }
   
           // Check for bearing off
           if (this.isValidMove(from, 100)) {
+            console.log('has valid bearing off move')
             return true;
           }
         }
       }
     }
     //no valid moves
+    console.log('no valid move; returning false')
     return false;
   }
 
@@ -191,7 +200,6 @@ export class Game {
     const currentPlayer = this.currentPlayer;
     let steps = this.currentPlayer === PLAYER_COLORS.WHITE ? to - from : from - to;
     if(to === BEARING_OFF_INDEX) steps = this.currentPlayer === PLAYER_COLORS.WHITE ? PRISON_INDEX['BLACK'] - from : from;
-    console.log('steps:',steps)
     const directionMultiplier = currentPlayer === PLAYER_COLORS.WHITE ? 1 : -1;
   
     (`Checking isValidMove from ${from} to ${to} for ${currentPlayer}`);
@@ -227,15 +235,13 @@ export class Game {
     // Check if Bearing off is correct
     if (to === BEARING_OFF_INDEX) {
       if (!this.allCheckersHome(currentPlayer)) {
-        console.log('not all checkers home:')
         return false;
       }
       // check if from is included in moves left
-      console.log(steps)
       if(!this.movesLeft.includes(steps)) {
         //check if there is a dice larger then the steps
         if(!this.movesLeft.some(item => item > steps)) {
-          console.log('larger checker found')
+          ('larger checker found')
           return false
         } else {
           let largercheckers = 0
@@ -249,7 +255,6 @@ export class Game {
              }
           }
           if (largercheckers !== 0){
-            console.log('larger checker found')
             return false
           }
         }
@@ -289,8 +294,6 @@ export class Game {
   private allCheckersHome(color: PLAYER_COLORS): boolean {
     let startIndex = color === PLAYER_COLORS.WHITE ? HOME_AREA_START_INDEX['WHITE'] : HOME_AREA_START_INDEX['BLACK'] - 5;
     const checkersInBoard = TOTAL_STONES - this.finishedCheckers(color)
-    console.log('checkers in board/allcheckershome:',checkersInBoard)
-    console.log('finished white',this.finishedCheckers(color))
     // Check for stones in prison
     if (color === PLAYER_COLORS.WHITE) {
       if (this.board[PRISON_INDEX['WHITE']]!.length > 0) return false;
@@ -380,11 +383,8 @@ export class Game {
     };
   }
   
-  public getHomeCheckers(): {homeWhite: number; homeBlack: number} {
-    return {
-      homeWhite: this.finishedCheckers(PLAYER_COLORS.WHITE),
-      homeBlack: this.finishedCheckers(PLAYER_COLORS.BLACK)
-    };
+  public getHomeCheckers(color: PLAYER_COLORS): (number) {
+    return (this.finishedCheckers(color))
   }
 
   public getDice(): [number, number] {

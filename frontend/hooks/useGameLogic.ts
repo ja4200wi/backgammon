@@ -1,7 +1,7 @@
 // hooks/useGameLogic.ts
 import { useState, useEffect } from 'react';
 import { Game } from '../gameLogic/backgammon';
-import { GAME_SETTINGS } from '../utils/constants';
+import { GAME_SETTINGS, PLAYER_COLORS } from '../utils/constants';
 
 export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
@@ -26,26 +26,35 @@ export const useGameLogic = () => {
     const distances = currentGame.getDistances();
     updateScores(distances.distBlack, distances.distWhite);
     if (currentGame.isGameOver()) return;
-
-    if (!currentGame.hasLegalMove()) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      currentGame.switchPlayer();
-      setDice(currentGame.getDice());
-    }
+    
+    checkForLegalMoveHelper(currentGame)
     
     if (currentGame.getMovesLeft().length === 0 && moveIsOver) {
       setMoveIsOver(false)
       currentGame.switchPlayer();
       setDice(currentGame.getDice());
+      // checks already for next player if a legal moves exists
+      checkForLegalMoveHelper(currentGame)
     }
   };
 
+  const checkForLegalMoveHelper = async (game: Game) => {
+    if (!game.hasLegalMove()) {
+      console.log('there is no legal move')
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      game.switchPlayer();
+      setDice(game.getDice());
+    }
+  }
+
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     if (game) {
+      runGame(game)
       const success = game.moveStone(sourceIndex, targetIndex);
       setPositions(game.getCurrentPositions());
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
+      updateHomeCheckers(game!)
 
       return success;
     }
@@ -67,12 +76,18 @@ export const useGameLogic = () => {
   const updateMoveIsOver = () => {
     setMoveIsOver(true)
   }
+  const updateHomeCheckers = (game: Game) => {
+    if (game) {
+      setHomeCheckers([game.getHomeCheckers(PLAYER_COLORS.WHITE),game.getHomeCheckers(PLAYER_COLORS.BLACK)])
+    }
+  }
 
   const undoMove = () => {
     game?.undoMove()
     setPositions(game!.getCurrentPositions());
     const distances = game!.getDistances();
     updateScores(distances.distBlack, distances.distWhite);
+    updateHomeCheckers(game!)
   }
 
   const legalMovesFrom = (from: number): number[] => {

@@ -2,6 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 import AcceptMoveButton from "../components/AcceptMoveButton";
 import UndoMoveButton from "../components/UndoMoveButton";
 import DoubleButton from "../components/DoulbeButton";
+import { APP_COLORS } from "../utils/constants";
 
 export default function SignupScr() {
   return (
