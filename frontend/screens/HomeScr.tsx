@@ -10,8 +10,10 @@ import {
 import {Button, Card, Icon, Divider} from '@rneui/themed';
 import AvatarWithFlag from '../components/AvatarWithFlag';
 import AvatarWithPuzzle from '../components/AvatarWithPuzzle';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {DIMENSIONS} from '../utils/constants';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { DIMENSIONS } from '../utils/constants';
+import NavBar from '../components/NavBar';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
 
 export default function HomeScr({navigation}: {navigation: any}) {
   return (
@@ -73,25 +75,12 @@ export default function HomeScr({navigation}: {navigation: any}) {
             buttonStyle={styles.playButton}
             titleStyle={{fontWeight: 'bold', fontSize: 23}}
             containerStyle={styles.playButtonContainer}
-            onPress={() => navigation.navigate('Game')}
+            onPress={() => navigation.navigate('GameSelection')}
           />
         </View>
       </ImageBackground>
 
-      {/* Bottom Navigation */}
-      <View style={styles.footerContainer}>
-        <View style={styles.bottomNav}>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-            <Icon name="home" type="material" color="#6B9C41" size={45} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => console.log('Study')}>
-            <Icon name="school" type="material" color="white" size={45} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => console.log('Friends')}>
-            <Icon name="person" type="material" color="white" size={45} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <NavBar navigation={navigation} />
     </SafeAreaView>
   );
 }
@@ -100,16 +89,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#312F2C',
-    zIndex: 1,
   },
   headerContainer: {
     paddingRight: 16,
     paddingLeft: 16,
     backgroundColor: '#312F2C',
-    zIndex: 1,
+    zIndex: 2
   },
   bodyContainer: {
-    flexGrow: 1, // Allow the body to grow to take up space
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 16,
   },
@@ -129,7 +117,7 @@ const styles = StyleSheet.create({
     width: DIMENSIONS.screenWidth,
     height: DIMENSIONS.screenHeight,
     backgroundColor: 'rgba(48, 46, 43, .9)',
-    zIndex: 2,
+    zIndex: 1,
   },
   card: {
     borderRadius: 15,
@@ -137,7 +125,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(84, 80, 75, 0.9)',
     padding: 16,
     marginBottom: 20,
-    zIndex: 3,
+    zIndex: 2,
+    elevation: 0, // Remove elevation on Android
+    shadowColor: 'transparent', // Remove shadow color on iOS
   },
   userRow: {
     flexDirection: 'row',
@@ -175,22 +165,12 @@ const styles = StyleSheet.create({
   playButtonContainer: {
     marginTop: 'auto', // Push the button to the bottom of the container
     marginBottom: 24, // Add margin above the footer
-    zIndex: 3,
+    zIndex: 2,
   },
   playButton: {
     backgroundColor: '#6B9C41',
     borderRadius: 5,
     height: 60,
-  },
-  footerContainer: {
-    backgroundColor: '#302E2B',
-    padding: 4,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#302E2B',
-    paddingVertical: 10,
   },
   buttonContainer: {
     marginTop: 'auto', // Pushes the button to the bottom of the container

@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { APP_COLORS } from "./constants";
+import { APP_COLORS, DIMENSIONS } from "./constants";
 
 export const GLOBAL_STYLES = StyleSheet.create({
     buttonDisabled: {
