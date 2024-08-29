@@ -1,18 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Dimensions, Alert} from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { HeaderBackButton } from '@react-navigation/elements';
 import Board from '../components/Board';
-import {Game} from '../gameLogic/backgammon';
-import 'react-native-gesture-handler';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
-import {
-  DIMENSIONS,
-  APP_COLORS,
-  PLAYER_COLORS,
-  DICE_COLORS,
-  BOARD_COLORS,
-} from '../utils/constants';
-import {distributeCheckersGame} from '../gameLogic/gameUtils';
-import {useGameLogic} from '../hooks/useGameLogic';
+import { useGameLogic } from '../hooks/useGameLogic';
+import { DIMENSIONS, APP_COLORS, PLAYER_COLORS, DICE_COLORS, BOARD_COLORS } from '../utils/constants';
+import { distributeCheckersGame } from '../gameLogic/gameUtils';
 
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
@@ -79,11 +72,12 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {backgroundColor: APP_COLORS.secondBackgroundColor},
-      ]}>
+    <View style={[styles.container, { backgroundColor: APP_COLORS.secondBackgroundColor }]}>
+      <HeaderBackButton
+        onPress={() => navigation.goBack()}
+        tintColor="white"  // You can customize the color if needed
+        style={{alignSelf: 'flex-start'}}
+      />
       <Board
         colors={{
           backgroundColor: BOARD_COLORS.BACKGROUND,
@@ -121,6 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 40, // Add some padding to avoid overlap with the back button
   },
 });
 
