@@ -7,7 +7,7 @@ import {DiceProps} from './Dice';
 import Prison from './Prison';
 import Home from '../components/Home';
 import PipCount from './PipCount';
-import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../utils/constants';
+import {DICE_COLORS, PLAYER_COLORS, DIMENSIONS} from '../utils/constants';
 import AcceptMoveButton from './AcceptMoveButton';
 import DoubleButton from './DoulbeButton';
 import UndoMoveButton from './UndoMoveButton';
@@ -37,7 +37,7 @@ interface BoardProps {
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
   onAcceptMove: () => void;
   onUndoMove: () => void;
-  legalMovesFrom: (sourceIndex :number) => number[];
+  legalMovesFrom: (sourceIndex: number) => number[];
 }
 
 const Board: React.FC<BoardProps> = ({
@@ -56,7 +56,6 @@ const Board: React.FC<BoardProps> = ({
   hasDoneMove,
   legalMovesFrom,
 }) => {
-
   const initialSpikes = Array.from({length: 26}, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
     color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
@@ -68,10 +67,12 @@ const Board: React.FC<BoardProps> = ({
 
   const [spikes, setSpikes] = useState(initialSpikes);
   const [selectedSource, setSelectedSource] = useState<number | null>(null);
-  const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>([],);
+  const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
+    [],
+  );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
   const [usedDice, setUsedDice] = useState<{[key: number]: number}>({}); //
-  const [diceStack, setDiceStack] = useState<number[]>([])
+  const [diceStack, setDiceStack] = useState<number[]>([]);
 
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
@@ -110,17 +111,17 @@ const Board: React.FC<BoardProps> = ({
 
   const handleHomePress = (index: number) => {
     if (selectedSource === null) {
-      return
+      return;
     } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index)
+      moveChecker(selectedSource, index);
     }
-  }
+  };
   const handleAcceptMovePress = () => {
-    onAcceptMove()
-  }
+    onAcceptMove();
+  };
   const handleUndoMovePress = () => {
-    onUndoMove()
-  }
+    onUndoMove();
+  };
 
   /**
    * 1. Prevent moves from empty spikes
@@ -164,10 +165,11 @@ const Board: React.FC<BoardProps> = ({
     setPrisonCheckers(prisonCheckers);
     setSpikes(newSpikes);
   };
+
   const calculatePossibleMoves = (sourceIndex: number) => {
-    const possibleMovesFrom = legalMovesFrom(sourceIndex)
-    setPossibleMoves(possibleMovesFrom)
-  }
+    const possibleMovesFrom = legalMovesFrom(sourceIndex);
+    setPossibleMoves(possibleMovesFrom);
+  };
 
   useEffect(() => {
     distributeCheckers();
@@ -176,7 +178,6 @@ const Board: React.FC<BoardProps> = ({
   useEffect(() => {
     setUsedDice([]);
   }, [currentPlayer]);
-
 
   useEffect(() => {
     if (selectedSource !== null) {
@@ -208,63 +209,93 @@ const Board: React.FC<BoardProps> = ({
     <View>
       <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-        <Home onPress={handleHomePress} count= {homeCount[1]}/>
-    </View>
-    <View
-      style={[
-        styles.board,
-        {backgroundColor: colors.backgroundColor, width: width, height: height},
-      ]}>
-      <View style={[styles.boardHalf]}>
-        <View style={[styles.reverse]}>{SixSpikes(7)}</View>
-        <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
-          {dice.color === DICE_COLORS.WHITE ? (
-            <Dice
-              diceOne={dice.diceOne}
-              diceTwo={dice.diceTwo}
-              color={dice.color}
-         />
-        ) : (
-       <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'row' }}>
-          <AcceptMoveButton onPress={handleAcceptMovePress} disabled={noMovesLeft} />
-          <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
-          <DoubleButton onPress={() => {}} disabled={true} />
-    </View>
-  )}
-</View>
-        <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
+        <Home onPress={handleHomePress} count={homeCount[1]} />
       </View>
-      <Prison
-        backgroundColor={colors.prisonColor}
-        width={DIMENSIONS.spikeWidth}
-        height={height}
-        checkers={prisonCheckers}
-        onPress={handlePrisonPress}
-      />
-      <View style={[styles.boardHalf]}>
-        <View style={[styles.reverse]}>{SixSpikes(1)}</View>
-        <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
-          {dice.color === DICE_COLORS.BLACK ? (
-            <Dice
-              diceOne={dice.diceOne}
-              diceTwo={dice.diceTwo}
-              color={dice.color}
-         />
-        ) : (
-       <View style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'space-evenly', alignItems: 'center', flexDirection: 'row' }}>
-          <AcceptMoveButton onPress={handleAcceptMovePress} disabled={noMovesLeft} />
-          <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
-          <DoubleButton onPress={() => {}} disabled={true} />
-    </View>
-  )}
-</View>
-        <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
+      <View
+        style={[
+          styles.board,
+          {
+            backgroundColor: colors.backgroundColor,
+            width: width,
+            height: height,
+          },
+        ]}>
+        <View style={[styles.boardHalf]}>
+          <View style={[styles.reverse]}>{SixSpikes(7)}</View>
+          <View
+            style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
+            {dice.color === DICE_COLORS.WHITE ? (
+              <Dice
+                diceOne={dice.diceOne}
+                diceTwo={dice.diceTwo}
+                color={dice.color}
+              />
+            ) : (
+              <View
+                style={{
+                  height: DIMENSIONS.spikeHeight,
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <AcceptMoveButton
+                  onPress={handleAcceptMovePress}
+                  disabled={noMovesLeft}
+                />
+                <UndoMoveButton
+                  onPress={handleUndoMovePress}
+                  disabled={hasDoneMove}
+                />
+                <DoubleButton onPress={() => {}} disabled={true} />
+              </View>
+            )}
+          </View>
+          <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
+        </View>
+        <Prison
+          backgroundColor={colors.prisonColor}
+          width={DIMENSIONS.spikeWidth}
+          height={height}
+          checkers={prisonCheckers}
+          onPress={handlePrisonPress}
+        />
+        <View style={[styles.boardHalf]}>
+          <View style={[styles.reverse]}>{SixSpikes(1)}</View>
+          <View
+            style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
+            {dice.color === DICE_COLORS.BLACK ? (
+              <Dice
+                diceOne={dice.diceOne}
+                diceTwo={dice.diceTwo}
+                color={dice.color}
+              />
+            ) : (
+              <View
+                style={{
+                  height: DIMENSIONS.spikeHeight,
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <AcceptMoveButton
+                  onPress={handleAcceptMovePress}
+                  disabled={noMovesLeft}
+                />
+                <UndoMoveButton
+                  onPress={handleUndoMovePress}
+                  disabled={hasDoneMove}
+                />
+                <DoubleButton onPress={() => {}} disabled={true} />
+              </View>
+            )}
+          </View>
+          <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
+        </View>
       </View>
-    </View>
-    <View style={styles.row}>
+      <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.WHITE} count={pipCount[0]} />
-        <Home onPress={handleHomePress} count= {homeCount[0]} />
-    </View>
+        <Home onPress={handleHomePress} count={homeCount[0]} />
+      </View>
     </View>
   );
 };
@@ -290,7 +321,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  }
+  },
 });
 
 export default Board;
