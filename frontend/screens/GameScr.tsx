@@ -1,11 +1,17 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
-import { HeaderBackButton } from '@react-navigation/elements';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Alert} from 'react-native';
+import {NavigationProp, ParamListBase} from '@react-navigation/native';
+import {HeaderBackButton} from '@react-navigation/elements';
 import Board from '../components/Board';
-import { useGameLogic } from '../hooks/useGameLogic';
-import { DIMENSIONS, APP_COLORS, PLAYER_COLORS, DICE_COLORS, BOARD_COLORS } from '../utils/constants';
-import { distributeCheckersGame } from '../gameLogic/gameUtils';
+import {useGameLogic} from '../hooks/useGameLogic';
+import {
+  DIMENSIONS,
+  APP_COLORS,
+  PLAYER_COLORS,
+  DICE_COLORS,
+  BOARD_COLORS,
+} from '../utils/constants';
+import {distributeCheckersGame} from '../gameLogic/gameUtils';
 
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
@@ -72,10 +78,14 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: APP_COLORS.secondBackgroundColor }]}>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: APP_COLORS.secondBackgroundColor},
+      ]}>
       <HeaderBackButton
         onPress={() => navigation.goBack()}
-        tintColor="white"  // You can customize the color if needed
+        tintColor="white" // You can customize the color if needed
         style={{alignSelf: 'flex-start'}}
       />
       <Board
@@ -110,6 +120,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   );
 };
 
+// Styling
 const styles = StyleSheet.create({
   container: {
     flex: 1,

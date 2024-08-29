@@ -1,10 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, SafeAreaView, ImageBackground } from 'react-native';
-import { Button, Card, Icon, Divider } from '@rneui/themed';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  SafeAreaView,
+  ImageBackground,
+} from 'react-native';
+import {Button, Card, Icon, Divider} from '@rneui/themed';
 import AvatarWithFlag from '../components/AvatarWithFlag';
 import AvatarWithPuzzle from '../components/AvatarWithPuzzle';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { DIMENSIONS } from '../utils/constants';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {DIMENSIONS} from '../utils/constants';
 
 export default function HomeScr({navigation}: {navigation: any}) {
   return (
@@ -23,8 +30,7 @@ export default function HomeScr({navigation}: {navigation: any}) {
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
-        style={styles.bodyContainer}
-      >
+        style={styles.bodyContainer}>
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
 
@@ -63,9 +69,9 @@ export default function HomeScr({navigation}: {navigation: any}) {
           <Button
             title="Play"
             loading={false}
-            loadingProps={{ size: 'small', color: 'white' }}
+            loadingProps={{size: 'small', color: 'white'}}
             buttonStyle={styles.playButton}
-            titleStyle={{ fontWeight: 'bold', fontSize: 23 }}
+            titleStyle={{fontWeight: 'bold', fontSize: 23}}
             containerStyle={styles.playButtonContainer}
             onPress={() => navigation.navigate('Game')}
           />
@@ -187,8 +193,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   buttonContainer: {
-    marginTop: 'auto',   // Pushes the button to the bottom of the container
-    marginBottom: 0,    // Adds a 24px margin above the footer
-    zIndex: 3,           // Ensures the button is above the overlay square
+    marginTop: 'auto', // Pushes the button to the bottom of the container
+    marginBottom: 0, // Adds a 24px margin above the footer
+    zIndex: 3, // Ensures the button is above the overlay square
   },
 });

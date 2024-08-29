@@ -5,7 +5,14 @@ import 'react-native-gesture-handler';
 import HomeScr from './screens/HomeScr';
 import GameScreen from './screens/GameScr';
 
-const Stack = createStackNavigator();
+type RootStackParamList = {
+  Home: undefined; // undefined because you aren't passing any params to the home screen
+  Game: undefined; // Add Game route
+  SignUp: undefined; // Add SignUp route
+  Profile: { name: string }; 
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
