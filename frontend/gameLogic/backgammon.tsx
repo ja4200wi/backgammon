@@ -28,7 +28,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupTestBoard2();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -484,7 +484,7 @@ export class Game {
   }
 
   private rollDice(): [number, number] {
-    this.dice = [1, 2]; //[this.getRandomDieRoll(), this.getRandomDieRoll()];
+    this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
     } else {
