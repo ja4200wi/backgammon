@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Android",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "android",
+      "cwd": "${workspaceFolder}/frontend",
+      "program": "${workspaceFolder}/frontend/index.js",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/frontend/**/*.js"]
+    },
+    {
+      "name": "Debug iOS",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "ios",
+      "cwd": "${workspaceFolder}/frontend",
+      "program": "${workspaceFolder}/frontend/index.js",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/frontend/**/*.js"]
+    }
+  ]
+}
