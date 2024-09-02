@@ -23,7 +23,6 @@ export default function Profile({navigation}: {navigation: any}) {
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
     </ImageBackground>
-    <NavBar navigation={navigation} selectedScreen='Profile'/>
     </SafeAreaView>
     );
 }

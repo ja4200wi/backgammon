@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
-import { Card, Icon, Button, Tooltip } from '@rneui/themed';
+import { Card, Icon, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS } from '../utils/constants';
-import NavBar from '../components/NavBar';
-import Friends from '../images/group.svg';
 import Header from '../components/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
-  
+
 type GameMode = 'Elo Game' | 'Friendly Game' | 'Play a Friend' | 'Play vs. Computer' | 'Pass & Play';
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
@@ -26,12 +24,21 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
         setOpenTooltip(null)
     }
   };
-  
+
+  const handleBackPress = () => {
+    navigation.goBack(); // Navigate back to the previous screen
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <Header />
+      {/* Back Button */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+          <Icon name="arrow-back" type="material" color={APP_COLORS.iconGrey} size={28} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Select Game Mode</Text>
+      </View>
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
@@ -108,7 +115,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <View style={styles.cardHeader}>
                 <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
                   {selectedMode !== 'Play a Friend' && (
-                    <Friends width={24} height={24} style={{ marginRight: 16, }} />
+                    <Icon name="people" type="material" color="#597FD1" size={24} style={{ marginRight: 16 }} />
                   )}
                   <Text style={[styles.cardTitle, selectedMode !== 'Play a Friend' && { fontSize: 20, fontWeight: '600' }]}>Play a Friend</Text>
                 </View>
@@ -179,94 +186,93 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-
-      <NavBar navigation={navigation} selectedScreen='Home'/>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: APP_COLORS.headerBackGroundColor,
-    },
-    headerText: {
-      color: 'white',
-      fontSize: 20,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      flex: 1, // Makes the title take up the remaining space
-    },
-    headerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 16,
-      backgroundColor: '#312F2C',
-      justifyContent: 'space-between',
-      zIndex: 2, // Ensure the header is on top of the overlay
-    },
-    backButton: {
-      zIndex: 2,
-    },
-    overlaySquare: {
-      position: 'absolute',
-      top: 0, left: 0, // Ensure overlay covers the entire screen
-      width: DIMENSIONS.screenWidth,
-      height: DIMENSIONS.screenHeight,
-      backgroundColor: 'rgba(48, 46, 43, .9)',
-      zIndex: 1, // Keep this lower than the body content and cards
-    },
-    bodyContent: {
-      padding: 16,
-      flex: 1,
-      justifyContent: 'center',
-      zIndex: 2, // Ensure body content and cards are above overlay
-    },
-    bodyContainer: {
-      flexGrow: 1,
-      justifyContent: 'center',
-      padding: 16,
-    },
-    card: {
-      borderRadius: 15,
-      borderColor: '#54504B',
-      backgroundColor: '#262522',
-      padding: 16,
-      marginBottom: 8,
-      zIndex: 3, // Ensure cards are above the overlay and other content
-      elevation: 0, // Remove elevation on Android
-      shadowColor: 'transparent', // Remove shadow color on iOS
-    },
-    cardHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    cardTitle: {
-      color: 'white',
-      fontSize: 24, // Font size for selected cards
-      fontWeight: 'bold',
-    },
-    selectedCard: {
-      backgroundColor: APP_COLORS.backgroundColorTransparent, // Slightly different background color when selected
-    },
-    cardDetails: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    cardSubtitle: {
-      color: 'gold',
-      fontSize: 18,
-    },
-    cardDetail: {
-      color: 'white',
-      fontSize: 18,
-      marginTop: 10,
-    },
-    startButton: {
-      marginTop: 10,
-      backgroundColor: '#6B9C41',
-      borderRadius: 5,
-    },
-  });
+  container: {
+    flex: 1,
+    backgroundColor: APP_COLORS.headerBackGroundColor,
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1, // Makes the title take up the remaining space
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#312F2C',
+    justifyContent: 'space-between',
+    zIndex: 2, // Ensure the header is on top of the overlay
+  },
+  backButton: {
+    zIndex: 2,
+  },
+  overlaySquare: {
+    position: 'absolute',
+    top: 0,
+    left: 0, // Ensure overlay covers the entire screen
+    width: DIMENSIONS.screenWidth,
+    height: DIMENSIONS.screenHeight,
+    backgroundColor: 'rgba(48, 46, 43, .9)',
+    zIndex: 1, // Keep this lower than the body content and cards
+  },
+  bodyContent: {
+    padding: 16,
+    flex: 1,
+    justifyContent: 'center',
+    zIndex: 2, // Ensure body content and cards are above overlay
+  },
+  bodyContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  card: {
+    borderRadius: 15,
+    borderColor: '#54504B',
+    backgroundColor: '#262522',
+    padding: 16,
+    marginBottom: 8,
+    zIndex: 3, // Ensure cards are above the overlay and other content
+    elevation: 0, // Remove elevation on Android
+    shadowColor: 'transparent', // Remove shadow color on iOS
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardTitle: {
+    color: 'white',
+    fontSize: 24, // Font size for selected cards
+    fontWeight: 'bold',
+  },
+  selectedCard: {
+    backgroundColor: APP_COLORS.backgroundColorTransparent, // Slightly different background color when selected
+  },
+  cardDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardSubtitle: {
+    color: 'gold',
+    fontSize: 18,
+  },
+  cardDetail: {
+    color: 'white',
+    fontSize: 18,
+    marginTop: 10,
+  },
+  startButton: {
+    marginTop: 10,
+    backgroundColor: '#6B9C41',
+    borderRadius: 5,
+  },
+});

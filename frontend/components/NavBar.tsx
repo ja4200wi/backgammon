@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Icon } from '@rneui/themed';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationHelpers, ParamListBase } from '@react-navigation/native';
 import { APP_COLORS } from '../utils/constants';
 
 type NavBarProps = {
-    navigation: NavigationProp<any>;
-    selectedScreen: string;
-  };
-  
-export default function NavBar({ navigation, selectedScreen}: NavBarProps) {
+  navigation: NavigationHelpers<ParamListBase>;
+  selectedScreen: string;
+};
+
+export default function NavBar({ navigation, selectedScreen }: NavBarProps) {
   return (
     <View style={styles.footerContainer}>
       <View style={styles.bottomNav}>
@@ -17,7 +17,7 @@ export default function NavBar({ navigation, selectedScreen}: NavBarProps) {
           <Icon
             name="home"
             type="material"
-            color={selectedScreen === 'Home' ? '#6B9C41' : 'white'}
+            color={selectedScreen === 'Home' ? '#6B9C41' : APP_COLORS.iconGrey}
             size={36}
           />
         </TouchableOpacity>
@@ -25,7 +25,7 @@ export default function NavBar({ navigation, selectedScreen}: NavBarProps) {
           <Icon
             name="school"
             type="material"
-            color={selectedScreen === 'Study' ? '#6B9C41' : 'white'}
+            color={selectedScreen === 'Study' ? '#6B9C41' : APP_COLORS.iconGrey}
             size={36}
           />
         </TouchableOpacity>
@@ -33,7 +33,7 @@ export default function NavBar({ navigation, selectedScreen}: NavBarProps) {
           <Icon
             name="person"
             type="material"
-            color={selectedScreen === 'Profile' ? '#6B9C41' : 'white'}
+            color={selectedScreen === 'Profile' ? '#6B9C41' : APP_COLORS.iconGrey}
             size={36}
           />
         </TouchableOpacity>

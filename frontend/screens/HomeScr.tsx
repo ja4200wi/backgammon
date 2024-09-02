@@ -68,8 +68,6 @@ export default function HomeScr({navigation}: {navigation: any}) {
           />
         </View>
       </ImageBackground>
-
-      <NavBar navigation={navigation} selectedScreen='Home' />
     </SafeAreaView>
   );
 }

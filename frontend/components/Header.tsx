@@ -11,11 +11,11 @@ export default function Header({}) {
     <View style={styles.headerContainer}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => console.log('Friends')}>
-          <Icon name="people" type="material" color="white" size={30} />
+          <Icon name="people" type="material" color={APP_COLORS.iconGrey} size={30} />
           </TouchableOpacity>
           <Text style={styles.headerText}>Gammon.com</Text>
           <TouchableOpacity onPress={() => console.log('Settings')}>
-          <Icon name="settings" type="material" color="white" size={30} />
+          <Icon name="settings" type="material" color={APP_COLORS.iconGrey} size={30} />
           </TouchableOpacity>
         </View>
       </View>
