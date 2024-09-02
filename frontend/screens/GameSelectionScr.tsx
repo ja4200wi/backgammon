@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
 import { Card, Icon, Button, Tooltip } from '@rneui/themed';
-import { DIMENSIONS } from '../utils/constants';
+import { APP_COLORS, DIMENSIONS } from '../utils/constants';
 import NavBar from '../components/NavBar';
 import Friends from '../images/group.svg';
+import Header from '../components/Header';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
   
 type GameMode = 'Elo Game' | 'Friendly Game' | 'Play a Friend' | 'Play vs. Computer' | 'Pass & Play';
 
@@ -29,20 +31,12 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
-
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <Icon name="arrow-back" type="material" color="white" size={30} onPress={() => navigation.goBack()} style={styles.backButton} />
-        <Text style={styles.headerText}>Select Game Mode</Text>
-      </View>
-
+      <Header />
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
       >
-        {/* Overlay Square */}
         <View style={styles.overlaySquare} />
-
         {/* Body */}
         <View style={styles.bodyContent}>
           <TouchableOpacity
@@ -72,7 +66,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
                     <Text style={styles.cardSubtitle}>Gold League</Text>
                     <Text style={styles.cardDetail}>1023 GP</Text>
                   </View>
-                  <Button title="Start Game" buttonStyle={styles.startButton} />
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
                 </>
               )}
             </Card>
@@ -100,7 +94,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               {selectedMode === 'Friendly Game' && (
                 <>
                   <Text style={styles.cardDetail}>No Rankings, Just Fun!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} />
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
                 </>
               )}
             </Card>
@@ -122,7 +116,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               {selectedMode === 'Play a Friend' && (
                 <>
                   <Text style={styles.cardDetail}>Invite a friend to play!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} />
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
                 </>
               )}
             </Card>
@@ -150,7 +144,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               {selectedMode === 'Play vs. Computer' && (
                 <>
                   <Text style={styles.cardDetail}>Challenge the AI!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} />
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
                 </>
               )}
             </Card>
@@ -186,7 +180,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
         </View>
       </ImageBackground>
 
-      <NavBar navigation={navigation} />
+      <NavBar navigation={navigation} selectedScreen='Home'/>
     </SafeAreaView>
   );
 }
@@ -194,7 +188,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#312F2C',
+      backgroundColor: APP_COLORS.headerBackGroundColor,
     },
     headerText: {
       color: 'white',
@@ -222,14 +216,16 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgba(48, 46, 43, .9)',
       zIndex: 1, // Keep this lower than the body content and cards
     },
-    bodyContainer: {
-      flex: 1,
-    },
     bodyContent: {
       padding: 16,
       flex: 1,
       justifyContent: 'center',
       zIndex: 2, // Ensure body content and cards are above overlay
+    },
+    bodyContainer: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: 16,
     },
     card: {
       borderRadius: 15,
@@ -252,7 +248,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     selectedCard: {
-      backgroundColor: 'rgba(84, 80, 75, 0.9)', // Slightly different background color when selected
+      backgroundColor: APP_COLORS.backgroundColorTransparent, // Slightly different background color when selected
     },
     cardDetails: {
       flexDirection: 'row',
