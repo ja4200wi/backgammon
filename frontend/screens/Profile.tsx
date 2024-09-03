@@ -1,25 +1,31 @@
 import React from 'react';
 import { View, StyleSheet, StatusBar, SafeAreaView, ImageBackground, Text } from 'react-native';
-import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
+import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE, COUNTRIES } from '../utils/constants';
 import Header from '../components/Header';
 import AvatarWithFlag from '../components/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 
-function UserProfile() {
-  return(
-    <View style={[styles.content,{padding:16}]}>
-          <View style={styles.userRow}>
-            <AvatarWithFlag />
-            <View style={{flexDirection: 'column', justifyContent:'center', marginLeft: 16}}>
-              <Text style={[GLOBAL_STYLES.headline]}>GubiGammer</Text>
-              <Text style={{fontSize: 12, color: APP_COLORS.standardGrey}}>Joined 11. March 2018</Text>
-            </View>
-            <Icon name="edit" color={APP_COLORS.iconGrey} size={24} style={{ marginLeft: 'auto' }} />
-          </View>
+function UserProfile({ username, dateJoined }: { username: string, dateJoined: Date }) {
+  const formattedDate = dateJoined.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return (
+    <View style={[styles.content, { padding: 16 }]}>
+      <View style={styles.userRow}>
+        <AvatarWithFlag country={COUNTRIES.JAPAN} />
+        <View style={{ flexDirection: 'column', justifyContent: 'center', marginLeft: 16 }}>
+          <Text style={[GLOBAL_STYLES.headline]}>{username}</Text>
+          <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>Joined {formattedDate}</Text>
         </View>
-  )
+        <Icon name="edit" color={APP_COLORS.iconGrey} size={24} style={{ marginLeft: 'auto' }} />
+      </View>
+    </View>
+  );
 }
 function Headline({ headline }: { headline: string }) {
   return (
@@ -126,7 +132,7 @@ export default function Profile({navigation}: {navigation: any}) {
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
         <ScrollView style={{zIndex: 2}}>
-        <UserProfile />
+        <UserProfile username='GubiGammer' dateJoined={new Date('2018-03-11')}/>
         <Headline headline='Statistics' />
         <ProfileContent 
         GamesPlayed='243'

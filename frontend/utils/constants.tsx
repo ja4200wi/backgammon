@@ -23,7 +23,39 @@ export const APP_COLORS = {
     tertiaryColor: '#bc6c25',
 
   };
-  //change colors for different look
+  export enum COUNTRIES {
+    UNITED_STATES = 'us',
+    CANADA = 'ca',
+    UNITED_KINGDOM = 'gb',
+    GERMANY = 'de',
+    FRANCE = 'fr',
+    ITALY = 'it',
+    SPAIN = 'es',
+    AUSTRALIA = 'au',
+    BRAZIL = 'br',
+    JAPAN = 'jp',
+    CHINA = 'cn',
+    INDIA = 'in',
+    MEXICO = 'mx',
+    RUSSIA = 'ru',
+    SOUTH_AFRICA = 'za',
+    SOUTH_KOREA = 'kr',
+    NETHERLANDS = 'nl',
+    SWEDEN = 'se',
+    SWITZERLAND = 'ch',
+    TURKEY = 'tr',
+    ARGENTINA = 'ar',
+    SAUDI_ARABIA = 'sa',
+    UNITED_ARAB_EMIRATES = 'ae',
+    BELGIUM = 'be',
+    NORWAY = 'no',
+    POLAND = 'pl',
+    PORTUGAL = 'pt',
+    DENMARK = 'dk',
+    IRELAND = 'ie',
+    ISRAEL = 'il',
+  }
+  
   export enum PLAYER_COLORS {
     WHITE = 'white',
     BLACK = 'black',
