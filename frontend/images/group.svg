@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="group">
+  <!-- Head of the left figure -->
+  <circle cx="8" cy="6" r="4.25" fill="#654321"></circle>
+  <!-- Body of the left figure -->
+  <path d="M10,11.25H6A4.756,4.756,0,0,0,1.25,16v4a.75.75,0,0,0,.75.75H14a.75.75,0,0,0,.75-.75V16A4.756,4.756,0,0,0,10,11.25Z" fill="#597FD1"></path>
+  <!-- Head of the right figure -->
+  <circle cx="16.799" cy="7.747" r="3.747" fill="#CCB093"></circle>
+  <!-- Body of the right figure -->
+  <path d="M22.75,16.56v3.53a.666.666,0,0,1-.66.66H15.75V16a5.7,5.7,0,0,0-1.27-3.58,3.435,3.435,0,0,1,.56-.04h3.52A4.187,4.187,0,0,1,22.75,16.56Z" fill="#C7D159"></path>
+</svg>
