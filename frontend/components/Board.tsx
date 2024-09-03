@@ -209,7 +209,7 @@ const Board: React.FC<BoardProps> = ({
     <View>
       <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-        <Home onPress={handleHomePress} count={homeCount[1]} />
+        <Home onPress={handleHomePress} count={homeCount[1]} player={PLAYER_COLORS.BLACK} />
       </View>
       <View
         style={[
@@ -294,7 +294,7 @@ const Board: React.FC<BoardProps> = ({
       </View>
       <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.WHITE} count={pipCount[0]} />
-        <Home onPress={handleHomePress} count={homeCount[0]} />
+        <Home onPress={handleHomePress} count={homeCount[0]} player={PLAYER_COLORS.WHITE}/>
       </View>
     </View>
   );

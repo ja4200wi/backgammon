@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Text, Dimensions} from 'react-native';
-import { PLAYER_COLORS } from '../utils/constants';
+import { APP_COLORS, PLAYER_COLORS } from '../utils/constants';
 
 interface PipCountProps {
   color: PLAYER_COLORS;
@@ -19,15 +19,16 @@ const PipCount: React.FC<PipCountProps> = ({color, count}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'brown',
-    borderRadius: 5,
+    backgroundColor: APP_COLORS.standardGrey,
+    borderRadius: 20,
     marginVertical: 5,
     height: 30,
     width: 150,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   textstyle: {
-    color: 'white',
+    color: 'black',
     fontWeight: 'bold',
     fontSize: 20,
   },

@@ -1,4 +1,4 @@
-import {Position} from '../components/Board';
+import { Position } from '../components/Board';
 import {PLAYER_COLORS} from '../utils/constants';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
@@ -12,6 +12,7 @@ interface Move {
   from: number;
   to: number;
 }
+
 
 export class Game {
   private board: (Stone[] | null)[];
@@ -33,7 +34,7 @@ export class Game {
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
     } else {
-      this.currentPlayer = PLAYER_COLORS.WHITE;
+      this.currentPlayer = PLAYER_COLORS.BLACK;
     }
     this.dice = [1, 1];
     this.movesLeft = [];
