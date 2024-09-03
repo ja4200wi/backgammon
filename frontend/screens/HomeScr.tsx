@@ -7,12 +7,10 @@ import {
   SafeAreaView,
   ImageBackground,
 } from 'react-native';
-import {Button, Card, Icon, Divider} from '@rneui/themed';
+import {Button, Card, Divider} from '@rneui/themed';
 import AvatarWithFlag from '../components/AvatarWithFlag';
 import AvatarWithPuzzle from '../components/AvatarWithPuzzle';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { APP_COLORS, DIMENSIONS } from '../utils/constants';
-import NavBar from '../components/NavBar';
 import Header from '../components/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
 import { Card, Icon, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS } from '../utils/constants';
-import Header from '../components/Header';
-import { GLOBAL_STYLES } from '../utils/globalStyles';
 
 type GameMode = 'Elo Game' | 'Friendly Game' | 'Play a Friend' | 'Play vs. Computer' | 'Pass & Play';
 

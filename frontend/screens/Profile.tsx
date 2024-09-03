@@ -1,13 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, SafeAreaView, ImageBackground } from 'react-native';
-import { Button, Card, Icon, Divider } from '@rneui/themed';
-import AvatarWithFlag from '../components/AvatarWithFlag';
-import AvatarWithPuzzle from '../components/AvatarWithPuzzle';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { View, StyleSheet, StatusBar, SafeAreaView, ImageBackground } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
 import Header from '../components/Header';
-import NavBar from '../components/NavBar';
-import { GLOBAL_STYLES } from '../utils/globalStyles';
 
 
 export default function Profile({navigation}: {navigation: any}) {
