@@ -28,7 +28,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupTestBoard2();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -145,7 +145,7 @@ export class Game {
     return this.board;
   }
 
-  private handleMoveStone(from: number, to: number): boolean {
+  public moveStone(from: number, to: number): boolean {
     let steps =
       this.currentPlayer === PLAYER_COLORS.WHITE ? to - from : from - to;
     if (to === BEARING_OFF_INDEX)
@@ -203,7 +203,7 @@ export class Game {
     const currentDice = [...this.movesLeft];
     this.lastMoves.push([currentBoard, currentDice]);
   }
-  private handleUndoMove(): void {
+  public undoMove(): void {
     if (this.lastMoves.length === 0) return;
 
     const [board, movesLeft] = this.lastMoves.pop()!;
@@ -249,7 +249,7 @@ export class Game {
       }
     }
   }
-  private checkForLegalMove(): boolean {
+  public hasLegalMove(): boolean {
     if (this.movesLeft.length === 0) {
       return true;
     }
@@ -295,7 +295,7 @@ export class Game {
     return false;
   }
 
-  private legalMovesFrom(from: number): number[] {
+  public getLegalMovesFrom(from: number): number[] {
     const uniqueMovesLeft = [...new Set(this.movesLeft)];
     const legalMoves: number[] = [];
     const playerMultiplier =
@@ -317,7 +317,7 @@ export class Game {
         this.board[i]!.length > 0 &&
         this.board[i]![0].color === player
       ) {
-        const feasibleTargets = this.legalMovesFrom(i);
+        const feasibleTargets = this.getLegalMovesFrom(i);
         for (const to of feasibleTargets) {
           moves.push({from: i, to});
         }
@@ -432,7 +432,7 @@ export class Game {
     // Move is valid
     return true;
   }
-  private finishedCheckers(color: PLAYER_COLORS): number {
+  public getHomeCheckers(color: PLAYER_COLORS): number {
     let stoneCount = 0;
 
     for (let i = 0; i < this.board.length; i++) {
@@ -451,7 +451,7 @@ export class Game {
       color === PLAYER_COLORS.WHITE
         ? HOME_AREA_START_INDEX['WHITE']
         : HOME_AREA_START_INDEX['BLACK'] - 5;
-    const checkersInBoard = TOTAL_STONES - this.finishedCheckers(color);
+    const checkersInBoard = TOTAL_STONES - this.getHomeCheckers(color);
     // Check for stones in prison
     if (color === PLAYER_COLORS.WHITE) {
       if (this.board[PRISON_INDEX['WHITE']]!.length > 0) return false;
@@ -485,7 +485,7 @@ export class Game {
   }
 
   private rollDice(): [number, number] {
-    this.dice = [1, 2]; //[this.getRandomDieRoll(), this.getRandomDieRoll()];
+    this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
     } else {
@@ -519,9 +519,6 @@ export class Game {
     return totalDistance;
   }
   //public functions
-  public moveStone(from: number, to: number): boolean {
-    return this.handleMoveStone(from, to);
-  }
   public getCurrentPositions(): {
     index: number;
     color: PLAYER_COLORS;
@@ -547,10 +544,6 @@ export class Game {
     };
   }
 
-  public getHomeCheckers(color: PLAYER_COLORS): number {
-    return this.finishedCheckers(color);
-  }
-
   public getDice(): [number, number] {
     return this.dice;
   }
@@ -563,14 +556,10 @@ export class Game {
     return this.currentPlayer;
   }
 
-  public hasLegalMove(): boolean {
-    return this.checkForLegalMove();
-  }
-
   public isGameOver(): boolean {
     if (
-      this.finishedCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES ||
-      this.finishedCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES
+      this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES ||
+      this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES
     ) {
       return true;
     }
@@ -580,19 +569,11 @@ export class Game {
     return this.lastMoves;
   }
   public whoIsWinner(): string {
-    if (this.finishedCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES)
+    if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES)
       return PLAYER_COLORS.BLACK;
-    if (this.finishedCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES)
+    if (this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES)
       return PLAYER_COLORS.WHITE;
     return 'no one';
-  }
-
-  public getLegalMovesFrom(from: number): number[] {
-    return this.legalMovesFrom(from);
-  }
-
-  public undoMove() {
-    this.handleUndoMove();
   }
 
   public switchPlayer() {

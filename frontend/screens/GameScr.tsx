@@ -78,11 +78,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {backgroundColor: APP_COLORS.secondBackgroundColor},
-      ]}>
+    <View style={[styles.container, { backgroundColor: APP_COLORS.backgroundColor }]}>
       <HeaderBackButton
         onPress={() => navigation.goBack()}
         tintColor="white" // You can customize the color if needed

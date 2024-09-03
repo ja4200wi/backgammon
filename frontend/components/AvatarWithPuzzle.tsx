@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import Puzzle from '../images/puzzle.svg';
+import { APP_COLORS } from '../utils/constants';
 
 const AvatarWithFlag = () => {
   return (
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    backgroundColor: '#C7C7C7',
+    backgroundColor: APP_COLORS.standardGrey,
     justifyContent: 'center',
     alignItems: 'center',
   },
