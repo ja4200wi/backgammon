@@ -227,6 +227,7 @@ export class Game {
       }
     }
   }
+
   private updateMovesLeft(steps: number, from: number, to: number): void {
     if (to === BEARING_OFF_INDEX) {
       steps = this.currentPlayer === PLAYER_COLORS.WHITE ? 25 - from : from;
