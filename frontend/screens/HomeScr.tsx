@@ -25,6 +25,7 @@ export default function HomeScr({navigation}: {navigation: any}) {
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
+        resizeMode='cover'
       >
         {/* Semi-transparent Square for the overlay look */}
         <View style={styles.overlaySquare} />

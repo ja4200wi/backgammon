@@ -42,6 +42,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
+        resizeMode='cover'
       >
         <View style={styles.overlaySquare} />
         {/* Body */}

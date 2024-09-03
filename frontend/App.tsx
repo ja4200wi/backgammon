@@ -29,7 +29,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeTabs} />
+        <Stack.Screen name="Main" component={HomeTabs} />
         <Stack.Screen name="GameSelection" component={GameSelectionScr} />
         <Stack.Screen name="Game" component={GameScreen} />
       </Stack.Navigator>
