@@ -74,7 +74,7 @@ export const APP_COLORS = {
 
   export enum GAME_TYPE {
     ELO = 'Elo',
-    FRIENDLY = 'Friendly',
+    ONLINE = 'online',
     FRIENDLIST = 'FriendList',
     COMPUTER = 'Computer',
     PASSPLAY = 'PassandPlay'

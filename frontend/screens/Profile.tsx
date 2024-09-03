@@ -42,7 +42,7 @@ function HistoryLineItem({GameType,Opponent,Win}: {GameType: GAME_TYPE, Opponent
       switch (GameType) {
         case GAME_TYPE.ELO:
           return ICONS.TrophyIcon;
-        case GAME_TYPE.FRIENDLY:
+        case GAME_TYPE.ONLINE:
           return ICONS.WifiIcon;
         case GAME_TYPE.FRIENDLIST:
           return ICONS.PeopleIcon;
@@ -111,7 +111,7 @@ function HistoryContent() {
     <HistoryLineItem GameType={GAME_TYPE.ELO} Opponent='DaddyGammer' Win={true} />
     <HistoryLineItem GameType={GAME_TYPE.PASSPLAY} Opponent='MiaTurtle' Win={false} />
     <HistoryLineItem GameType={GAME_TYPE.COMPUTER} Opponent='ChampJann' Win={false} />
-    <HistoryLineItem GameType={GAME_TYPE.FRIENDLY} Opponent='Peterpan' Win={true} />
+    <HistoryLineItem GameType={GAME_TYPE.ONLINE} Opponent='Peterpan' Win={true} />
     <HistoryLineItem GameType={GAME_TYPE.ELO} Opponent='Guest28395' Win={true} />
     <HistoryLineItem GameType={GAME_TYPE.FRIENDLIST} Opponent='IwinYouLose' Win={false} />
     </View>

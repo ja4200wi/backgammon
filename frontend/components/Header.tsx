@@ -4,31 +4,24 @@ import { Card, Icon, Button, Tooltip } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS } from '../utils/constants';
 import NavBar from '../components/NavBar';
 import Friends from '../images/group.svg';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
 
 
 export default function Header({}) {
   return (
     <View style={styles.headerContainer}>
-        <View style={styles.header}>
           <TouchableOpacity onPress={() => console.log('Friends')}>
           <Icon name="people" type="material" color={APP_COLORS.iconGrey} size={30} />
           </TouchableOpacity>
-          <Text style={styles.headerText}>Gammon.com</Text>
+          <Text style={GLOBAL_STYLES.headline}>Gammon.com</Text>
           <TouchableOpacity onPress={() => console.log('Settings')}>
           <Icon name="settings" type="material" color={APP_COLORS.iconGrey} size={30} />
           </TouchableOpacity>
-        </View>
       </View>
   );
 };
 
 const styles = StyleSheet.create({
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 4,
-      },
       headerText: {
         color: '#FFF',
         fontSize: 24,
@@ -37,8 +30,13 @@ const styles = StyleSheet.create({
       headerContainer: {
         paddingRight: 16,
         paddingLeft: 16,
+        paddingTop: 8,
+        paddingBottom: 8,
         backgroundColor: APP_COLORS.headerBackGroundColor,
-        zIndex: 2
+        zIndex: 2,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
       },
 });
 

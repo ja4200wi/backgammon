@@ -1,44 +1,175 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
 import { Card, Icon, Button } from '@rneui/themed';
-import { APP_COLORS, DIMENSIONS, ICONS } from '../utils/constants';
-import Friends from '../images/group.svg'
+import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
 
-type GameMode = 'Elo Game' | 'Friendly Game' | 'Play a Friend' | 'Play vs. Computer' | 'Pass & Play';
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
-  const [selectedMode, setSelectedMode] = useState<GameMode>('Elo Game'); // Default selection
-  const [openTooltip, setOpenTooltip] = useState<GameMode | null>();
-  
-
-  const handleSelectMode = (mode: GameMode) => {
+  const [selectedMode, setSelectedMode] = useState<GAME_TYPE>(GAME_TYPE.ELO); // Default selection
+  const handleSelectMode = (mode: GAME_TYPE) => {
     if (selectedMode !== mode) {
       setSelectedMode(mode);
     }
   };
-
-  const handleTooltipToggle = (key: GameMode) => {
-    if (openTooltip !== key) {
-        setOpenTooltip(key);
-    } else if (openTooltip === key) {
-        setOpenTooltip(null)
-    }
-  };
-
   const handleBackPress = () => {
     navigation.goBack(); // Navigate back to the previous screen
   };
+
+  function HeaderBackButton() {
+    return(
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={handleBackPress} >
+          <Icon name="arrow-back" type="material" color={APP_COLORS.iconGrey} size={28} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Select Game Mode</Text>
+      </View>
+    )
+  }
+  function EloGameCard({League,Elo}: {League:string,Elo:number}){
+    return(
+      <TouchableOpacity
+            onPress={() => handleSelectMode(GAME_TYPE.ELO)}
+            disabled={selectedMode === GAME_TYPE.ELO}
+          >
+            <Card containerStyle={[styles.card, selectedMode === GAME_TYPE.ELO && styles.selectedCard]}>
+              <View style={styles.cardHeader}>
+                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                  {selectedMode !== GAME_TYPE.ELO && (
+                    ICONS.TrophyIcon
+                  )}
+                  <Text style={[GLOBAL_STYLES.headline, selectedMode !== GAME_TYPE.ELO && { fontSize: 20, fontWeight: '600' }]}>
+                    Elo Game
+                  </Text>
+                </View>
+              </View>
+              {selectedMode === GAME_TYPE.ELO && (
+                <>
+                  <View style={styles.cardDetailContainer}>
+                    <Text style={[GLOBAL_STYLES.lineItems]}>{League}</Text>
+                    <Text style={GLOBAL_STYLES.lineItems}>{Elo} GP</Text>
+                  </View>
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                </>
+              )}
+            </Card>
+          </TouchableOpacity>
+    )
+  }
+  function OnlineGameCard() {
+    return(
+      <TouchableOpacity
+            onPress={() => handleSelectMode(GAME_TYPE.ONLINE)}
+            disabled={selectedMode === GAME_TYPE.ONLINE}
+          >
+            <Card containerStyle={[styles.card, selectedMode === GAME_TYPE.ONLINE && styles.selectedCard]}>
+              <View style={styles.cardHeader}>
+                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                  {selectedMode !== GAME_TYPE.ONLINE && (
+                    ICONS.WifiIcon
+                  )}
+                  <Text style={[GLOBAL_STYLES.headline, selectedMode !== GAME_TYPE.ONLINE && { fontSize: 20, fontWeight: '600' }]}>Friendly Game</Text>
+                </View>
+              </View>
+              {selectedMode === GAME_TYPE.ONLINE && (
+                <>
+                  <View style={styles.cardDetailContainer}>
+                    <Text style={GLOBAL_STYLES.lineItems}>No Rankings, Just Fun!</Text>
+                  </View>
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                </>
+              )}
+            </Card>
+          </TouchableOpacity>
+    )
+  }
+  function FriendsGameCard() {
+    return(
+      <TouchableOpacity
+            onPress={() => handleSelectMode(GAME_TYPE.FRIENDLIST)}
+            disabled={selectedMode === GAME_TYPE.FRIENDLIST}
+          >
+            <Card containerStyle={[styles.card, selectedMode === GAME_TYPE.FRIENDLIST && styles.selectedCard]}>
+              <View style={styles.cardHeader}>
+                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                  {selectedMode !== GAME_TYPE.FRIENDLIST && (
+                    ICONS.PeopleIcon
+                  )}
+                  <Text style={[styles.cardTitle, selectedMode !== GAME_TYPE.FRIENDLIST && { fontSize: 20, fontWeight: '600' }]}>Play a Friend</Text>
+                </View>
+              </View>
+              {selectedMode === GAME_TYPE.FRIENDLIST && (
+                <>
+                  <View style={styles.cardDetailContainer}>
+                  <Text style={GLOBAL_STYLES.lineItems}>Invite a friend to play!</Text>
+                  </View>
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                </>
+              )}
+            </Card>
+          </TouchableOpacity>
+    )
+  }
+  function ComputerGameCard() {
+    return(
+      <TouchableOpacity
+            onPress={() => handleSelectMode(GAME_TYPE.COMPUTER)}
+            disabled={selectedMode === GAME_TYPE.COMPUTER}
+          >
+            <Card containerStyle={[styles.card, selectedMode === GAME_TYPE.COMPUTER && styles.selectedCard]}>
+              <View style={styles.cardHeader}>
+                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                  {selectedMode !== GAME_TYPE.COMPUTER && (
+                    ICONS.ComputerIcon
+                  )}
+                  <Text style={[styles.cardTitle, selectedMode !== GAME_TYPE.COMPUTER && { fontSize: 20, fontWeight: '600' }]}>Play vs. Computer</Text>
+                </View>
+              </View>
+              {selectedMode === GAME_TYPE.COMPUTER && (
+                <>
+                  <View style={styles.cardDetailContainer}>
+                  <Text style={GLOBAL_STYLES.lineItems}>Challenge the AI!</Text>
+                  </View>
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                </>
+              )}
+            </Card>
+          </TouchableOpacity>
+    )
+  }
+  function PassAndPlayGameCard() {
+    return(
+      <TouchableOpacity
+            onPress={() => handleSelectMode(GAME_TYPE.PASSPLAY)}
+            disabled={selectedMode === GAME_TYPE.PASSPLAY}
+          >
+            <Card containerStyle={[styles.card, selectedMode === GAME_TYPE.PASSPLAY && styles.selectedCard]}>
+              <View style={styles.cardHeader}>
+                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                  {selectedMode !== GAME_TYPE.PASSPLAY && (
+                    ICONS.SwapHorizIcon
+                  )}
+                  <Text style={[styles.cardTitle, selectedMode !== GAME_TYPE.PASSPLAY && { fontSize: 20, fontWeight: '600' }]}>Pass & Play</Text>
+                </View>
+              </View>
+              {selectedMode === GAME_TYPE.PASSPLAY && (
+                <>
+                  <View style={styles.cardDetailContainer}>
+                  <Text style={GLOBAL_STYLES.lineItems}>Play with someone nearby!</Text>
+                  </View>
+                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => navigation.navigate('Game')}/>
+                </>
+              )}
+            </Card>
+          </TouchableOpacity>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       {/* Back Button */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-          <Icon name="arrow-back" type="material" color={APP_COLORS.iconGrey} size={28} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Select Game Mode</Text>
-      </View>
+      <HeaderBackButton />
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
@@ -47,120 +178,11 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
         <View style={styles.overlaySquare} />
         {/* Body */}
         <View style={styles.bodyContent}>
-          <TouchableOpacity
-            onPress={() => handleSelectMode('Elo Game')}
-            disabled={selectedMode === 'Elo Game'}
-          >
-            <Card containerStyle={[styles.card, selectedMode === 'Elo Game' && styles.selectedCard]}>
-              <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
-                  {selectedMode !== 'Elo Game' && (
-                    ICONS.TrophyIcon
-                  )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Elo Game' && { fontSize: 20, fontWeight: '600' }]}>
-                    Elo Game
-                  </Text>
-                </View>
-              </View>
-              {selectedMode === 'Elo Game' && (
-                <>
-                  <View style={styles.cardDetails}>
-                    <Text style={styles.cardSubtitle}>Gold League</Text>
-                    <Text style={styles.cardDetail}>1023 GP</Text>
-                  </View>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
-                </>
-              )}
-            </Card>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => handleSelectMode('Friendly Game')}
-            disabled={selectedMode === 'Friendly Game'}
-          >
-            <Card containerStyle={[styles.card, selectedMode === 'Friendly Game' && styles.selectedCard]}>
-              <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
-                  {selectedMode !== 'Friendly Game' && (
-                    ICONS.WifiIcon
-                  )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Friendly Game' && { fontSize: 20, fontWeight: '600' }]}>Friendly Game</Text>
-                </View>
-              </View>
-              {selectedMode === 'Friendly Game' && (
-                <>
-                  <Text style={styles.cardDetail}>No Rankings, Just Fun!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
-                </>
-              )}
-            </Card>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => handleSelectMode('Play a Friend')}
-            disabled={selectedMode === 'Play a Friend'}
-          >
-            <Card containerStyle={[styles.card, selectedMode === 'Play a Friend' && styles.selectedCard]}>
-              <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
-                  {selectedMode !== 'Play a Friend' && (
-                    ICONS.PeopleIcon
-                  )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Play a Friend' && { fontSize: 20, fontWeight: '600' }]}>Play a Friend</Text>
-                </View>
-              </View>
-              {selectedMode === 'Play a Friend' && (
-                <>
-                  <Text style={styles.cardDetail}>Invite a friend to play!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
-                </>
-              )}
-            </Card>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => handleSelectMode('Play vs. Computer')}
-            disabled={selectedMode === 'Play vs. Computer'}
-          >
-            <Card containerStyle={[styles.card, selectedMode === 'Play vs. Computer' && styles.selectedCard]}>
-              <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
-                  {selectedMode !== 'Play vs. Computer' && (
-                    ICONS.ComputerIcon
-                  )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Play vs. Computer' && { fontSize: 20, fontWeight: '600' }]}>Play vs. Computer</Text>
-                </View>
-              </View>
-              {selectedMode === 'Play vs. Computer' && (
-                <>
-                  <Text style={styles.cardDetail}>Challenge the AI!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
-                </>
-              )}
-            </Card>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => handleSelectMode('Pass & Play')}
-            disabled={selectedMode === 'Pass & Play'}
-          >
-            <Card containerStyle={[styles.card, selectedMode === 'Pass & Play' && styles.selectedCard]}>
-              <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
-                  {selectedMode !== 'Pass & Play' && (
-                    ICONS.SwapHorizIcon
-                  )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Pass & Play' && { fontSize: 20, fontWeight: '600' }]}>Pass & Play</Text>
-                </View>
-              </View>
-              {selectedMode === 'Pass & Play' && (
-                <>
-                  <Text style={styles.cardDetail}>Play with someone nearby!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => navigation.navigate('Game')}/>
-                </>
-              )}
-            </Card>
-          </TouchableOpacity>
+          <EloGameCard Elo={1342} League='Gold League' />
+          <OnlineGameCard />
+          <FriendsGameCard />
+          <ComputerGameCard />
+          <PassAndPlayGameCard />
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -173,22 +195,22 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLORS.headerBackGroundColor,
   },
   headerText: {
-    color: 'white',
-    fontSize: 20,
+    color: '#FFF',
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    flex: 1, // Makes the title take up the remaining space
+    flex: 1,
   },
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#312F2C',
-    justifyContent: 'space-between',
-    zIndex: 2, // Ensure the header is on top of the overlay
-  },
-  backButton: {
+    paddingRight: 16,
+    paddingLeft: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    backgroundColor: APP_COLORS.headerBackGroundColor,
     zIndex: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   overlaySquare: {
     position: 'absolute',
@@ -212,7 +234,7 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 15,
-    borderColor: '#54504B',
+    borderColor: APP_COLORS.cardBackgroundColor,
     backgroundColor: APP_COLORS.darkGrey,
     padding: 16,
     marginBottom: 8,
@@ -233,22 +255,14 @@ const styles = StyleSheet.create({
   selectedCard: {
     backgroundColor: APP_COLORS.backgroundColorTransparent, // Slightly different background color when selected
   },
-  cardDetails: {
+  cardDetailContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  cardSubtitle: {
-    color: 'gold',
-    fontSize: 18,
-  },
-  cardDetail: {
-    color: 'white',
-    fontSize: 18,
-    marginTop: 10,
+    marginTop: 8,
   },
   startButton: {
-    marginTop: 10,
+    marginTop: 8,
     backgroundColor: '#6B9C41',
     borderRadius: 5,
   },
