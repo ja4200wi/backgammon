@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
 import { Card, Icon, Button } from '@rneui/themed';
-import { APP_COLORS, DIMENSIONS } from '../utils/constants';
+import { APP_COLORS, DIMENSIONS, ICONS } from '../utils/constants';
+import Friends from '../images/group.svg'
 
 type GameMode = 'Elo Game' | 'Friendly Game' | 'Play a Friend' | 'Play vs. Computer' | 'Pass & Play';
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
   const [selectedMode, setSelectedMode] = useState<GameMode>('Elo Game'); // Default selection
   const [openTooltip, setOpenTooltip] = useState<GameMode | null>();
+  
 
   const handleSelectMode = (mode: GameMode) => {
     if (selectedMode !== mode) {
@@ -53,13 +55,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <View style={styles.cardHeader}>
                 <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
                   {selectedMode !== 'Elo Game' && (
-                    <Icon
-                      name="emoji-events"
-                      type="material"
-                      color="#597FD1"
-                      size={24}
-                      style={{ marginRight: 16, }}
-                    />
+                    ICONS.TrophyIcon
                   )}
                   <Text style={[styles.cardTitle, selectedMode !== 'Elo Game' && { fontSize: 20, fontWeight: '600' }]}>
                     Elo Game
@@ -86,13 +82,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <View style={styles.cardHeader}>
                 <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
                   {selectedMode !== 'Friendly Game' && (
-                    <Icon
-                      name="wifi"
-                      type="material"
-                      color="#6B9C41"
-                      size={24}
-                      style={{ marginRight: 16, }}
-                    />
+                    ICONS.WifiIcon
                   )}
                   <Text style={[styles.cardTitle, selectedMode !== 'Friendly Game' && { fontSize: 20, fontWeight: '600' }]}>Friendly Game</Text>
                 </View>
@@ -114,7 +104,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <View style={styles.cardHeader}>
                 <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
                   {selectedMode !== 'Play a Friend' && (
-                    <Icon name="people" type="material" color="#597FD1" size={24} style={{ marginRight: 16 }} />
+                    ICONS.PeopleIcon
                   )}
                   <Text style={[styles.cardTitle, selectedMode !== 'Play a Friend' && { fontSize: 20, fontWeight: '600' }]}>Play a Friend</Text>
                 </View>
@@ -136,13 +126,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <View style={styles.cardHeader}>
                 <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
                   {selectedMode !== 'Play vs. Computer' && (
-                    <Icon
-                      name="computer"
-                      type="material"
-                      color="#7E7E7E"
-                      size={24}
-                      style={{ marginRight: 16, }}
-                    />
+                    ICONS.ComputerIcon
                   )}
                   <Text style={[styles.cardTitle, selectedMode !== 'Play vs. Computer' && { fontSize: 20, fontWeight: '600' }]}>Play vs. Computer</Text>
                 </View>
@@ -164,13 +148,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <View style={styles.cardHeader}>
                 <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
                   {selectedMode !== 'Pass & Play' && (
-                    <Icon
-                      name="swap-horiz"
-                      type="material"
-                      color="#C7D159"
-                      size={24}
-                      style={{ marginRight: 16, }}
-                    />
+                    ICONS.SwapHorizIcon
                   )}
                   <Text style={[styles.cardTitle, selectedMode !== 'Pass & Play' && { fontSize: 20, fontWeight: '600' }]}>Pass & Play</Text>
                 </View>
@@ -235,7 +213,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 15,
     borderColor: '#54504B',
-    backgroundColor: '#262522',
+    backgroundColor: APP_COLORS.darkGrey,
     padding: 16,
     marginBottom: 8,
     zIndex: 3, // Ensure cards are above the overlay and other content

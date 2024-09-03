@@ -23,12 +23,16 @@ export const GLOBAL_STYLES = StyleSheet.create({
       color: '#FFF',
       fontSize: 24,
       fontWeight: '500',
-      flex: 1,
       //fontFamily: 'Roboto-Regular',
     },
     lineItems: {
       color: '#FFF',
-      fontSize: 16,
-    }
+      fontSize: 18,
+    },
+    rowLineItems: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingBottom: 8,
+    },
     // Add other styles as needed
   });

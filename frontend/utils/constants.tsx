@@ -1,4 +1,7 @@
 import { Dimensions } from "react-native";
+import {Icon} from '@rneui/themed';
+import Friends from '../images/group.svg'
+import React from 'react';
 
 export const APP_COLORS = {
     backgroundColor: '#302E2B',
@@ -6,7 +9,7 @@ export const APP_COLORS = {
     headerBackGroundColor: '#312F2C',
     cardBackgroundColor: '#54504B',
     iconGrey: '#B5B6B5',
-    unselectedCard: '#262522',
+    darkGrey: '#262522',
     standardGrey: '#C7C7C7',
     buttonBlueFontColor: '#007AFF',
     buttonDisabledFontColor: '#808080',
@@ -36,6 +39,24 @@ export const APP_COLORS = {
     BACKGROUND = '#dda15e',
     PRISON = '#bc6c25' ,
   }
+
+  export enum GAME_TYPE {
+    ELO = 'Elo',
+    FRIENDLY = 'Friendly',
+    FRIENDLIST = 'FriendList',
+    COMPUTER = 'Computer',
+    PASSPLAY = 'PassandPlay'
+  }
+
+export const ICONS = {
+  TrophyIcon: <Icon name="emoji-events" type="material" color="#597FD1" size={24} style={{ marginRight: 16 }} />,
+  WifiIcon: <Icon name="wifi" type="material" color="#6B9C41" size={24} style={{ marginRight: 16 }} />,
+  PeopleIcon: <Friends width={24} height={24} style={{marginRight: 16}} />,
+  ComputerIcon: <Icon name="computer" type="material" color="#7E7E7E" size={24} style={{ marginRight: 16 }} />,
+  SwapHorizIcon: <Icon name="swap-horiz" type="material" color="#C7D159" size={24} style={{ marginRight: 16 }} />,
+  BackIcon: <Icon name="arrow-back" type="material" color={APP_COLORS.iconGrey} size={28} />,
+};
+
   
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;

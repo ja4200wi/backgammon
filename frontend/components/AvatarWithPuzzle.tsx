@@ -4,7 +4,7 @@ import { Avatar } from 'react-native-elements'; // Ensure this is installed and 
 import Puzzle from '../images/puzzle.svg';
 import { APP_COLORS } from '../utils/constants';
 
-const AvatarWithFlag = () => {
+const AvatarWithPuzzle = () => {
   return (
     <View style={styles.container}>
       <Avatar
@@ -48,4 +48,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AvatarWithFlag;
+export default AvatarWithPuzzle;
