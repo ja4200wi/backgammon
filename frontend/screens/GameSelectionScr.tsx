@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Imag
 import { Card, Icon, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
+import HeaderSecondary from '../components/HeaderSecondary';
 
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
@@ -12,20 +13,6 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       setSelectedMode(mode);
     }
   };
-  const handleBackPress = () => {
-    navigation.goBack(); // Navigate back to the previous screen
-  };
-
-  function HeaderBackButton() {
-    return(
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBackPress} >
-          <Icon name="arrow-back" type="material" color={APP_COLORS.iconGrey} size={28} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Select Game Mode</Text>
-      </View>
-    )
-  }
   function EloGameCard({League,Elo}: {League:string,Elo:number}){
     return(
       <TouchableOpacity
@@ -169,7 +156,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       {/* Back Button */}
-      <HeaderBackButton />
+      <HeaderSecondary navigation={navigation} headline='Select Game Mode' />
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}

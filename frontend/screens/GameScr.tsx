@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, StyleSheet, Alert, SafeAreaView} from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/elements';
 import Board from '../components/Board';
@@ -12,6 +12,7 @@ import {
   BOARD_COLORS,
 } from '../utils/constants';
 import {distributeCheckersGame} from '../gameLogic/gameUtils';
+import HeaderSecondary from '../components/HeaderSecondary';
 
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
@@ -78,12 +79,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: APP_COLORS.backgroundColor }]}>
-      <HeaderBackButton
-        onPress={() => navigation.goBack()}
-        tintColor="white" // You can customize the color if needed
-        style={{alignSelf: 'flex-start'}}
-      />
+    <SafeAreaView style={styles.safeAreaContainer}>
+      <HeaderSecondary navigation={navigation} headline='Press & Play' />
       <Board
         colors={{
           backgroundColor: BOARD_COLORS.BACKGROUND,
@@ -112,17 +109,21 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
         onUndoMove={undoMove}
         legalMovesFrom={legalMovesFrom}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 // Styling
 const styles = StyleSheet.create({
+  safeAreaContainer: {
+    flex: 1,
+    backgroundColor: APP_COLORS.headerBackGroundColor,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 40, // Add some padding to avoid overlap with the back button
   },
 });
 
