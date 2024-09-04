@@ -13,6 +13,7 @@ import {
 } from '../utils/constants';
 import {distributeCheckersGame} from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/HeaderSecondary';
+import GameNavBar from '../components/GameNavBar';
 
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
@@ -117,6 +118,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
         firstRoll={firstRoll}
       />
       </View>
+      <GameNavBar navigation={navigation} />
     </SafeAreaView>
   );
 };
