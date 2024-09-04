@@ -558,7 +558,6 @@ export class Game {
   }
 
   public getMovesLeft(): number[] {
-    console.log(this.movesLeft)
     return this.movesLeft;
   }
 

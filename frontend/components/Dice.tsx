@@ -41,7 +41,6 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
       animateStartingSequence();
     } else {
       animateDice(); // Normal animation when not in starting sequence
-      console.log(diceOne,diceTwo)
     }
   }, [diceOne, diceTwo]);
 
@@ -85,7 +84,6 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
 
   const animateDice = () => {
     if(!firstRoll) {
-      console.log('rendering animated dice')
     let intervalId: NodeJS.Timeout | null = null;
     const randomDiceSequence = [1, 2, 3, 4, 5, 6];
     let currentIndex = 0;
@@ -131,7 +129,6 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
     }, 500); // Normal dice rolling lasts for 500ms
   } else {
     if(diceOne && diceTwo){
-      console.log('rendering normal dice')
       if (color === DICE_COLORS.WHITE) {
         setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
       } else {

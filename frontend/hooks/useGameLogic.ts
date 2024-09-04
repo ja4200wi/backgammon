@@ -27,22 +27,18 @@ export const useGameLogic = () => {
   };
 
   const runGame = async (currentGame: Game) => {
-    console.log('im in runGame',isStartingPhase,firstRoll)
     if(isStartingPhase) {
-      console.log('CHANGING')
       if(currentGame.getDice()[0] > currentGame.getDice()[1]){
         currentGame.setPlayer(PLAYER_COLORS.WHITE)
         setDice(currentGame.getDice())
         setTimeout(() => {setStartingPhase(false)},2250)
         setMoveIsOver(false)
-        console.log('done with waiting')
       }
       else {
         currentGame.setPlayer(PLAYER_COLORS.BLACK)
         setDice(currentGame.getDice())
         setTimeout(() => {setStartingPhase(false)},2250)
         setMoveIsOver(false)
-        console.log('done with waiting')
       }
     }
     const distances = currentGame.getDistances();
@@ -66,7 +62,6 @@ export const useGameLogic = () => {
   };
 
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
-    console.log('im in movechecker')
     if (game) {
       runGame(game);
       const success = game.moveStone(sourceIndex, targetIndex);
@@ -97,7 +92,6 @@ export const useGameLogic = () => {
     setScores([distWhite, distBlack]);
   };
   const updateMoveIsOver = () => {
-    console.log('im in updatemoveisover')
     if(firstRoll) {
       setFirstRoll(false)
     };
