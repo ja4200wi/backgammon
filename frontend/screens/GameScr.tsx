@@ -85,8 +85,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
       <Board
         colors={{
           backgroundColor: BOARD_COLORS.BACKGROUND,
-          spikeLightColor: BOARD_COLORS.SPIKELIGHT,
-          spikeDarkColor: BOARD_COLORS.SPIKEDARK,
+          spikeLightColor: BOARD_COLORS.SPIKEDARK,
+          spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
           prisonColor: BOARD_COLORS.PRISON,
         }}
         width={DIMENSIONS.boardWidth}

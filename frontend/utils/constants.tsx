@@ -66,8 +66,8 @@ export const APP_COLORS = {
     BLACK = 'black',
   }
   export enum BOARD_COLORS {
-    SPIKELIGHT = '#283618',
-    SPIKEDARK = '#fefae0',
+    SPIKEDARK = '#283618',
+    SPIKELIGHT = '#fefae0',
     BACKGROUND = '#dda15e',
     PRISON = '#bc6c25' ,
   }
