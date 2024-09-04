@@ -38,6 +38,8 @@ interface BoardProps {
   onAcceptMove: () => void;
   onUndoMove: () => void;
   legalMovesFrom: (sourceIndex: number) => number[];
+  isStartingPhase: boolean;
+  firstRoll: boolean;
 }
 
 const Board: React.FC<BoardProps> = ({
@@ -55,6 +57,8 @@ const Board: React.FC<BoardProps> = ({
   noMovesLeft,
   hasDoneMove,
   legalMovesFrom,
+  isStartingPhase,
+  firstRoll,
 }) => {
   const initialSpikes = Array.from({length: 26}, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
@@ -188,6 +192,28 @@ const Board: React.FC<BoardProps> = ({
     }
   }, [selectedSource]);
 
+  function ButtonView() {
+    return(
+      <View
+                style={{
+                  height: DIMENSIONS.spikeHeight,
+                  justifyContent: 'space-evenly',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <AcceptMoveButton
+                  onPress={handleAcceptMovePress}
+                  disabled={noMovesLeft}
+                />
+                <UndoMoveButton
+                  onPress={handleUndoMovePress}
+                  disabled={hasDoneMove}
+                />
+                <DoubleButton onPress={() => {}} disabled={true} />
+              </View>
+    )
+  }
+
   const SixSpikes = (startIndex: number) => (
     <>
       {spikes.slice(startIndex, startIndex + 6).map((spike, idx) => (
@@ -208,8 +234,8 @@ const Board: React.FC<BoardProps> = ({
   return (
     <View>
       <View style={styles.row}>
-        <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-        <Home onPress={handleHomePress} count={homeCount[1]} player={PLAYER_COLORS.BLACK} />
+       <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
+       <Home onPress={handleHomePress} count={homeCount[1]} player={PLAYER_COLORS.BLACK}/>
       </View>
       <View
         style={[
@@ -220,34 +246,33 @@ const Board: React.FC<BoardProps> = ({
             height: height,
           },
         ]}>
-        <View style={[styles.boardHalf]}>
-          <View style={[styles.reverse]}>{SixSpikes(7)}</View>
-          <View
-            style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
-            {dice.color === DICE_COLORS.WHITE ? (
-              <Dice
+          {isStartingPhase && (
+            <View style={styles.TopDice}>
+            <Dice
                 diceOne={dice.diceOne}
                 diceTwo={dice.diceTwo}
                 color={dice.color}
+                startingSeq={isStartingPhase}
+                firstRoll={firstRoll}
               />
-            ) : (
-              <View
-                style={{
-                  height: DIMENSIONS.spikeHeight,
-                  justifyContent: 'space-evenly',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
-                <AcceptMoveButton
-                  onPress={handleAcceptMovePress}
-                  disabled={noMovesLeft}
+          </View>
+          )}
+        <View style={[styles.boardHalf]}>
+          <View style={[styles.reverse]}>{SixSpikes(7)}</View>
+          <View
+            style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
+            {!isStartingPhase && (
+              dice.color === DICE_COLORS.WHITE ? (
+                <Dice
+                  diceOne={dice.diceOne}
+                  diceTwo={dice.diceTwo}
+                  color={dice.color}
+                  startingSeq={isStartingPhase}
+                  firstRoll={firstRoll}
                 />
-                <UndoMoveButton
-                  onPress={handleUndoMovePress}
-                  disabled={hasDoneMove}
-                />
-                <DoubleButton onPress={() => {}} disabled={true} />
-              </View>
+              ) : (
+                <ButtonView />
+              )
             )}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
@@ -263,30 +288,18 @@ const Board: React.FC<BoardProps> = ({
           <View style={[styles.reverse]}>{SixSpikes(1)}</View>
           <View
             style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
-            {dice.color === DICE_COLORS.BLACK ? (
-              <Dice
-                diceOne={dice.diceOne}
-                diceTwo={dice.diceTwo}
-                color={dice.color}
-              />
-            ) : (
-              <View
-                style={{
-                  height: DIMENSIONS.spikeHeight,
-                  justifyContent: 'space-evenly',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
-                <AcceptMoveButton
-                  onPress={handleAcceptMovePress}
-                  disabled={noMovesLeft}
+            {!isStartingPhase && (
+              dice.color === DICE_COLORS.BLACK && !isStartingPhase ? (
+                <Dice
+                  diceOne={dice.diceOne}
+                  diceTwo={dice.diceTwo}
+                  color={dice.color}
+                  startingSeq={isStartingPhase}
+                  firstRoll={firstRoll}
                 />
-                <UndoMoveButton
-                  onPress={handleUndoMovePress}
-                  disabled={hasDoneMove}
-                />
-                <DoubleButton onPress={() => {}} disabled={true} />
-              </View>
+              ) : (
+                <ButtonView />
+              )
             )}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
@@ -322,6 +335,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  TopDice: {
+    position: 'absolute',
+    alignItems: 'center',
+    zIndex: 100,
+    top: '50%', // Vertically center the dice
+    left: '50%', // Horizontally center the dice
+    transform: [{ translateX: -125 }, { translateY: -30 }], // Adjust position to the center of the element
+  }
 });
 
 export default Board;

@@ -42,6 +42,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
     undoMoveButtonState,
     undoMove,
     legalMovesFrom,
+    isStartingPhase,
+    firstRoll,
   } = useGameLogic();
 
   useEffect(() => {
@@ -102,6 +104,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
             game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
               ? DICE_COLORS.WHITE
               : DICE_COLORS.BLACK,
+            startingSeq: isStartingPhase,
+            firstRoll: firstRoll,
         }}
         onMoveChecker={handleMoveChecker}
         noMovesLeft={hasMovesLeft(game!)}
@@ -109,6 +113,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
         hasDoneMove={undoMoveButtonState(game!)}
         onUndoMove={undoMove}
         legalMovesFrom={legalMovesFrom}
+        isStartingPhase={isStartingPhase}
+        firstRoll={firstRoll}
       />
       </View>
     </SafeAreaView>

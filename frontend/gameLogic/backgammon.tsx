@@ -36,8 +36,9 @@ export class Game {
     } else {
       this.currentPlayer = PLAYER_COLORS.BLACK;
     }
-    this.dice = [1, 1];
-    this.movesLeft = [];
+    let tempDice = this.rollFirstDice();
+    this.dice = tempDice;
+    this.movesLeft = tempDice;
     this.lastMoves = [];
   }
 
@@ -494,6 +495,12 @@ export class Game {
     return this.dice;
   }
 
+  private rollFirstDice(): [number,number] {
+    let tempDice = this.rollDice()
+    while(tempDice[0] === tempDice[1]) {tempDice = this.rollDice()}
+    return tempDice
+  }
+
   private getRandomDieRoll(): number {
     return Math.floor(Math.random() * 6) + 1;
   }
@@ -543,12 +550,15 @@ export class Game {
       distWhite: this.calculateTotalDistance(PLAYER_COLORS.WHITE),
     };
   }
-
+  public setPlayer(player: PLAYER_COLORS) {
+    this.currentPlayer = player
+  }
   public getDice(): [number, number] {
     return this.dice;
   }
 
   public getMovesLeft(): number[] {
+    console.log(this.movesLeft)
     return this.movesLeft;
   }
 
@@ -567,6 +577,9 @@ export class Game {
   }
   public getLastMoves() {
     return this.lastMoves;
+  }
+  public rollNewDice() {
+    this.rollDice()
   }
   public whoIsWinner(): string {
     if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES)
