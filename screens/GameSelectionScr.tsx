@@ -28,12 +28,16 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
   const [openTooltip, setOpenTooltip] = useState<GameMode | null>();
 
   const createSession = async () => {
-    await client.models.Session.create({
+    const { errors, data: game } = await client.models.Session.create({
       playerOneID: '1',
       playerTwoID: '2',
       gameState:
         '[{ index: 0, color: PLAYER_COLORS.WHITE, count: 2 },{ index: 11, color: PLAYER_COLORS.WHITE, count: 5 },{ index: 16, color: PLAYER_COLORS.WHITE, count: 3 },{ index: 18, color: PLAYER_COLORS.WHITE, count: 5 },{ index: 23, color: PLAYER_COLORS.BLACK, count: 2 },{ index: 12, color: PLAYER_COLORS.BLACK, count: 5 },{ index: 7, color: PLAYER_COLORS.BLACK, count: 3 },{ index: 5, color: PLAYER_COLORS.BLACK, count: 5 },]',
     });
+    if (game?.id !== null) {
+      console.log(game?.id);
+      navigation.navigate('PlayFriend', { gameId: game?.id });
+    }
   };
 
   const handleSelectMode = (mode: GameMode) => {
