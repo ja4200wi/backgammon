@@ -9,9 +9,9 @@ interface PipCountProps {
 const screenWidth = Dimensions.get('window').width;
 const PipCount: React.FC<PipCountProps> = ({color, count}) => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.textstyle}>
-        {color}: {count}
+    <View style={[styles.container,{backgroundColor: color === PLAYER_COLORS.WHITE ? '#FFF' : APP_COLORS.darkGrey, borderColor: color === PLAYER_COLORS.WHITE ? '#000' : '#FFF'}]}>
+      <Text style={[styles.textstyle, {color: color === PLAYER_COLORS.WHITE ? '#000' : '#FFF'}]}>
+        {count}
       </Text>
     </View>
   );
@@ -19,18 +19,18 @@ const PipCount: React.FC<PipCountProps> = ({color, count}) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: APP_COLORS.standardGrey,
     borderRadius: 20,
+    borderWidth: 2,
     marginVertical: 5,
-    height: 30,
-    width: 150,
+    height: 34,
+    width: 70,
     alignItems: 'center',
     justifyContent: 'center',
   },
   textstyle: {
     color: 'black',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 16,
   },
 });
 

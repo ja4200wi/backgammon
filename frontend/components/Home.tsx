@@ -32,6 +32,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: APP_COLORS.iconGrey,
+    borderColor: APP_COLORS.cardBackgroundColor,
     borderRadius: 20,
     marginVertical: 5,
     height: 34,

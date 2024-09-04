@@ -81,6 +81,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
       <HeaderSecondary navigation={navigation} headline='Press & Play' />
+      <View style={styles.boardContainer}>
       <Board
         colors={{
           backgroundColor: BOARD_COLORS.BACKGROUND,
@@ -109,6 +110,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
         onUndoMove={undoMove}
         legalMovesFrom={legalMovesFrom}
       />
+      </View>
     </SafeAreaView>
   );
 };
@@ -120,11 +122,15 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLORS.headerBackGroundColor,
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
+  boardContainer: {
+    backgroundColor: APP_COLORS.cardBackgroundColor, 
+    flexGrow: 1,
+    width: DIMENSIONS.screenWidth,
     justifyContent: 'center',
     alignItems: 'center',
-  },
+    paddingRight: 16,
+    paddingLeft: 16,
+  }
 });
 
 export default GameScr;
