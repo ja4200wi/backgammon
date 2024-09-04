@@ -1,11 +1,10 @@
-import {Position} from '../components/Board';
-import {PLAYER_COLORS} from '../utils/constants';
+import { PLAYER_COLORS } from '../utils/constants';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
-const PRISON_INDEX = {WHITE: 0, BLACK: 25};
+const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
 const BEARING_OFF_INDEX = 100;
 const TOTAL_STONES = 15;
-const HOME_AREA_START_INDEX = {WHITE: 19, BLACK: 6};
+const HOME_AREA_START_INDEX = { WHITE: 19, BLACK: 6 };
 const HOME_AREA_SIZE = 6;
 
 interface Move {
@@ -81,7 +80,7 @@ export class Game {
   }
 
   private createStones(count: number, color: PLAYER_COLORS): Stone[] {
-    return Array.from({length: count}, () => new Stone(color));
+    return Array.from({ length: count }, () => new Stone(color));
   }
 
   private maximizesSteps(from: number, to: number): boolean {
@@ -97,9 +96,9 @@ export class Game {
     if (maxDiceUsable === 1) {
       // if only one move possible, ensure highest is done, which is still feasible
       const maxStepsFeasible = Math.max(
-        ...this.getAllPossibleMoves(this.currentPlayer).map(move =>
-          Math.abs(move.from - move.to),
-        ),
+        ...this.getAllPossibleMoves(this.currentPlayer).map((move) =>
+          Math.abs(move.from - move.to)
+        )
       );
       const steps = Math.abs(from - to);
       if (steps === maxStepsFeasible) return true;
@@ -122,11 +121,11 @@ export class Game {
   }
 
   private deepCopyBoard(board: (Stone[] | null)[]): (Stone[] | null)[] {
-    return board.map(column => {
+    return board.map((column) => {
       if (column === null) {
         return null;
       } else {
-        return column.map(stone => ({
+        return column.map((stone) => ({
           ...stone,
         }));
       }
@@ -197,8 +196,8 @@ export class Game {
   }
 
   private safeMoves() {
-    const currentBoard = this.board.map(position =>
-      position ? [...position] : null,
+    const currentBoard = this.board.map((position) =>
+      position ? [...position] : null
     );
     const currentDice = [...this.movesLeft];
     this.lastMoves.push([currentBoard, currentDice]);
@@ -208,7 +207,7 @@ export class Game {
 
     const [board, movesLeft] = this.lastMoves.pop()!;
 
-    this.board = board.map(position => (position ? [...position] : null));
+    this.board = board.map((position) => (position ? [...position] : null));
 
     this.movesLeft = [...movesLeft];
   }
@@ -319,7 +318,7 @@ export class Game {
       ) {
         const feasibleTargets = this.getLegalMovesFrom(i);
         for (const to of feasibleTargets) {
-          moves.push({from: i, to});
+          moves.push({ from: i, to });
         }
       }
     }
@@ -329,13 +328,13 @@ export class Game {
   private hasPrisonChecker(): boolean {
     return this.board[
       this.currentPlayer === PLAYER_COLORS.WHITE ? 0 : 25
-    ]?.some(stone => stone.color === this.currentPlayer)!;
+    ]?.some((stone) => stone.color === this.currentPlayer)!;
   }
 
   private isValidMove(
     from: number,
     to: number,
-    board: (Stone[] | null)[],
+    board: (Stone[] | null)[]
   ): boolean {
     const currentPlayer = this.currentPlayer;
     let steps =
@@ -393,7 +392,7 @@ export class Game {
       // check if from is included in moves left
       if (!this.movesLeft.includes(steps)) {
         //check if there is a dice larger then the steps
-        if (!this.movesLeft.some(item => item > steps)) {
+        if (!this.movesLeft.some((item) => item > steps)) {
           ('larger checker found');
           return false;
         } else {
@@ -439,7 +438,7 @@ export class Game {
       const stonesAtPosition = this.board[i];
       if (stonesAtPosition) {
         stoneCount += stonesAtPosition.filter(
-          stone => stone.color === color,
+          (stone) => stone.color === color
         ).length;
       }
     }
@@ -480,7 +479,7 @@ export class Game {
       return 0;
     }
     return (
-      this.board[index]?.filter(stone => stone.color === color).length || 0
+      this.board[index]?.filter((stone) => stone.color === color).length || 0
     );
   }
 
@@ -524,20 +523,20 @@ export class Game {
     color: PLAYER_COLORS;
     count: number;
   }[] {
-    const positions: {index: number; color: PLAYER_COLORS; count: number}[] =
+    const positions: { index: number; color: PLAYER_COLORS; count: number }[] =
       [];
     for (let i = 0; i < this.board.length; i++) {
       const stones = this.board[i];
       if (stones && stones.length > 0) {
         const color = stones[0].color;
         const count = stones.length;
-        positions.push({index: i, color, count});
+        positions.push({ index: i, color, count });
       }
     }
     return positions;
   }
 
-  public getDistances(): {distBlack: number; distWhite: number} {
+  public getDistances(): { distBlack: number; distWhite: number } {
     return {
       distBlack: this.calculateTotalDistance(PLAYER_COLORS.BLACK),
       distWhite: this.calculateTotalDistance(PLAYER_COLORS.WHITE),
@@ -593,11 +592,11 @@ export class Game {
     const movesLeftCopy = [...this.movesLeft];
 
     const lastMovesCopy = this.lastMoves.map(([boardState, diceState]) => {
-      const boardStateCopy = boardState.map(column => {
+      const boardStateCopy = boardState.map((column) => {
         if (column === null) {
           return null;
         } else {
-          return column.map(stone => new Stone(stone.color));
+          return column.map((stone) => new Stone(stone.color));
         }
       });
       const diceStateCopy = [...diceState];

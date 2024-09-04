@@ -1,13 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, ImageBackground } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  StatusBar,
+  SafeAreaView,
+  TouchableOpacity,
+  ImageBackground,
+} from 'react-native';
 import { Card, Icon, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS } from '../utils/constants';
 
-type GameMode = 'Elo Game' | 'Friendly Game' | 'Play a Friend' | 'Play vs. Computer' | 'Pass & Play';
+import type { Schema } from '../amplify/data/resource';
+import { generateClient } from 'aws-amplify/data';
+
+const client = generateClient<Schema>();
+
+type GameMode =
+  | 'Elo Game'
+  | 'Friendly Game'
+  | 'Play a Friend'
+  | 'Play vs. Computer'
+  | 'Pass & Play';
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
   const [selectedMode, setSelectedMode] = useState<GameMode>('Elo Game'); // Default selection
   const [openTooltip, setOpenTooltip] = useState<GameMode | null>();
+
+  const createSession = async () => {
+    await client.models.Session.create({
+      playerOneID: '1',
+      playerTwoID: '2',
+      gameState:
+        '[{ index: 0, color: PLAYER_COLORS.WHITE, count: 2 },{ index: 11, color: PLAYER_COLORS.WHITE, count: 5 },{ index: 16, color: PLAYER_COLORS.WHITE, count: 3 },{ index: 18, color: PLAYER_COLORS.WHITE, count: 5 },{ index: 23, color: PLAYER_COLORS.BLACK, count: 2 },{ index: 12, color: PLAYER_COLORS.BLACK, count: 5 },{ index: 7, color: PLAYER_COLORS.BLACK, count: 3 },{ index: 5, color: PLAYER_COLORS.BLACK, count: 5 },]',
+    });
+  };
 
   const handleSelectMode = (mode: GameMode) => {
     if (selectedMode !== mode) {
@@ -17,9 +44,9 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 
   const handleTooltipToggle = (key: GameMode) => {
     if (openTooltip !== key) {
-        setOpenTooltip(key);
+      setOpenTooltip(key);
     } else if (openTooltip === key) {
-        setOpenTooltip(null)
+      setOpenTooltip(null);
     }
   };
 
@@ -29,11 +56,16 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle='light-content' />
       {/* Back Button */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-          <Icon name="arrow-back" type="material" color={APP_COLORS.iconGrey} size={28} />
+          <Icon
+            name='arrow-back'
+            type='material'
+            color={APP_COLORS.iconGrey}
+            size={28}
+          />
         </TouchableOpacity>
         <Text style={styles.headerText}>Select Game Mode</Text>
       </View>
@@ -49,19 +81,34 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
             onPress={() => handleSelectMode('Elo Game')}
             disabled={selectedMode === 'Elo Game'}
           >
-            <Card containerStyle={[styles.card, selectedMode === 'Elo Game' && styles.selectedCard]}>
+            <Card
+              containerStyle={[
+                styles.card,
+                selectedMode === 'Elo Game' && styles.selectedCard,
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                <View
+                  style={{ flexDirection: 'row', alignContent: 'flex-start' }}
+                >
                   {selectedMode !== 'Elo Game' && (
                     <Icon
-                      name="emoji-events"
-                      type="material"
-                      color="#597FD1"
+                      name='emoji-events'
+                      type='material'
+                      color='#597FD1'
                       size={24}
-                      style={{ marginRight: 16, }}
+                      style={{ marginRight: 16 }}
                     />
                   )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Elo Game' && { fontSize: 20, fontWeight: '600' }]}>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      selectedMode !== 'Elo Game' && {
+                        fontSize: 20,
+                        fontWeight: '600',
+                      },
+                    ]}
+                  >
                     Elo Game
                   </Text>
                 </View>
@@ -72,7 +119,11 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
                     <Text style={styles.cardSubtitle}>Gold League</Text>
                     <Text style={styles.cardDetail}>1023 GP</Text>
                   </View>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                  <Button
+                    title='Start Game'
+                    buttonStyle={styles.startButton}
+                    onPress={() => console.log('Start Game')}
+                  />
                 </>
               )}
             </Card>
@@ -82,25 +133,46 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
             onPress={() => handleSelectMode('Friendly Game')}
             disabled={selectedMode === 'Friendly Game'}
           >
-            <Card containerStyle={[styles.card, selectedMode === 'Friendly Game' && styles.selectedCard]}>
+            <Card
+              containerStyle={[
+                styles.card,
+                selectedMode === 'Friendly Game' && styles.selectedCard,
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                <View
+                  style={{ flexDirection: 'row', alignContent: 'flex-start' }}
+                >
                   {selectedMode !== 'Friendly Game' && (
                     <Icon
-                      name="wifi"
-                      type="material"
-                      color="#6B9C41"
+                      name='wifi'
+                      type='material'
+                      color='#6B9C41'
                       size={24}
-                      style={{ marginRight: 16, }}
+                      style={{ marginRight: 16 }}
                     />
                   )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Friendly Game' && { fontSize: 20, fontWeight: '600' }]}>Friendly Game</Text>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      selectedMode !== 'Friendly Game' && {
+                        fontSize: 20,
+                        fontWeight: '600',
+                      },
+                    ]}
+                  >
+                    Friendly Game
+                  </Text>
                 </View>
               </View>
               {selectedMode === 'Friendly Game' && (
                 <>
                   <Text style={styles.cardDetail}>No Rankings, Just Fun!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                  <Button
+                    title='Start Game'
+                    buttonStyle={styles.startButton}
+                    onPress={() => console.log('Start Game')}
+                  />
                 </>
               )}
             </Card>
@@ -110,19 +182,48 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
             onPress={() => handleSelectMode('Play a Friend')}
             disabled={selectedMode === 'Play a Friend'}
           >
-            <Card containerStyle={[styles.card, selectedMode === 'Play a Friend' && styles.selectedCard]}>
+            <Card
+              containerStyle={[
+                styles.card,
+                selectedMode === 'Play a Friend' && styles.selectedCard,
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                <View
+                  style={{ flexDirection: 'row', alignContent: 'flex-start' }}
+                >
                   {selectedMode !== 'Play a Friend' && (
-                    <Icon name="people" type="material" color="#597FD1" size={24} style={{ marginRight: 16 }} />
+                    <Icon
+                      name='people'
+                      type='material'
+                      color='#597FD1'
+                      size={24}
+                      style={{ marginRight: 16 }}
+                    />
                   )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Play a Friend' && { fontSize: 20, fontWeight: '600' }]}>Play a Friend</Text>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      selectedMode !== 'Play a Friend' && {
+                        fontSize: 20,
+                        fontWeight: '600',
+                      },
+                    ]}
+                  >
+                    Play a Friend
+                  </Text>
                 </View>
               </View>
               {selectedMode === 'Play a Friend' && (
                 <>
-                  <Text style={styles.cardDetail}>Invite a friend to play!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                  <Text style={styles.cardDetail}>
+                    Invite a friend to play!
+                  </Text>
+                  <Button
+                    title='Start Game'
+                    buttonStyle={styles.startButton}
+                    onPress={() => createSession()}
+                  />
                 </>
               )}
             </Card>
@@ -132,25 +233,46 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
             onPress={() => handleSelectMode('Play vs. Computer')}
             disabled={selectedMode === 'Play vs. Computer'}
           >
-            <Card containerStyle={[styles.card, selectedMode === 'Play vs. Computer' && styles.selectedCard]}>
+            <Card
+              containerStyle={[
+                styles.card,
+                selectedMode === 'Play vs. Computer' && styles.selectedCard,
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                <View
+                  style={{ flexDirection: 'row', alignContent: 'flex-start' }}
+                >
                   {selectedMode !== 'Play vs. Computer' && (
                     <Icon
-                      name="computer"
-                      type="material"
-                      color="#7E7E7E"
+                      name='computer'
+                      type='material'
+                      color='#7E7E7E'
                       size={24}
-                      style={{ marginRight: 16, }}
+                      style={{ marginRight: 16 }}
                     />
                   )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Play vs. Computer' && { fontSize: 20, fontWeight: '600' }]}>Play vs. Computer</Text>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      selectedMode !== 'Play vs. Computer' && {
+                        fontSize: 20,
+                        fontWeight: '600',
+                      },
+                    ]}
+                  >
+                    Play vs. Computer
+                  </Text>
                 </View>
               </View>
               {selectedMode === 'Play vs. Computer' && (
                 <>
                   <Text style={styles.cardDetail}>Challenge the AI!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => console.log('Start Game')}/>
+                  <Button
+                    title='Start Game'
+                    buttonStyle={styles.startButton}
+                    onPress={() => console.log('Start Game')}
+                  />
                 </>
               )}
             </Card>
@@ -160,25 +282,48 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
             onPress={() => handleSelectMode('Pass & Play')}
             disabled={selectedMode === 'Pass & Play'}
           >
-            <Card containerStyle={[styles.card, selectedMode === 'Pass & Play' && styles.selectedCard]}>
+            <Card
+              containerStyle={[
+                styles.card,
+                selectedMode === 'Pass & Play' && styles.selectedCard,
+              ]}
+            >
               <View style={styles.cardHeader}>
-                <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
+                <View
+                  style={{ flexDirection: 'row', alignContent: 'flex-start' }}
+                >
                   {selectedMode !== 'Pass & Play' && (
                     <Icon
-                      name="swap-horiz"
-                      type="material"
-                      color="#C7D159"
+                      name='swap-horiz'
+                      type='material'
+                      color='#C7D159'
                       size={24}
-                      style={{ marginRight: 16, }}
+                      style={{ marginRight: 16 }}
                     />
                   )}
-                  <Text style={[styles.cardTitle, selectedMode !== 'Pass & Play' && { fontSize: 20, fontWeight: '600' }]}>Pass & Play</Text>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      selectedMode !== 'Pass & Play' && {
+                        fontSize: 20,
+                        fontWeight: '600',
+                      },
+                    ]}
+                  >
+                    Pass & Play
+                  </Text>
                 </View>
               </View>
               {selectedMode === 'Pass & Play' && (
                 <>
-                  <Text style={styles.cardDetail}>Play with someone nearby!</Text>
-                  <Button title="Start Game" buttonStyle={styles.startButton} onPress={() => navigation.navigate('Game')}/>
+                  <Text style={styles.cardDetail}>
+                    Play with someone nearby!
+                  </Text>
+                  <Button
+                    title='Start Game'
+                    buttonStyle={styles.startButton}
+                    onPress={() => navigation.navigate('Game')}
+                  />
                 </>
               )}
             </Card>
