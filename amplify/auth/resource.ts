@@ -8,4 +8,14 @@ export const auth = defineAuth({
   loginWith: {
     email: true,
   },
+  userAttributes: {
+    nickname: {
+      required: true,
+      mutable: true,
+    },
+    profilePicture: {
+      required: false,
+      mutable: true,
+    },
+  },
 });
