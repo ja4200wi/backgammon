@@ -29,7 +29,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupDefaultBoard();
+      this.setupBearingOffBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -57,15 +57,14 @@ export class Game {
     this.board[2] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[4] = this.createStones(3, PLAYER_COLORS.BLACK);
-    this.board[5] = this.createStones(3, PLAYER_COLORS.BLACK);
+    this.board[5] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[6] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[25] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[25] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[22] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[23] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[24] = this.createStones(2, PLAYER_COLORS.WHITE);
+    this.board[23] = this.createStones(4, PLAYER_COLORS.WHITE);
   }
 
   private setupTestBoard() {
@@ -171,6 +170,7 @@ export class Game {
     this.handleCapture(to);
     this.board[to]?.push(stone);
     this.updateMovesLeft(steps, from, to);
+    console.log('move done:',this.movesLeft)
     return true;
   }
 
@@ -246,7 +246,7 @@ export class Game {
     } else {
       const indexOfMove = this.movesLeft.indexOf(steps);
       if (indexOfMove !== -1) {
-        this.movesLeft.splice(indexOfMove, 1);
+        const temp = this.movesLeft.splice(indexOfMove, 1);
       }
     }
   }
@@ -262,16 +262,17 @@ export class Game {
       playerColor === PLAYER_COLORS.WHITE
         ? PRISON_INDEX['WHITE']
         : PRISON_INDEX['BLACK'];
-
     // If the player has stones in prison, they must move them first
     if (this.hasPrisonChecker()) {
       for (const move of movesLeft) {
         const targetIndex =
           playerColor === PLAYER_COLORS.WHITE ? move : prisonIndex - move;
         if (this.isValidMove(prisonIndex, targetIndex, this.board)) {
+          console.log('there is a legal prison move')
           return true;
         }
       }
+      console.log('no legal prison move')
       return false;
     }
 

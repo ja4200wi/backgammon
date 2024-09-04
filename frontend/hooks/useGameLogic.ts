@@ -43,21 +43,33 @@ export const useGameLogic = () => {
     }
     const distances = currentGame.getDistances();
     updateScores(distances.distBlack, distances.distWhite);
+    //check if game is over
     if (currentGame.isGameOver()) return;
-    checkForLegalMoveHelper(currentGame);
+    //check if there is a legal move
+    checkForLegalMoveHelper(currentGame,true);
+
     if (currentGame.getMovesLeft().length === 0 && moveIsOver && !isStartingPhase) {
       setMoveIsOver(false);
       currentGame.switchPlayer();
       setDice(currentGame.getDice());
-      checkForLegalMoveHelper(currentGame);
+      checkForLegalMoveHelper(currentGame,false);
     }
   };
 
-  const checkForLegalMoveHelper = async (game: Game) => {
+  const checkForLegalMoveHelper = async (game: Game, afterMove: boolean) => {
+    console.log('checking for legal move')
     if (!game.hasLegalMove()) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      game.switchPlayer();
-      setDice(game.getDice());
+      console.log('there is no legal move')
+      if(afterMove) {
+        console.log('switch player, aftermove true')
+        game.switchPlayer();
+        setDice(game.getDice());
+      } else {
+        console.log('switch player, aftermove false')
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        game.switchPlayer();
+        setDice(game.getDice());
+      }
     }
   };
 
@@ -69,6 +81,7 @@ export const useGameLogic = () => {
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       updateHomeCheckers(game!);
+      checkForLegalMoveHelper(game,true);
 
       return success;
     }
