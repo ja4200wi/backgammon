@@ -29,7 +29,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupBearingOffBoard();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -170,7 +170,6 @@ export class Game {
     this.handleCapture(to);
     this.board[to]?.push(stone);
     this.updateMovesLeft(steps, from, to);
-    console.log('move done:',this.movesLeft)
     return true;
   }
 
@@ -268,11 +267,9 @@ export class Game {
         const targetIndex =
           playerColor === PLAYER_COLORS.WHITE ? move : prisonIndex - move;
         if (this.isValidMove(prisonIndex, targetIndex, this.board)) {
-          console.log('there is a legal prison move')
           return true;
         }
       }
-      console.log('no legal prison move')
       return false;
     }
 
