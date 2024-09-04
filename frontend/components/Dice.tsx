@@ -72,16 +72,17 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
     }, 100);
 
     // After 2 seconds, stop rolling and compare dice
-    setTimeout(() => {
+    const timeoutID = setTimeout(() => {
       if (intervalId) {
         clearInterval(intervalId);
       }
 
       // Show the actual dice results (pause for 0.5 seconds)
       setDice([WHITE_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
-    }, 1500); // Animation for 2 seconds
+    }, 1400); 
+    return() => clearTimeout(timeoutID)
+    
   };
-
   const animateDice = () => {
     if(!firstRoll) {
     let intervalId: NodeJS.Timeout | null = null;
@@ -116,7 +117,7 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
     }, 100);
 
     // Stop after 500ms and show final dice
-    setTimeout(() => {
+    const timeoutID = setTimeout(() => {
       if (intervalId) {
         clearInterval(intervalId);
       }
@@ -127,6 +128,7 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
         setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
       }
     }, 500); // Normal dice rolling lasts for 500ms
+    return () => clearTimeout(timeoutID)
   } else {
     if(diceOne && diceTwo){
       if (color === DICE_COLORS.WHITE) {
