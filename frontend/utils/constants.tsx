@@ -93,7 +93,7 @@ export const ICONS = {
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const boardWidth = screenWidth * 0.95;
-const boardHeight = screenHeight * 0.7;
+const boardHeight = screenHeight * 0.65;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 3;
 
