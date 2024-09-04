@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,12 +12,10 @@ import Header from '../components/Header';
 
 import type { Schema } from '../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
+import GameListScreen from '../components/GameList';
+import HeaderSecondary from '../components/HeaderSecondary';
 
 const client = generateClient<Schema>();
-
-interface playFriendInfo {
-  gameId: string;
-}
 
 export default function PlayFriend({
   route,
@@ -26,12 +24,12 @@ export default function PlayFriend({
   route: any;
   navigation: any;
 }) {
-  const gameId = route.params.gameId;
-  console.log(gameId);
+  const gameId = route?.params?.gameId;
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
-      <Header navigation={undefined} />
+      <HeaderSecondary navigation={navigation} headline='Play with a Friend' />
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
@@ -40,7 +38,9 @@ export default function PlayFriend({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <Text>{gameId}</Text>
+        <Text style={{ color: 'white' }}>{gameId}</Text>
+        {gameId !== undefined && <GameListScreen />}
+        <GameListScreen />
       </ImageBackground>
     </SafeAreaView>
   );
