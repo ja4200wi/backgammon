@@ -3,9 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import CountryFlag from 'react-native-country-flag'; // Ensure this is installed and set up
 import Profile from '../images/profile.svg' // Ensure your SVG import is correct
-import { APP_COLORS } from '../utils/constants';
+import { APP_COLORS, COUNTRIES } from '../utils/constants';
 
-const AvatarWithFlag = () => {
+const AvatarWithFlag = ({country} :{country:COUNTRIES}) => {
   return (
     <View style={styles.container}>
       <Avatar
@@ -18,7 +18,7 @@ const AvatarWithFlag = () => {
         <Profile width={24} height={24} /> 
       </View>
       <View style={styles.flagContainer}>
-        <CountryFlag isoCode="de" size={14} />
+        <CountryFlag isoCode={country} size={14} />
       </View>
     </View>
   );

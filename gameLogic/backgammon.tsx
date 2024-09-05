@@ -32,10 +32,11 @@ export class Game {
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
     } else {
-      this.currentPlayer = PLAYER_COLORS.WHITE;
+      this.currentPlayer = PLAYER_COLORS.BLACK;
     }
-    this.dice = [1, 1];
-    this.movesLeft = [];
+    let tempDice = this.rollFirstDice();
+    this.dice = tempDice;
+    this.movesLeft = tempDice;
     this.lastMoves = [];
   }
 
@@ -54,15 +55,14 @@ export class Game {
     this.board[2] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[4] = this.createStones(3, PLAYER_COLORS.BLACK);
-    this.board[5] = this.createStones(3, PLAYER_COLORS.BLACK);
+    this.board[5] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[6] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[25] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[25] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[22] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[23] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[24] = this.createStones(2, PLAYER_COLORS.WHITE);
+    this.board[23] = this.createStones(4, PLAYER_COLORS.WHITE);
   }
 
   private setupTestBoard() {
@@ -244,7 +244,7 @@ export class Game {
     } else {
       const indexOfMove = this.movesLeft.indexOf(steps);
       if (indexOfMove !== -1) {
-        this.movesLeft.splice(indexOfMove, 1);
+        const temp = this.movesLeft.splice(indexOfMove, 1);
       }
     }
   }
@@ -260,7 +260,6 @@ export class Game {
       playerColor === PLAYER_COLORS.WHITE
         ? PRISON_INDEX['WHITE']
         : PRISON_INDEX['BLACK'];
-
     // If the player has stones in prison, they must move them first
     if (this.hasPrisonChecker()) {
       for (const move of movesLeft) {
@@ -493,6 +492,14 @@ export class Game {
     return this.dice;
   }
 
+  private rollFirstDice(): [number, number] {
+    let tempDice = this.rollDice();
+    while (tempDice[0] === tempDice[1]) {
+      tempDice = this.rollDice();
+    }
+    return tempDice;
+  }
+
   private getRandomDieRoll(): number {
     return Math.floor(Math.random() * 6) + 1;
   }
@@ -542,7 +549,9 @@ export class Game {
       distWhite: this.calculateTotalDistance(PLAYER_COLORS.WHITE),
     };
   }
-
+  public setPlayer(player: PLAYER_COLORS) {
+    this.currentPlayer = player;
+  }
   public getDice(): [number, number] {
     return this.dice;
   }
@@ -566,6 +575,9 @@ export class Game {
   }
   public getLastMoves() {
     return this.lastMoves;
+  }
+  public rollNewDice() {
+    this.rollDice();
   }
   public whoIsWinner(): string {
     if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES)

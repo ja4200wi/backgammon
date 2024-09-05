@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import {View, StyleSheet, Alert, SafeAreaView} from 'react-native';
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/elements';
 import Board from '../components/Board';
@@ -12,6 +12,8 @@ import {
   BOARD_COLORS,
 } from '../utils/constants';
 import {distributeCheckersGame} from '../gameLogic/gameUtils';
+import HeaderSecondary from '../components/HeaderSecondary';
+import GameNavBar from '../components/GameNavBar';
 
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
@@ -41,6 +43,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
     undoMoveButtonState,
     undoMove,
     legalMovesFrom,
+    isStartingPhase,
+    firstRoll,
   } = useGameLogic();
 
   useEffect(() => {
@@ -78,17 +82,14 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: APP_COLORS.backgroundColor }]}>
-      <HeaderBackButton
-        onPress={() => navigation.goBack()}
-        tintColor="white" // You can customize the color if needed
-        style={{alignSelf: 'flex-start'}}
-      />
+    <SafeAreaView style={styles.safeAreaContainer}>
+      <HeaderSecondary navigation={navigation} headline='Press & Play' />
+      <View style={styles.boardContainer}>
       <Board
         colors={{
           backgroundColor: BOARD_COLORS.BACKGROUND,
-          spikeLightColor: BOARD_COLORS.SPIKELIGHT,
-          spikeDarkColor: BOARD_COLORS.SPIKEDARK,
+          spikeLightColor: BOARD_COLORS.SPIKEDARK,
+          spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
           prisonColor: BOARD_COLORS.PRISON,
         }}
         width={DIMENSIONS.boardWidth}
@@ -104,6 +105,8 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
             game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
               ? DICE_COLORS.WHITE
               : DICE_COLORS.BLACK,
+            startingSeq: isStartingPhase,
+            firstRoll: firstRoll,
         }}
         onMoveChecker={handleMoveChecker}
         noMovesLeft={hasMovesLeft(game!)}
@@ -112,18 +115,28 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
         onUndoMove={undoMove}
         legalMovesFrom={legalMovesFrom}
       />
-    </View>
+      </View>
+      <GameNavBar navigation={navigation} />
+    </SafeAreaView>
   );
 };
 
 // Styling
 const styles = StyleSheet.create({
-  container: {
+  safeAreaContainer: {
     flex: 1,
+    backgroundColor: APP_COLORS.headerBackGroundColor,
+    alignItems: 'center',
+  },
+  boardContainer: {
+    backgroundColor: APP_COLORS.cardBackgroundColor, 
+    flexGrow: 1,
+    width: DIMENSIONS.screenWidth,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 40, // Add some padding to avoid overlap with the back button
-  },
+    paddingRight: 16,
+    paddingLeft: 16,
+  }
 });
 
 export default GameScr;

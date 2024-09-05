@@ -6,9 +6,11 @@ import {GAME_SETTINGS, PLAYER_COLORS} from '../utils/constants';
 export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
+  const [isStartingPhase, setStartingPhase] =  useState<boolean>(true)
   const [moveIsOver, setMoveIsOver] = useState(true);
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
   const [scores, setScores] = useState(GAME_SETTINGS.startScores);
+  const [firstRoll, setFirstRoll] = useState(true);
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount,
   );
@@ -25,26 +27,45 @@ export const useGameLogic = () => {
   };
 
   const runGame = async (currentGame: Game) => {
+    if(isStartingPhase) {
+      if(currentGame.getDice()[0] > currentGame.getDice()[1]){
+        currentGame.setPlayer(PLAYER_COLORS.WHITE)
+        setDice(currentGame.getDice())
+        setTimeout(() => {setStartingPhase(false)},2250)
+        setMoveIsOver(false)
+      }
+      else {
+        currentGame.setPlayer(PLAYER_COLORS.BLACK)
+        setDice(currentGame.getDice())
+        setTimeout(() => {setStartingPhase(false)},2250)
+        setMoveIsOver(false)
+      }
+    }
     const distances = currentGame.getDistances();
     updateScores(distances.distBlack, distances.distWhite);
+    //check if game is over
     if (currentGame.isGameOver()) return;
+    //check if there is a legal move
+    checkForLegalMoveHelper(currentGame,true);
 
-    checkForLegalMoveHelper(currentGame);
-
-    if (currentGame.getMovesLeft().length === 0 && moveIsOver) {
+    if (currentGame.getMovesLeft().length === 0 && moveIsOver && !isStartingPhase) {
       setMoveIsOver(false);
       currentGame.switchPlayer();
       setDice(currentGame.getDice());
-      // checks already for next player if a legal moves exists
-      checkForLegalMoveHelper(currentGame);
+      checkForLegalMoveHelper(currentGame,false);
     }
   };
 
-  const checkForLegalMoveHelper = async (game: Game) => {
+  const checkForLegalMoveHelper = async (game: Game, afterMove: boolean) => {
     if (!game.hasLegalMove()) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      game.switchPlayer();
-      setDice(game.getDice());
+      if(afterMove) {
+        game.switchPlayer();
+        setDice(game.getDice());
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        game.switchPlayer();
+        setDice(game.getDice());
+      }
     }
   };
 
@@ -56,6 +77,7 @@ export const useGameLogic = () => {
       const distances = game.getDistances();
       updateScores(distances.distBlack, distances.distWhite);
       updateHomeCheckers(game!);
+      checkForLegalMoveHelper(game,true);
 
       return success;
     }
@@ -79,6 +101,9 @@ export const useGameLogic = () => {
     setScores([distWhite, distBlack]);
   };
   const updateMoveIsOver = () => {
+    if(firstRoll) {
+      setFirstRoll(false)
+    };
     setMoveIsOver(true);
   };
   const updateHomeCheckers = (game: Game) => {
@@ -117,5 +142,7 @@ export const useGameLogic = () => {
     undoMoveButtonState,
     undoMove,
     legalMovesFrom,
+    isStartingPhase,
+    firstRoll,
   };
 };

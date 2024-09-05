@@ -7,36 +7,31 @@ import {
   ImageBackground,
   Button,
 } from 'react-native';
-import {DIMENSIONS} from '../utils/constants';
+import { DIMENSIONS } from '../utils/constants';
 import Header from '../components/Header';
-
-import {Amplify} from 'aws-amplify';
-import {Authenticator, useAuthenticator} from '@aws-amplify/ui-react-native';
-
-import outputs from '../amplify_outputs.json';
-
-Amplify.configure(outputs);
+import { useAuthenticator } from '@aws-amplify/ui-react-native';
 
 const SignOutButton = () => {
-  const {signOut} = useAuthenticator();
+  const { signOut } = useAuthenticator();
 
   return (
-    <View style={{zIndex: 2}}>
-      <Button title="Sign Out" onPress={signOut} />
+    <View style={{ zIndex: 2 }}>
+      <Button title='Sign Out' onPress={signOut} />
     </View>
   );
 };
 
-export default function Settings({navigation}: {navigation: any}) {
+export default function Settings({ navigation }: { navigation: any }) {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <Header navigation={navigation} />
+      <StatusBar barStyle='light-content' />
+      <Header />
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
-        resizeMode="cover">
+        resizeMode='cover'
+      >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
         <SignOutButton />

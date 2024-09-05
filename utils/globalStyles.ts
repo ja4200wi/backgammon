@@ -22,13 +22,27 @@ export const GLOBAL_STYLES = StyleSheet.create({
     headline: {
       color: '#FFF',
       fontSize: 24,
-      fontWeight: '500',
-      flex: 1,
+      fontWeight: 'bold',
       //fontFamily: 'Roboto-Regular',
     },
     lineItems: {
       color: '#FFF',
-      fontSize: 16,
-    }
+      fontSize: 18,
+    },
+    rowLineItems: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingBottom: 8,
+    },
+    headerContainer: {
+      paddingRight: 16,
+      paddingLeft: 16,
+      paddingTop: 8,
+      paddingBottom: 8,
+      backgroundColor: APP_COLORS.headerBackGroundColor,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
     // Add other styles as needed
   });

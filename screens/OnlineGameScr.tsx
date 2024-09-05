@@ -163,6 +163,8 @@ export default function OnlineGameScr({
         pipCount={scores}
         homeCount={homeCheckers}
         dice={{
+          firstRoll: true,
+          startingSeq: true,
           diceOne: dice[0],
           diceTwo: dice[1],
           color:
