@@ -52,14 +52,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
       runGame(game);
     }
   }, [moveIsOver, game, dice]);
-
-  const handleMoveChecker = async (
-    sourceIndex: number,
-    targetIndex: number
-  ) => {
-    const success = await onMoveChecker(sourceIndex, targetIndex);
-    if (success && game?.isGameOver()) {
-      const winner = game.whoIsWinner();
+  const showWinnerScreen = (success: boolean) => {
+      const winner = game!.whoIsWinner();
       Alert.alert(
         `${winner} wins the Game`,
         'What would you like to do?',
@@ -77,6 +71,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         ],
         { cancelable: false }
       );
+  }
+  const handleMoveChecker = async (
+    sourceIndex: number,
+    targetIndex: number
+  ) => {
+    const success = await onMoveChecker(sourceIndex, targetIndex);
+    if (success && game?.isGameOver()) {
+      showWinnerScreen(success)
     }
     return success;
   };
