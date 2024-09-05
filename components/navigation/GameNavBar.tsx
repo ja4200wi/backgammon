@@ -10,48 +10,10 @@ import {
 import { Icon } from '@rneui/themed';
 import { APP_COLORS } from '../../utils/constants';
 import { Divider } from '@rneui/themed';
-import { DebugInstructions } from 'react-native/Libraries/NewAppScreen';
 
-export default function GameNavBar({ navigation }: { navigation: any }) {
+export default function GameNavBar() {
   return (
     <View style={styles.footerContainer}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Icon
-          name='arrow-back'
-          type='material'
-          color={APP_COLORS.iconGrey}
-          size={36}
-        />
-      </TouchableOpacity>
-      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity
-        onPress={() =>
-          Alert.alert(
-            'Restart Game',
-            'Are you sure you want to restart the game? Your current Game will be lost.',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              {
-                text: 'Restart',
-                onPress: () => console.log('Restart Pressed'),
-              },
-            ],
-            { cancelable: false }
-          )
-        }
-      >
-        <Icon
-          name='sync'
-          type='material'
-          color={APP_COLORS.iconGrey}
-          size={36}
-        />
-      </TouchableOpacity>
-      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
       <TouchableOpacity
         onPress={() =>
           ActionSheetIOS.showActionSheetWithOptions(
@@ -95,6 +57,67 @@ export default function GameNavBar({ navigation }: { navigation: any }) {
         >
           x2
         </Text>
+      </TouchableOpacity>
+      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
+      <TouchableOpacity
+        onPress={() =>
+          Alert.alert(
+            'Restart Game',
+            'Are you sure you want to restart the game? Your current Game will be lost.',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              {
+                text: 'Restart',
+                onPress: () => console.log('Restart Pressed'),
+              },
+            ],
+            { cancelable: false }
+          )
+        }
+      >
+        <Icon
+          name='replay'
+          type='material'
+          color={APP_COLORS.iconGrey}
+          size={36}
+        />
+      </TouchableOpacity>
+      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
+      <TouchableOpacity
+        onPress={() =>
+          ActionSheetIOS.showActionSheetWithOptions(
+            {
+              options: [
+                'Cancel',
+                'Give up (-1)',
+                'Give up as a Gammon (-2)',
+                'Give up as a Backgammon (-3)',
+              ],
+              cancelButtonIndex: 0,
+              userInterfaceStyle: 'dark',
+            },
+            (buttonIndex) => {
+              if (buttonIndex === 1) {
+                console.log('Give up (-1)');
+              } else if (buttonIndex === 2) {
+                console.log('Give up as a Gammon (-2)');
+              } else if (buttonIndex === 3) {
+                console.log('Give up as a Backgammon (-3)');
+              }
+            }
+          )
+        }
+      >
+        <Icon
+          name='done'
+          type='material'
+          color={APP_COLORS.iconGrey}
+          size={36}
+        />
       </TouchableOpacity>
     </View>
   );

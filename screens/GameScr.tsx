@@ -110,7 +110,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
           legalMovesFrom={legalMovesFrom}
         />
       </View>
-      <GameNavBar navigation={navigation} />
+      <GameNavBar />
     </SafeAreaView>
   );
 };
