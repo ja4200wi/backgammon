@@ -114,8 +114,6 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
         hasDoneMove={undoMoveButtonState(game!)}
         onUndoMove={undoMove}
         legalMovesFrom={legalMovesFrom}
-        isStartingPhase={isStartingPhase}
-        firstRoll={firstRoll}
       />
       </View>
       <GameNavBar navigation={navigation} />

@@ -38,8 +38,6 @@ interface BoardProps {
   onAcceptMove: () => void;
   onUndoMove: () => void;
   legalMovesFrom: (sourceIndex: number) => number[];
-  isStartingPhase: boolean;
-  firstRoll: boolean;
 }
 
 const Board: React.FC<BoardProps> = ({
@@ -57,8 +55,6 @@ const Board: React.FC<BoardProps> = ({
   noMovesLeft,
   hasDoneMove,
   legalMovesFrom,
-  isStartingPhase,
-  firstRoll,
 }) => {
   const initialSpikes = Array.from({length: 26}, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
@@ -245,14 +241,14 @@ const Board: React.FC<BoardProps> = ({
             height: height,
           },
         ]}>
-          {isStartingPhase && (
+          {dice.startingSeq && (
             <View style={styles.TopDice}>
             <Dice
                 diceOne={dice.diceOne}
                 diceTwo={dice.diceTwo}
                 color={dice.color}
-                startingSeq={isStartingPhase}
-                firstRoll={firstRoll}
+                startingSeq={dice.startingSeq}
+                firstRoll={dice.firstRoll}
               />
           </View>
           )}
@@ -260,14 +256,14 @@ const Board: React.FC<BoardProps> = ({
           <View style={[styles.reverse]}>{SixSpikes(7)}</View>
           <View
             style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
-            {!isStartingPhase && (
+            {!dice.startingSeq && (
               dice.color === DICE_COLORS.WHITE ? (
                 <Dice
                   diceOne={dice.diceOne}
                   diceTwo={dice.diceTwo}
                   color={dice.color}
-                  startingSeq={isStartingPhase}
-                  firstRoll={firstRoll}
+                  startingSeq={dice.startingSeq}
+                  firstRoll={dice.firstRoll}
                 />
               ) : (
                 <ButtonView />
@@ -287,14 +283,14 @@ const Board: React.FC<BoardProps> = ({
           <View style={[styles.reverse]}>{SixSpikes(1)}</View>
           <View
             style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
-            {!isStartingPhase && (
-              dice.color === DICE_COLORS.BLACK && !isStartingPhase ? (
+            {!dice.startingSeq && (
+              dice.color === DICE_COLORS.BLACK && !dice.startingSeq ? (
                 <Dice
                   diceOne={dice.diceOne}
                   diceTwo={dice.diceTwo}
                   color={dice.color}
-                  startingSeq={isStartingPhase}
-                  firstRoll={firstRoll}
+                  startingSeq={dice.startingSeq}
+                  firstRoll={dice.firstRoll}
                 />
               ) : (
                 <ButtonView />
