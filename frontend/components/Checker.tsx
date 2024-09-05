@@ -10,9 +10,6 @@ interface CheckerProps {
 }
 
 const Checker: React.FC<CheckerProps> = ({color, width, height}) => {
-  const toReadableString = () => {
-    return `Checker(color: ${color}, width: ${width}, height: ${height})`;
-  };
   return (
     <View
       style={[

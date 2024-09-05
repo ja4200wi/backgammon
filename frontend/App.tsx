@@ -7,6 +7,8 @@ import GameScreen from './screens/GameScr';
 import GameSelectionScr from './screens/GameSelectionScr';
 import ProfileScr from './screens/Profile';
 import NavBar from './components/NavBar';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { APP_COLORS } from './utils/constants';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +29,7 @@ function HomeTabs() {
 
 export default function App() {
   return (
+    <SafeAreaView style={{flex:1,backgroundColor: APP_COLORS.headerBackGroundColor}}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={HomeTabs} />
@@ -34,5 +37,6 @@ export default function App() {
         <Stack.Screen name="Game" component={GameScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+    </SafeAreaView>
   );
 }
