@@ -14,7 +14,7 @@ import NavBar from './NavBar';
 import Friends from '../images/group.svg';
 import { GLOBAL_STYLES } from '../../utils/globalStyles';
 
-export default function Header() {
+export default function Header({ navigation }: { navigation: any }) {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity onPress={() => console.log('Friends')}>
@@ -26,7 +26,7 @@ export default function Header() {
         />
       </TouchableOpacity>
       <Text style={GLOBAL_STYLES.headline}>Gammon.com</Text>
-      <TouchableOpacity onPress={() => console.log('Settings')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
         <Icon
           name='settings'
           type='material'

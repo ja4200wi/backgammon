@@ -7,26 +7,39 @@ import GameScreen from './screens/GameScr';
 import GameSelectionScr from './screens/GameSelectionScr';
 import ProfileScr from './screens/Profile';
 import NavBar from './components/navigation/NavBar';
+import Settings from './screens/SettingsScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './utils/constants';
+
+import { Amplify } from 'aws-amplify';
+import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
+
+import outputs from './amplify_outputs.json';
+
+Amplify.configure(outputs);
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   return (
-    <Tab.Navigator
-      screenOptions={{ headerShown: false }}
-      tabBar={({ navigation, state }) => (
-        <NavBar
-          navigation={navigation}
-          selectedScreen={state.routeNames[state.index]}
-        />
-      )}
-    >
-      <Tab.Screen name='Home' component={HomeScr} />
-      <Tab.Screen name='Profile' component={ProfileScr} />
-    </Tab.Navigator>
+    <Authenticator.Provider>
+      <Authenticator>
+        <Tab.Navigator
+          screenOptions={{ headerShown: false }}
+          tabBar={({ navigation, state }) => (
+            <NavBar
+              navigation={navigation}
+              selectedScreen={state.routeNames[state.index]}
+            />
+          )}
+        >
+          <Tab.Screen name='Home' component={HomeScr} />
+          <Tab.Screen name='Profile' component={ProfileScr} />
+          <Tab.Screen name='Settings' component={Settings} />
+        </Tab.Navigator>
+      </Authenticator>
+    </Authenticator.Provider>
   );
 }
 
