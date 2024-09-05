@@ -88,14 +88,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
       <HeaderSecondary navigation={navigation} headline='Press & Play' />
       <View style={styles.boardContainer}>
         <Board
-          colors={{
-            backgroundColor: BOARD_COLORS.BACKGROUND,
-            spikeLightColor: BOARD_COLORS.SPIKEDARK,
-            spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
-            prisonColor: BOARD_COLORS.PRISON,
-          }}
-          width={DIMENSIONS.boardWidth}
-          height={DIMENSIONS.boardHeight}
           positions={positions}
           currentPlayer={game?.getCurrentPlayer()!}
           pipCount={scores}

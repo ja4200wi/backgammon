@@ -29,7 +29,6 @@ interface BoardProps {
   currentPlayer: PLAYER_COLORS;
   pipCount: number[];
   homeCount: number[];
-  height: number;
   dice: DiceProps;
   noMovesLeft: boolean;
   hasDoneMove: boolean;
@@ -40,7 +39,6 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({
-  height,
   dice,
   currentPlayer,
   positions,
@@ -275,7 +273,7 @@ const Board: React.FC<BoardProps> = ({
         <Prison
           backgroundColor={colors.prisonColor}
           width={DIMENSIONS.spikeWidth}
-          height={height}
+          height={DIMENSIONS.boardHeight}
           checkers={prisonCheckers}
           onPress={handlePrisonPress}
         />
