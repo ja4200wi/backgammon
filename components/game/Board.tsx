@@ -8,9 +8,6 @@ import Prison from './Prison';
 import Home from './Home';
 import PipCount from './PipCount';
 import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS, BOARD_COLORS } from '../../utils/constants';
-import AcceptMoveButton from './AcceptMoveButton';
-import DoubleButton from './DoulbeButton';
-import UndoMoveButton from './UndoMoveButton';
 
 export interface Position {
   index: number;
@@ -66,7 +63,7 @@ const Board: React.FC<BoardProps> = ({
     []
   );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
-  const [usedDice, setUsedDice] = useState<{ [key: number]: number }>({}); //
+  const [usedDice, setUsedDice] = useState<{ [key: number]: number }>({});
 
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
@@ -110,18 +107,6 @@ const Board: React.FC<BoardProps> = ({
       moveChecker(selectedSource, index);
     }
   };
-  const handleAcceptMovePress = () => {
-    onAcceptMove();
-  };
-  const handleUndoMovePress = () => {
-    onUndoMove();
-  };
-
-  /**
-   * 1. Prevent moves from empty spikes
-   * 2. Prevent moves to spikes with more than one opponent's checker
-   * 3. Prevent moves in the wrong direction
-   */
 
   const distributeCheckers = () => {
     const newSpikes = Array.from({ length: 26 }, (_, index) => ({
@@ -182,31 +167,11 @@ const Board: React.FC<BoardProps> = ({
     }
   }, [selectedSource]);
 
-  function ButtonView() {
-    return (
-      <View
-        style={{
-          height: DIMENSIONS.spikeHeight,
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
-      >
-        <AcceptMoveButton
-          onPress={handleAcceptMovePress}
-          disabled={noMovesLeft}
-        />
-        <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
-        <DoubleButton onPress={() => {}} disabled={true} />
-      </View>
-    );
-  }
-
   const SixSpikes = (startIndex: number) => (
     <>
       {spikes.slice(startIndex, startIndex + 6).map((spike, idx) => (
         <Spike
-          key={startIndex + idx} // Ensure unique keys by combining startIndex and idx
+          key={startIndex + idx}
           height={spike.height}
           color={spike.color}
           width={spike.width}
@@ -255,18 +220,15 @@ const Board: React.FC<BoardProps> = ({
           <View
             style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}
           >
-            {!dice.startingSeq &&
-              (dice.color === DICE_COLORS.WHITE ? (
-                <Dice
-                  diceOne={dice.diceOne}
-                  diceTwo={dice.diceTwo}
-                  color={dice.color}
-                  startingSeq={dice.startingSeq}
-                  firstRoll={dice.firstRoll}
-                />
-              ) : (
-                <ButtonView />
-              ))}
+            {!dice.startingSeq && dice.color === DICE_COLORS.WHITE && (
+              <Dice
+                diceOne={dice.diceOne}
+                diceTwo={dice.diceTwo}
+                color={dice.color}
+                startingSeq={dice.startingSeq}
+                firstRoll={dice.firstRoll}
+              />
+            )}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
         </View>
@@ -282,18 +244,15 @@ const Board: React.FC<BoardProps> = ({
           <View
             style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}
           >
-            {!dice.startingSeq &&
-              (dice.color === DICE_COLORS.BLACK && !dice.startingSeq ? (
-                <Dice
-                  diceOne={dice.diceOne}
-                  diceTwo={dice.diceTwo}
-                  color={dice.color}
-                  startingSeq={dice.startingSeq}
-                  firstRoll={dice.firstRoll}
-                />
-              ) : (
-                <ButtonView />
-              ))}
+            {!dice.startingSeq && dice.color === DICE_COLORS.BLACK && (
+              <Dice
+                diceOne={dice.diceOne}
+                diceTwo={dice.diceTwo}
+                color={dice.color}
+                startingSeq={dice.startingSeq}
+                firstRoll={dice.firstRoll}
+              />
+            )}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
         </View>
