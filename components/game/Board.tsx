@@ -7,7 +7,7 @@ import { DiceProps } from './Dice';
 import Prison from './Prison';
 import Home from './Home';
 import PipCount from './PipCount';
-import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../../utils/constants';
+import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS, BOARD_COLORS } from '../../utils/constants';
 import AcceptMoveButton from './AcceptMoveButton';
 import DoubleButton from './DoulbeButton';
 import UndoMoveButton from './UndoMoveButton';
@@ -17,16 +17,15 @@ export interface Position {
   color: PLAYER_COLORS;
   count: number;
 }
+const colors = {
+  backgroundColor: BOARD_COLORS.BACKGROUND,
+  spikeDarkColor: BOARD_COLORS.SPIKEDARK,
+  spikeLightColor: BOARD_COLORS.SPIKELIGHT,
+  prisonColor: BOARD_COLORS.PRISON, 
+}
 
 interface BoardProps {
   positions: Position[];
-  colors: {
-    backgroundColor: string;
-    spikeLightColor: string;
-    spikeDarkColor: string;
-    prisonColor: string;
-  };
-  width: number;
   currentPlayer: PLAYER_COLORS;
   pipCount: number[];
   homeCount: number[];
@@ -41,8 +40,6 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({
-  colors,
-  width,
   height,
   dice,
   currentPlayer,
@@ -58,7 +55,7 @@ const Board: React.FC<BoardProps> = ({
 }) => {
   const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
-    color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
+    color: index % 2 === 0 ? colors.spikeDarkColor : colors.spikeLightColor,
     width: DIMENSIONS.spikeWidth,
     invert: index >= 12 ? true : false,
     checkers: [] as React.ReactElement[],
@@ -131,7 +128,7 @@ const Board: React.FC<BoardProps> = ({
   const distributeCheckers = () => {
     const newSpikes = Array.from({ length: 26 }, (_, index) => ({
       height: DIMENSIONS.spikeHeight,
-      color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
+      color: index % 2 === 0 ? colors.spikeDarkColor : colors.spikeLightColor,
       width: DIMENSIONS.spikeWidth,
       invert: index >= 13 ? true : false,
       checkers: [] as React.ReactElement[],
@@ -239,8 +236,8 @@ const Board: React.FC<BoardProps> = ({
           styles.board,
           {
             backgroundColor: colors.backgroundColor,
-            width: width,
-            height: height,
+            width: DIMENSIONS.boardWidth,
+            height: DIMENSIONS.boardHeight,
           },
         ]}
       >
