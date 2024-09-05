@@ -27,11 +27,7 @@ interface BoardProps {
   pipCount: number[];
   homeCount: number[];
   dice: DiceProps;
-  noMovesLeft: boolean;
-  hasDoneMove: boolean;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
-  onAcceptMove: () => void;
-  onUndoMove: () => void;
   legalMovesFrom: (sourceIndex: number) => number[];
 }
 
@@ -39,14 +35,10 @@ const Board: React.FC<BoardProps> = ({
   dice,
   currentPlayer,
   positions,
-  onMoveChecker,
-  onAcceptMove,
-  onUndoMove,
   pipCount,
   homeCount,
-  noMovesLeft,
-  hasDoneMove,
   legalMovesFrom,
+  onMoveChecker,
 }) => {
   const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
@@ -63,7 +55,6 @@ const Board: React.FC<BoardProps> = ({
     []
   );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
-  const [usedDice, setUsedDice] = useState<{ [key: number]: number }>({});
 
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
@@ -76,11 +67,6 @@ const Board: React.FC<BoardProps> = ({
   const moveChecker = async (sourceIndex: number, targetIndex: number) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
-      const moveDistance = Math.abs(targetIndex - sourceIndex);
-      setUsedDice((prevUsedDice) => ({
-        ...prevUsedDice,
-        [moveDistance]: (prevUsedDice[moveDistance] || 0) + 1,
-      }));
       setPossibleMoves([]);
       setSelectedSource(null);
     } else {
@@ -153,10 +139,6 @@ const Board: React.FC<BoardProps> = ({
   useEffect(() => {
     distributeCheckers();
   }, [positions]);
-
-  useEffect(() => {
-    setUsedDice([]);
-  }, [currentPlayer]);
 
   useEffect(() => {
     if (selectedSource !== null) {

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
 import { NavigationProp, ParamListBase } from '@react-navigation/native';
-import { HeaderBackButton } from '@react-navigation/elements';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
@@ -9,7 +8,6 @@ import {
   APP_COLORS,
   PLAYER_COLORS,
   DICE_COLORS,
-  BOARD_COLORS,
 } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
@@ -103,10 +101,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
             firstRoll: firstRoll,
           }}
           onMoveChecker={handleMoveChecker}
-          noMovesLeft={hasMovesLeft(game!)}
-          onAcceptMove={updateMoveIsOver}
-          hasDoneMove={undoMoveButtonState(game!)}
-          onUndoMove={undoMove}
           legalMovesFrom={legalMovesFrom}
         />
       </View>
