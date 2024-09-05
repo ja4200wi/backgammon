@@ -110,7 +110,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
           legalMovesFrom={legalMovesFrom}
         />
       </View>
-      <GameNavBar />
+      <GameNavBar onAcceptMove={updateMoveIsOver} onUndoMove={undoMove} noMovesLeft={hasMovesLeft(game!)} noMoveDone={undoMoveButtonState(game!)} />
     </SafeAreaView>
   );
 };
