@@ -57,15 +57,11 @@ export const useGameLogic = () => {
   };
 
   const checkForLegalMoveHelper = async (game: Game, afterMove: boolean) => {
-    console.log('checking for legal move')
     if (!game.hasLegalMove()) {
-      console.log('there is no legal move')
       if(afterMove) {
-        console.log('switch player, aftermove true')
         game.switchPlayer();
         setDice(game.getDice());
       } else {
-        console.log('switch player, aftermove false')
         await new Promise(resolve => setTimeout(resolve, 1500));
         game.switchPlayer();
         setDice(game.getDice());
