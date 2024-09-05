@@ -15,6 +15,7 @@ import Header from '../components/navigation/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { fetchUserAttributes } from 'aws-amplify/auth';
+import { getUserNickname } from '../service/profileService';
 
 function UserCard({
   ELO,
@@ -27,12 +28,20 @@ function UserCard({
   GlobalRank: number;
   Username: string;
 }) {
+  const [profileName, setProfileName] = useState(''); // To store the profile name
+
+  const fetchUserData = async () => {
+    const nickname = await getUserNickname();
+    setProfileName(nickname);
+  };
+
+  fetchUserData();
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
         <AvatarWithFlag country={COUNTRIES.JAPAN} />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
-          {Username}
+          {profileName}
         </Text>
       </View>
       <View style={styles.statsRow}>
@@ -83,7 +92,7 @@ export default function HomeScr({ navigation }: { navigation: any }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
-      <Header />
+      <Header navigation={navigation} />
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
