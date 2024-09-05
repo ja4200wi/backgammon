@@ -1,29 +1,44 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { sayHello } from '../functions/sayHello/resource';
+import { joinGame } from '../functions/joinGame/resource';
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
-const schema = a.schema({
-  Session: a
-    .model({
-      playerOneID: a.id(),
-      playerOne: a.belongsTo('Player', 'playerOneID'),
-      playerTwoID: a.id(),
-      playerTwo: a.belongsTo('Player', 'playerTwoID'),
-      gameState: a.json(),
-    })
-    .authorization((allow) => [allow.owner()]),
-  Player: a
-    .model({
-      name: a.string(),
-      sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
-      sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
-    })
-    .authorization((allow) => [allow.owner()]),
-});
+const schema = a
+  .schema({
+    Session: a
+      .model({
+        playerOneID: a.id(),
+        playerOne: a.belongsTo('Player', 'playerOneID'),
+        playerTwoID: a.id(),
+        playerTwo: a.belongsTo('Player', 'playerTwoID'),
+        gameState: a.json(),
+      })
+      .authorization((allow) => [allow.authenticated()]),
+    Player: a
+      .model({
+        name: a.string(),
+        sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
+        sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
+      })
+      .authorization((allow) => [allow.owner()]),
+    sayHello: a
+      .query()
+      .arguments({
+        name: a.string(),
+      })
+      .returns(a.string())
+      .handler(a.handler.function(sayHello))
+      .authorization((allow) => [allow.guest()]),
+    joinGame: a
+      .query()
+      .arguments({
+        gameId: a.string().required(),
+        userId: a.string().required(),
+      })
+      .returns(a.string())
+      .handler(a.handler.function(joinGame))
+      .authorization((allow) => [allow.authenticated()]),
+  })
+  .authorization((allow) => [allow.resource(joinGame)]);
 
 export type Schema = ClientSchema<typeof schema>;
 

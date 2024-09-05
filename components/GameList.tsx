@@ -8,56 +8,44 @@ import {
 } from 'react-native';
 
 import { generateClient, SelectionSet } from 'aws-amplify/data';
-import { Amplify } from 'aws-amplify';
 import { Schema } from '../amplify/data/resource';
+import { Button } from '@rneui/themed';
+import { getCurrentUser } from 'aws-amplify/auth';
 
 const client = generateClient<Schema>();
 
 const selectionSet = ['id', 'playerOneID'] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 
+const joinGame = async (gameId: string) => {
+  const { userId } = await getCurrentUser();
+  const { errors, data } = await client.queries.joinGame({ gameId, userId });
+};
+
 const GameListScreen = () => {
   const [games, setGames] = useState<Session[]>(); //TODO: Replace any with the type of the games
-  const [loading, setLoading] = useState(true); // Loading state
-
-  // Fetch the games from the API
-  const getGames = async () => {
-    try {
-      const { errors, data: games } = await client.models.Session.list({
-        selectionSet,
-      });
-      if (!errors) {
-        console.log('Games:', games);
-        setGames(games);
-      } else {
-        console.error(errors);
-      }
-    } catch (error) {
-      console.error('Failed to fetch games', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    getGames();
+    const sub = client.models.Session.observeQuery().subscribe({
+      next: ({ items, isSynced }) => {
+        setGames([...items]);
+      },
+    });
+    return () => sub.unsubscribe();
   }, []);
 
   const renderItem = ({ item }: { item: Session }) => (
     <View style={styles.gameItem}>
       <Text style={styles.gameText}>Player One ID: {item.playerOneID}</Text>
       <Text style={styles.gameText}>Game ID: {item.id}</Text>
+      {/* Join button */}
+      <Button
+        title='Join Game'
+        buttonStyle={styles.startButton}
+        onPress={() => joinGame(item.id)}
+      />
     </View>
   );
-
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size='large' color='#0000ff' />
-        <Text>Loading Games...</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -109,6 +97,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  startButton: {
+    marginTop: 10,
+    backgroundColor: '#6B9C41',
+    borderRadius: 5,
   },
 });
 

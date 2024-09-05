@@ -13,6 +13,7 @@ import { APP_COLORS, DIMENSIONS } from '../utils/constants';
 
 import type { Schema } from '../amplify/data/resource';
 import { generateClient } from 'aws-amplify/data';
+import { getCurrentUser } from 'aws-amplify/auth';
 
 const client = generateClient<Schema>();
 
@@ -25,31 +26,30 @@ type GameMode =
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
   const [selectedMode, setSelectedMode] = useState<GameMode>('Elo Game'); // Default selection
-  const [openTooltip, setOpenTooltip] = useState<GameMode | null>();
+
+  const [userName, setUserName] = useState(''); // To store the profile name
+
+  const fetchUserData = async () => {
+    const { username } = await getCurrentUser();
+    setUserName(username);
+  };
 
   const createSession = async () => {
+    fetchUserData();
     const { errors, data: game } = await client.models.Session.create({
-      playerOneID: '1',
-      playerTwoID: '2',
+      playerOneID: userName,
+      playerTwoID: 'filler',
       gameState:
         '[{ "index": 0, "color": "WHITE", "count": 2 },{ "index": 11, "color": "WHITE", "count": 5 },{ "index": 16, "color": "WHITE", "count": 3 },{ "index": 18, "color": "WHITE", "count": 5 },{ "index": 23, "color": "BLACK", "count": 2 },{ "index": 12, "color": "BLACK", "count": 5 },{ "index": 7, "color": "BLACK", "count": 3 },{ "index": 5, "color": "BLACK", "count": 5 }]',
     });
-    if (game?.id !== null) {
-      navigation.navigate('PlayFriend'); //, { gameId: game?.id });
+    if (game?.id !== undefined) {
+      navigation.navigate('PlayFriend', { gameId: game?.id });
     }
   };
 
   const handleSelectMode = (mode: GameMode) => {
     if (selectedMode !== mode) {
       setSelectedMode(mode);
-    }
-  };
-
-  const handleTooltipToggle = (key: GameMode) => {
-    if (openTooltip !== key) {
-      setOpenTooltip(key);
-    } else if (openTooltip === key) {
-      setOpenTooltip(null);
     }
   };
 
