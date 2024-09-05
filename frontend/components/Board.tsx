@@ -76,7 +76,6 @@ const Board: React.FC<BoardProps> = ({
   );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
   const [usedDice, setUsedDice] = useState<{[key: number]: number}>({}); //
-  const [diceStack, setDiceStack] = useState<number[]>([]);
 
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
