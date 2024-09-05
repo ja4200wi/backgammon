@@ -135,12 +135,18 @@ export default function OnlineGameScr({
           tintColor='white' // You can customize the color if needed
           style={{ alignSelf: 'flex-start' }}
         />
-        <Text style={{ color: 'white', zIndex: 3 }}>{games![0].id}</Text>
         <Text style={{ color: 'white', zIndex: 3 }}>
-          {games![0].playerOneID}
+          {games !== undefined && games[0] !== undefined && games[0].id}
         </Text>
         <Text style={{ color: 'white', zIndex: 3 }}>
-          {games![0].playerTwoID}
+          {games !== undefined &&
+            games[0] !== undefined &&
+            games[0].playerOneID}
+        </Text>
+        <Text style={{ color: 'white', zIndex: 3 }}>
+          {games !== undefined &&
+            games[0] !== undefined &&
+            games[0].playerTwoID}
         </Text>
       </View>
       <Board
