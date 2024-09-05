@@ -17,13 +17,14 @@ const client = generateClient<Schema>();
 const selectionSet = ['id', 'playerOneID'] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 
-const joinGame = async (gameId: string) => {
-  const { userId } = await getCurrentUser();
-  const { errors, data } = await client.queries.joinGame({ gameId, userId });
-};
+export default function GameListScreen({ navigation }: { navigation: any }) {
+  const [games, setGames] = useState<Session[]>();
 
-const GameListScreen = () => {
-  const [games, setGames] = useState<Session[]>(); //TODO: Replace any with the type of the games
+  const joinGame = async (gameId: string) => {
+    const { userId } = await getCurrentUser();
+    const { errors, data } = await client.queries.joinGame({ gameId, userId });
+    navigation.navigate('Online', { gameId });
+  };
 
   useEffect(() => {
     const sub = client.models.Session.observeQuery().subscribe({
@@ -60,7 +61,7 @@ const GameListScreen = () => {
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -104,5 +105,3 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
-
-export default GameListScreen;

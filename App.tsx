@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScr from './screens/HomeScr';
 import GameScreen from './screens/GameScr';
+import OnlineGameScr from './screens/OnlineGameScr';
 import GameSelectionScr from './screens/GameSelectionScr';
 import ProfileScr from './screens/Profile';
 import NavBar from './components/NavBar';
@@ -58,6 +59,7 @@ export default function App() {
             <Stack.Screen name='GameSelection' component={GameSelectionScr} />
             <Stack.Screen name='Settings' component={Settings} />
             <Stack.Screen name='Game' component={GameScreen} />
+            <Stack.Screen name='Online' component={OnlineGameScr} />
             <Stack.Screen name='PlayFriend' component={PlayFriendScr} />
           </Stack.Navigator>
         </NavigationContainer>

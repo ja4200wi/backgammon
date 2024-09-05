@@ -42,9 +42,11 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       gameState:
         '[{ "index": 0, "color": "WHITE", "count": 2 },{ "index": 11, "color": "WHITE", "count": 5 },{ "index": 16, "color": "WHITE", "count": 3 },{ "index": 18, "color": "WHITE", "count": 5 },{ "index": 23, "color": "BLACK", "count": 2 },{ "index": 12, "color": "BLACK", "count": 5 },{ "index": 7, "color": "BLACK", "count": 3 },{ "index": 5, "color": "BLACK", "count": 5 }]',
     });
-    if (game?.id !== undefined) {
-      navigation.navigate('PlayFriend', { gameId: game?.id });
-    }
+    navigation.navigate('Online', { gameId: game!.id });
+  };
+
+  const listSessions = () => {
+    navigation.navigate('PlayFriend');
   };
 
   const handleSelectMode = (mode: GameMode) => {
@@ -226,6 +228,11 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
                     title='Start Game'
                     buttonStyle={styles.startButton}
                     onPress={() => createSession()}
+                  />
+                  <Button
+                    title='Join Game'
+                    buttonStyle={styles.startButton}
+                    onPress={() => listSessions()}
                   />
                 </>
               )}
