@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Triangle from 'react-native-triangle';
-import { PLAYER_COLORS } from '../../utils/constants';
+import { APP_COLORS, PLAYER_COLORS } from '../../utils/constants';
 
 interface SpikeProps {
   color: string;
@@ -101,7 +101,7 @@ const Spike: React.FC<SpikeProps> = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      style={{ backgroundColor: isHighlighted ? 'yellow' : 'transparent' }}
+      style={{ backgroundColor: isHighlighted ? 'rgba(89, 127, 209, .75)' : 'transparent', borderRadius: 15}}
     >
       {invert && (
         <Triangle width={width} height={height} color={color} direction='up' />
