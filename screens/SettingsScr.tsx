@@ -8,7 +8,7 @@ import {
   Button,
 } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
-import Header from '../components/Header';
+import Header from '../components/navigation/Header';
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
 
 const SignOutButton = () => {

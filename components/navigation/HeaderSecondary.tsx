@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Icon } from '@rneui/themed';
-import { APP_COLORS } from '../utils/constants';
+import { APP_COLORS } from '../../utils/constants';
 
 export default function HeaderSecondary({
   navigation,

@@ -9,10 +9,10 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Card, Icon, Button, Tooltip } from '@rneui/themed';
-import { APP_COLORS, DIMENSIONS } from '../utils/constants';
-import NavBar from '../components/NavBar';
+import { APP_COLORS, DIMENSIONS } from '../../utils/constants';
+import NavBar from './NavBar';
 import Friends from '../images/group.svg';
-import { GLOBAL_STYLES } from '../utils/globalStyles';
+import { GLOBAL_STYLES } from '../../utils/globalStyles';
 
 export default function Header() {
   return (

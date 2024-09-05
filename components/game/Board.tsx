@@ -1,13 +1,13 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
 import Dice from './Dice';
-import {DiceProps} from './Dice';
+import { DiceProps } from './Dice';
 import Prison from './Prison';
-import Home from '../components/Home';
+import Home from './Home';
 import PipCount from './PipCount';
-import {DICE_COLORS, PLAYER_COLORS, DIMENSIONS} from '../utils/constants';
+import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../../utils/constants';
 import AcceptMoveButton from './AcceptMoveButton';
 import DoubleButton from './DoulbeButton';
 import UndoMoveButton from './UndoMoveButton';
@@ -56,7 +56,7 @@ const Board: React.FC<BoardProps> = ({
   hasDoneMove,
   legalMovesFrom,
 }) => {
-  const initialSpikes = Array.from({length: 26}, (_, index) => ({
+  const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
     color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
     width: DIMENSIONS.spikeWidth,
@@ -68,10 +68,10 @@ const Board: React.FC<BoardProps> = ({
   const [spikes, setSpikes] = useState(initialSpikes);
   const [selectedSource, setSelectedSource] = useState<number | null>(null);
   const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
-    [],
+    []
   );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
-  const [usedDice, setUsedDice] = useState<{[key: number]: number}>({}); //
+  const [usedDice, setUsedDice] = useState<{ [key: number]: number }>({}); //
 
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
@@ -85,7 +85,7 @@ const Board: React.FC<BoardProps> = ({
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
       const moveDistance = Math.abs(targetIndex - sourceIndex);
-      setUsedDice(prevUsedDice => ({
+      setUsedDice((prevUsedDice) => ({
         ...prevUsedDice,
         [moveDistance]: (prevUsedDice[moveDistance] || 0) + 1,
       }));
@@ -129,7 +129,7 @@ const Board: React.FC<BoardProps> = ({
    */
 
   const distributeCheckers = () => {
-    const newSpikes = Array.from({length: 26}, (_, index) => ({
+    const newSpikes = Array.from({ length: 26 }, (_, index) => ({
       height: DIMENSIONS.spikeHeight,
       color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
       width: DIMENSIONS.spikeWidth,
@@ -141,8 +141,8 @@ const Board: React.FC<BoardProps> = ({
     const prisonCheckers: React.ReactElement[] = [];
     const homeCheckers: React.ReactElement[] = [];
 
-    positions.forEach(position => {
-      const {index, color, count} = position;
+    positions.forEach((position) => {
+      const { index, color, count } = position;
       for (let i = 0; i < count; i++) {
         const checker = (
           <Checker
@@ -188,25 +188,23 @@ const Board: React.FC<BoardProps> = ({
   }, [selectedSource]);
 
   function ButtonView() {
-    return(
+    return (
       <View
-                style={{
-                  height: DIMENSIONS.spikeHeight,
-                  justifyContent: 'space-evenly',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
-                <AcceptMoveButton
-                  onPress={handleAcceptMovePress}
-                  disabled={noMovesLeft}
-                />
-                <UndoMoveButton
-                  onPress={handleUndoMovePress}
-                  disabled={hasDoneMove}
-                />
-                <DoubleButton onPress={() => {}} disabled={true} />
-              </View>
-    )
+        style={{
+          height: DIMENSIONS.spikeHeight,
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          flexDirection: 'row',
+        }}
+      >
+        <AcceptMoveButton
+          onPress={handleAcceptMovePress}
+          disabled={noMovesLeft}
+        />
+        <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
+        <DoubleButton onPress={() => {}} disabled={true} />
+      </View>
+    );
   }
 
   const SixSpikes = (startIndex: number) => (
@@ -229,8 +227,12 @@ const Board: React.FC<BoardProps> = ({
   return (
     <View>
       <View style={styles.row}>
-       <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-       <Home onPress={handleHomePress} count={homeCount[1]} player={PLAYER_COLORS.BLACK}/>
+        <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
+        <Home
+          onPress={handleHomePress}
+          count={homeCount[1]}
+          player={PLAYER_COLORS.BLACK}
+        />
       </View>
       <View
         style={[
@@ -240,24 +242,26 @@ const Board: React.FC<BoardProps> = ({
             width: width,
             height: height,
           },
-        ]}>
-          {dice.startingSeq && (
-            <View style={styles.TopDice}>
+        ]}
+      >
+        {dice.startingSeq && (
+          <View style={styles.TopDice}>
             <Dice
-                diceOne={dice.diceOne}
-                diceTwo={dice.diceTwo}
-                color={dice.color}
-                startingSeq={dice.startingSeq}
-                firstRoll={dice.firstRoll}
-              />
+              diceOne={dice.diceOne}
+              diceTwo={dice.diceTwo}
+              color={dice.color}
+              startingSeq={dice.startingSeq}
+              firstRoll={dice.firstRoll}
+            />
           </View>
-          )}
+        )}
         <View style={[styles.boardHalf]}>
           <View style={[styles.reverse]}>{SixSpikes(7)}</View>
           <View
-            style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}>
-            {!dice.startingSeq && (
-              dice.color === DICE_COLORS.WHITE ? (
+            style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}
+          >
+            {!dice.startingSeq &&
+              (dice.color === DICE_COLORS.WHITE ? (
                 <Dice
                   diceOne={dice.diceOne}
                   diceTwo={dice.diceTwo}
@@ -267,8 +271,7 @@ const Board: React.FC<BoardProps> = ({
                 />
               ) : (
                 <ButtonView />
-              )
-            )}
+              ))}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
         </View>
@@ -282,9 +285,10 @@ const Board: React.FC<BoardProps> = ({
         <View style={[styles.boardHalf]}>
           <View style={[styles.reverse]}>{SixSpikes(1)}</View>
           <View
-            style={{height: DIMENSIONS.spikeHeight, justifyContent: 'center'}}>
-            {!dice.startingSeq && (
-              dice.color === DICE_COLORS.BLACK && !dice.startingSeq ? (
+            style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}
+          >
+            {!dice.startingSeq &&
+              (dice.color === DICE_COLORS.BLACK && !dice.startingSeq ? (
                 <Dice
                   diceOne={dice.diceOne}
                   diceTwo={dice.diceTwo}
@@ -294,15 +298,18 @@ const Board: React.FC<BoardProps> = ({
                 />
               ) : (
                 <ButtonView />
-              )
-            )}
+              ))}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
         </View>
       </View>
       <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.WHITE} count={pipCount[0]} />
-        <Home onPress={handleHomePress} count={homeCount[0]} player={PLAYER_COLORS.WHITE}/>
+        <Home
+          onPress={handleHomePress}
+          count={homeCount[0]}
+          player={PLAYER_COLORS.WHITE}
+        />
       </View>
     </View>
   );
@@ -337,7 +344,7 @@ const styles = StyleSheet.create({
     top: '50%', // Vertically center the dice
     left: '50%', // Horizontally center the dice
     transform: [{ translateX: -125 }, { translateY: -30 }], // Adjust position to the center of the element
-  }
+  },
 });
 
 export default Board;

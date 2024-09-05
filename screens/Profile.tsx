@@ -14,8 +14,8 @@ import {
   GAME_TYPE,
   COUNTRIES,
 } from '../utils/constants';
-import Header from '../components/Header';
-import AvatarWithFlag from '../components/AvatarWithFlag';
+import Header from '../components/navigation/Header';
+import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';

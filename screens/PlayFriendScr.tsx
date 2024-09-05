@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';
-import HeaderSecondary from '../components/HeaderSecondary';
+import HeaderSecondary from '../components/navigation/HeaderSecondary';
 
 export default function PlayFriend({
   route,

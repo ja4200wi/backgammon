@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Triangle from 'react-native-triangle';
-import { PLAYER_COLORS } from '../utils/constants';
+import { PLAYER_COLORS } from '../../utils/constants';
 
 interface SpikeProps {
   color: string;
@@ -36,7 +36,9 @@ const Spike: React.FC<SpikeProps> = ({
               key={index}
               style={[
                 styles.checkerRegular,
-                invert ? { bottom: index * (checkerHeight+3) } : { top: index * (checkerHeight+3) },
+                invert
+                  ? { bottom: index * (checkerHeight + 3) }
+                  : { top: index * (checkerHeight + 3) },
               ]}
             >
               {React.cloneElement(CheckerComponent)}
@@ -48,7 +50,16 @@ const Spike: React.FC<SpikeProps> = ({
       // Case 2: Shuffled display for more than 5 checkers
       const shuffledCheckers = [];
       for (let i = 0; i < checkerCount; i++) {
-        const shuffleDegree = checkerCount <= 6 ? 0.9 : checkerCount === 7 ? .75 : checkerCount === 8 ? 0.65 : checkerCount === 9 ? 0.58 : 0.52;
+        const shuffleDegree =
+          checkerCount <= 6
+            ? 0.9
+            : checkerCount === 7
+            ? 0.75
+            : checkerCount === 8
+            ? 0.65
+            : checkerCount === 9
+            ? 0.58
+            : 0.52;
         const offset = i * (checkerHeight * shuffleDegree); // Slight overlap for shuffling
         shuffledCheckers.push(
           <View
@@ -92,7 +103,9 @@ const Spike: React.FC<SpikeProps> = ({
       onPress={onPress}
       style={{ backgroundColor: isHighlighted ? 'yellow' : 'transparent' }}
     >
-      {invert && <Triangle width={width} height={height} color={color} direction="up" />}
+      {invert && (
+        <Triangle width={width} height={height} color={color} direction='up' />
+      )}
       <View
         style={[
           styles.spike,
@@ -106,11 +119,17 @@ const Spike: React.FC<SpikeProps> = ({
       >
         {renderCheckers()}
       </View>
-      {!invert && <Triangle width={width} height={height} color={color} direction="down" />}
+      {!invert && (
+        <Triangle
+          width={width}
+          height={height}
+          color={color}
+          direction='down'
+        />
+      )}
     </TouchableOpacity>
   );
 };
-
 
 const styles = StyleSheet.create({
   spike: {

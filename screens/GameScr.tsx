@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
-import {View, StyleSheet, Alert, SafeAreaView} from 'react-native';
-import {NavigationProp, ParamListBase} from '@react-navigation/native';
-import {HeaderBackButton} from '@react-navigation/elements';
-import Board from '../components/Board';
-import {useGameLogic} from '../hooks/useGameLogic';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { HeaderBackButton } from '@react-navigation/elements';
+import Board from '../components/game/Board';
+import { useGameLogic } from '../hooks/useGameLogic';
 import {
   DIMENSIONS,
   APP_COLORS,
@@ -11,9 +11,9 @@ import {
   DICE_COLORS,
   BOARD_COLORS,
 } from '../utils/constants';
-import {distributeCheckersGame} from '../gameLogic/gameUtils';
-import HeaderSecondary from '../components/HeaderSecondary';
-import GameNavBar from '../components/GameNavBar';
+import { distributeCheckersGame } from '../gameLogic/gameUtils';
+import HeaderSecondary from '../components/navigation/HeaderSecondary';
+import GameNavBar from '../components/navigation/GameNavBar';
 
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
@@ -27,7 +27,7 @@ const initialSpikes: React.ReactElement[][] = new Array(24)
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
-const GameScr: React.FC<GameScrProps> = ({navigation}) => {
+const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
   const {
     game,
     dice,
@@ -55,7 +55,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
 
   const handleMoveChecker = async (
     sourceIndex: number,
-    targetIndex: number,
+    targetIndex: number
   ) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success && game?.isGameOver()) {
@@ -75,7 +75,7 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
             style: 'default',
           },
         ],
-        {cancelable: false},
+        { cancelable: false }
       );
     }
     return success;
@@ -85,36 +85,36 @@ const GameScr: React.FC<GameScrProps> = ({navigation}) => {
     <SafeAreaView style={styles.safeAreaContainer}>
       <HeaderSecondary navigation={navigation} headline='Press & Play' />
       <View style={styles.boardContainer}>
-      <Board
-        colors={{
-          backgroundColor: BOARD_COLORS.BACKGROUND,
-          spikeLightColor: BOARD_COLORS.SPIKEDARK,
-          spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
-          prisonColor: BOARD_COLORS.PRISON,
-        }}
-        width={DIMENSIONS.boardWidth}
-        height={DIMENSIONS.boardHeight}
-        positions={positions}
-        currentPlayer={game?.getCurrentPlayer()!}
-        pipCount={scores}
-        homeCount={homeCheckers}
-        dice={{
-          diceOne: dice[0],
-          diceTwo: dice[1],
-          color:
-            game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
-              ? DICE_COLORS.WHITE
-              : DICE_COLORS.BLACK,
+        <Board
+          colors={{
+            backgroundColor: BOARD_COLORS.BACKGROUND,
+            spikeLightColor: BOARD_COLORS.SPIKEDARK,
+            spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
+            prisonColor: BOARD_COLORS.PRISON,
+          }}
+          width={DIMENSIONS.boardWidth}
+          height={DIMENSIONS.boardHeight}
+          positions={positions}
+          currentPlayer={game?.getCurrentPlayer()!}
+          pipCount={scores}
+          homeCount={homeCheckers}
+          dice={{
+            diceOne: dice[0],
+            diceTwo: dice[1],
+            color:
+              game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
+                ? DICE_COLORS.WHITE
+                : DICE_COLORS.BLACK,
             startingSeq: isStartingPhase,
             firstRoll: firstRoll,
-        }}
-        onMoveChecker={handleMoveChecker}
-        noMovesLeft={hasMovesLeft(game!)}
-        onAcceptMove={updateMoveIsOver}
-        hasDoneMove={undoMoveButtonState(game!)}
-        onUndoMove={undoMove}
-        legalMovesFrom={legalMovesFrom}
-      />
+          }}
+          onMoveChecker={handleMoveChecker}
+          noMovesLeft={hasMovesLeft(game!)}
+          onAcceptMove={updateMoveIsOver}
+          hasDoneMove={undoMoveButtonState(game!)}
+          onUndoMove={undoMove}
+          legalMovesFrom={legalMovesFrom}
+        />
       </View>
       <GameNavBar navigation={navigation} />
     </SafeAreaView>
@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   boardContainer: {
-    backgroundColor: APP_COLORS.cardBackgroundColor, 
+    backgroundColor: APP_COLORS.cardBackgroundColor,
     flexGrow: 1,
     width: DIMENSIONS.screenWidth,
     justifyContent: 'center',
     alignItems: 'center',
     paddingRight: 16,
     paddingLeft: 16,
-  }
+  },
 });
 
 export default GameScr;

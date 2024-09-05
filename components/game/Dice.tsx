@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Image, ImageSourcePropType, Animated } from 'react-native';
-import { DICE_COLORS } from '../utils/constants';
+import {
+  View,
+  StyleSheet,
+  Image,
+  ImageSourcePropType,
+  Animated,
+} from 'react-native';
+import { DICE_COLORS } from '../../utils/constants';
 
 export interface DiceProps {
   diceOne: number;
@@ -28,7 +34,13 @@ const BLACK_DICE_IMAGES: { [key: number]: ImageSourcePropType } = {
   6: require('../images/diceBlackSix.png'),
 };
 
-const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, firstRoll }) => {
+const Dice: React.FC<DiceProps> = ({
+  diceOne,
+  diceTwo,
+  color,
+  startingSeq,
+  firstRoll,
+}) => {
   const [curDice, setDice] = useState([
     WHITE_DICE_IMAGES[diceOne], // First dice is white by default in starting sequence
     BLACK_DICE_IMAGES[diceTwo], // Second dice is black by default in starting sequence
@@ -67,8 +79,12 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
     intervalId = setInterval(() => {
       currentIndex = (currentIndex + 1) % randomDiceSequence.length;
       const randomDiceOne = randomDiceSequence[currentIndex];
-      const randomDiceTwo = randomDiceSequence[(currentIndex + 1) % randomDiceSequence.length];
-      setDice([WHITE_DICE_IMAGES[randomDiceOne], BLACK_DICE_IMAGES[randomDiceTwo]]);
+      const randomDiceTwo =
+        randomDiceSequence[(currentIndex + 1) % randomDiceSequence.length];
+      setDice([
+        WHITE_DICE_IMAGES[randomDiceOne],
+        BLACK_DICE_IMAGES[randomDiceTwo],
+      ]);
     }, 100);
 
     // After 2 seconds, stop rolling and compare dice
@@ -79,65 +95,70 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
 
       // Show the actual dice results (pause for 0.5 seconds)
       setDice([WHITE_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
-    }, 1400); 
-    return() => clearTimeout(timeoutID)
-    
+    }, 1400);
+    return () => clearTimeout(timeoutID);
   };
   const animateDice = () => {
-    if(!firstRoll) {
-    let intervalId: NodeJS.Timeout | null = null;
-    const randomDiceSequence = [1, 2, 3, 4, 5, 6];
-    let currentIndex = 0;
+    if (!firstRoll) {
+      let intervalId: NodeJS.Timeout | null = null;
+      const randomDiceSequence = [1, 2, 3, 4, 5, 6];
+      let currentIndex = 0;
 
-    // Start shaking animation
-    Animated.sequence([
-      Animated.timing(shakeAnimation, {
-        toValue: 1,
-        duration: 250, // Shake phase
-        useNativeDriver: true,
-      }),
-      Animated.timing(shakeAnimation, {
-        toValue: 0,
-        duration: 250, // Return to original
-        useNativeDriver: true,
-      }),
-    ]).start();
+      // Start shaking animation
+      Animated.sequence([
+        Animated.timing(shakeAnimation, {
+          toValue: 1,
+          duration: 250, // Shake phase
+          useNativeDriver: true,
+        }),
+        Animated.timing(shakeAnimation, {
+          toValue: 0,
+          duration: 250, // Return to original
+          useNativeDriver: true,
+        }),
+      ]).start();
 
-    // Set interval for random dice images every 100ms
-    intervalId = setInterval(() => {
-      currentIndex = (currentIndex + 1) % randomDiceSequence.length;
-      const randomDiceOne = randomDiceSequence[currentIndex];
-      const randomDiceTwo = randomDiceSequence[(currentIndex + 1) % randomDiceSequence.length];
-      if(color === DICE_COLORS.WHITE){
-        setDice([WHITE_DICE_IMAGES[randomDiceOne], WHITE_DICE_IMAGES[randomDiceTwo]]);
-      }
-      else {
-        setDice([BLACK_DICE_IMAGES[randomDiceOne], BLACK_DICE_IMAGES[randomDiceTwo]]);
-      }
-    }, 100);
+      // Set interval for random dice images every 100ms
+      intervalId = setInterval(() => {
+        currentIndex = (currentIndex + 1) % randomDiceSequence.length;
+        const randomDiceOne = randomDiceSequence[currentIndex];
+        const randomDiceTwo =
+          randomDiceSequence[(currentIndex + 1) % randomDiceSequence.length];
+        if (color === DICE_COLORS.WHITE) {
+          setDice([
+            WHITE_DICE_IMAGES[randomDiceOne],
+            WHITE_DICE_IMAGES[randomDiceTwo],
+          ]);
+        } else {
+          setDice([
+            BLACK_DICE_IMAGES[randomDiceOne],
+            BLACK_DICE_IMAGES[randomDiceTwo],
+          ]);
+        }
+      }, 100);
 
-    // Stop after 500ms and show final dice
-    const timeoutID = setTimeout(() => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      // Stop after 500ms and show final dice
+      const timeoutID = setTimeout(() => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
 
-      if (color === DICE_COLORS.WHITE) {
-        setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
-      } else {
-        setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
-      }
-    }, 500); // Normal dice rolling lasts for 500ms
-    return () => clearTimeout(timeoutID)
-  } else {
-    if(diceOne && diceTwo){
-      if (color === DICE_COLORS.WHITE) {
-        setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
-      } else {
-        setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
+        if (color === DICE_COLORS.WHITE) {
+          setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
+        } else {
+          setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
+        }
+      }, 500); // Normal dice rolling lasts for 500ms
+      return () => clearTimeout(timeoutID);
+    } else {
+      if (diceOne && diceTwo) {
+        if (color === DICE_COLORS.WHITE) {
+          setDice([WHITE_DICE_IMAGES[diceOne], WHITE_DICE_IMAGES[diceTwo]]);
+        } else {
+          setDice([BLACK_DICE_IMAGES[diceOne], BLACK_DICE_IMAGES[diceTwo]]);
+        }
       }
     }
-  }
   };
 
   // Shake interpolation
@@ -156,7 +177,16 @@ const Dice: React.FC<DiceProps> = ({ diceOne, diceTwo, color, startingSeq, first
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.diceContainer, {width: startingSeq? 250 : 'auto',justifyContent: startingSeq ? 'space-evenly' : 'center'},animatedStyle]}>
+      <Animated.View
+        style={[
+          styles.diceContainer,
+          {
+            width: startingSeq ? 250 : 'auto',
+            justifyContent: startingSeq ? 'space-evenly' : 'center',
+          },
+          animatedStyle,
+        ]}
+      >
         <Image style={styles.dice} source={curDice[0]} />
         <Image style={styles.dice} source={curDice[1]} />
       </Animated.View>

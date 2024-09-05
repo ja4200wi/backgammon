@@ -2,20 +2,15 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import CountryFlag from 'react-native-country-flag'; // Ensure this is installed and set up
-import Profile from '../images/profile.svg' // Ensure your SVG import is correct
-import { APP_COLORS, COUNTRIES } from '../utils/constants';
+import Profile from '../images/profile.svg'; // Ensure your SVG import is correct
+import { APP_COLORS, COUNTRIES } from '../../utils/constants';
 
-const AvatarWithFlag = ({country} :{country:COUNTRIES}) => {
+const AvatarWithFlag = ({ country }: { country: COUNTRIES }) => {
   return (
     <View style={styles.container}>
-      <Avatar
-        size={64}
-        rounded
-        containerStyle={styles.avatar}
-      >
-      </Avatar>
+      <Avatar size={64} rounded containerStyle={styles.avatar}></Avatar>
       <View style={styles.profileContainer}>
-        <Profile width={24} height={24} /> 
+        <Profile width={24} height={24} />
       </View>
       <View style={styles.flagContainer}>
         <CountryFlag isoCode={country} size={14} />

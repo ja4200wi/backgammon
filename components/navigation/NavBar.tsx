@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { NavigationHelpers, ParamListBase } from '@react-navigation/native';
-import { APP_COLORS } from '../utils/constants';
+import { APP_COLORS } from '../../utils/constants';
 
 type NavBarProps = {
   navigation: NavigationHelpers<ParamListBase>;
@@ -15,25 +15,27 @@ export default function NavBar({ navigation, selectedScreen }: NavBarProps) {
       <View style={styles.bottomNav}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon
-            name="home"
-            type="material"
+            name='home'
+            type='material'
             color={selectedScreen === 'Home' ? '#6B9C41' : APP_COLORS.iconGrey}
             size={36}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => console.log('Study')}>
           <Icon
-            name="school"
-            type="material"
+            name='school'
+            type='material'
             color={selectedScreen === 'Study' ? '#6B9C41' : APP_COLORS.iconGrey}
             size={36}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           <Icon
-            name="person"
-            type="material"
-            color={selectedScreen === 'Profile' ? '#6B9C41' : APP_COLORS.iconGrey}
+            name='person'
+            type='material'
+            color={
+              selectedScreen === 'Profile' ? '#6B9C41' : APP_COLORS.iconGrey
+            }
             size={36}
           />
         </TouchableOpacity>

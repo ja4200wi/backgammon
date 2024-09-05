@@ -2,19 +2,19 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import Puzzle from '../images/puzzle.svg';
-import { APP_COLORS } from '../utils/constants';
+import { APP_COLORS } from '../../utils/constants';
 
 const AvatarWithPuzzle = () => {
   return (
     <View style={styles.container}>
-      <Avatar
-        size={64}
-        rounded
-        containerStyle={styles.avatar}
-      >
-      </Avatar>
+      <Avatar size={64} rounded containerStyle={styles.avatar}></Avatar>
       <View style={styles.profileContainer}>
-        <Puzzle width={32} height={32} color={'green'} style={styles.puzzleIcon} /> 
+        <Puzzle
+          width={32}
+          height={32}
+          color={'green'}
+          style={styles.puzzleIcon}
+        />
       </View>
     </View>
   );

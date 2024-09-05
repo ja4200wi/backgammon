@@ -6,7 +6,7 @@ import HomeScr from './screens/HomeScr';
 import GameScreen from './screens/GameScr';
 import GameSelectionScr from './screens/GameSelectionScr';
 import ProfileScr from './screens/Profile';
-import NavBar from './components/NavBar';
+import NavBar from './components/navigation/NavBar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './utils/constants';
 

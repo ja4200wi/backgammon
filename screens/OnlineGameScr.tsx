@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, Text } from 'react-native';
 import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
-import Board from '../components/Board';
+import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
   DIMENSIONS,

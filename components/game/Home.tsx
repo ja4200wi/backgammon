@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Checker from './Checker'; // Import your Checker component
-import { APP_COLORS, PLAYER_COLORS } from '../utils/constants';
+import { APP_COLORS, PLAYER_COLORS } from '../../utils/constants';
 
 interface HomeProps {
   onPress: (index: number) => void;
@@ -16,7 +16,19 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player }) => {
       <View key={i} style={[styles.checkerContainer, { right: i * 8 }]}>
         <Checker height={30} width={30} color={player} />
         {i === count - 1 && (
-          <Text style={[styles.checkerText, {color: player === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE}]}>{count}</Text>
+          <Text
+            style={[
+              styles.checkerText,
+              {
+                color:
+                  player === PLAYER_COLORS.WHITE
+                    ? PLAYER_COLORS.BLACK
+                    : PLAYER_COLORS.WHITE,
+              },
+            ]}
+          >
+            {count}
+          </Text>
         )}
       </View>
     );
@@ -40,7 +52,7 @@ const styles = StyleSheet.create({
     width: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden', 
+    overflow: 'hidden',
   },
   checkersContainer: {
     position: 'relative', // Container for absolute-positioned checkers
@@ -48,7 +60,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'flex-end', // Align checkers to the right
-    marginRight:8,
+    marginRight: 8,
   },
   checkerContainer: {
     position: 'absolute', // Position absolutely to stack

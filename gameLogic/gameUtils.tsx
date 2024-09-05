@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import Checker from '../components/Checker';
+import Checker from '../components/game/Checker';
 import {
   APP_COLORS,
   DIMENSIONS,

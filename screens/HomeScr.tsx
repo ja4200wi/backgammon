@@ -8,10 +8,10 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Button, Card, Divider } from '@rneui/themed';
-import AvatarWithFlag from '../components/AvatarWithFlag';
-import AvatarWithPuzzle from '../components/AvatarWithPuzzle';
+import AvatarWithFlag from '../components/misc/AvatarWithFlag';
+import AvatarWithPuzzle from '../components/misc/AvatarWithPuzzle';
 import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
-import Header from '../components/Header';
+import Header from '../components/navigation/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { fetchUserAttributes } from 'aws-amplify/auth';
