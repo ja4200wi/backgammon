@@ -11,6 +11,14 @@ import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../../utils/constants';
 import AcceptMoveButton from './AcceptMoveButton';
 import DoubleButton from './DoulbeButton';
 import UndoMoveButton from './UndoMoveButton';
+import { BOARD_COLORS } from '../../utils/constants';
+
+const colors = {
+  backgroundColor: BOARD_COLORS.BACKGROUND,
+  spikeLightColor: BOARD_COLORS.SPIKEDARK,
+  spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
+  prisonColor: BOARD_COLORS.PRISON,
+};
 
 export interface Position {
   index: number;
@@ -20,12 +28,6 @@ export interface Position {
 
 interface BoardProps {
   positions: Position[];
-  colors: {
-    backgroundColor: string;
-    spikeLightColor: string;
-    spikeDarkColor: string;
-    prisonColor: string;
-  };
   width: number;
   currentPlayer: PLAYER_COLORS;
   pipCount: number[];
@@ -41,7 +43,6 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({
-  colors,
   width,
   height,
   dice,
