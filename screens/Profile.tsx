@@ -12,33 +12,20 @@ import {
 } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
 import Header from '../components/Header';
-
-import type { Schema } from '../amplify/data/resource';
-import { generateClient } from 'aws-amplify/data';
-
-const client = generateClient<Schema>();
+import { getCurrentUser } from 'aws-amplify/auth';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 export default function Profile({ navigation }: { navigation: any }) {
-  const [modalVisible, setModalVisible] = useState(false); // To control modal visibility
   const [profileName, setProfileName] = useState(''); // To store the profile name
-  const [enteredName, setEnteredName] = useState(''); // To store name entered in input
 
-  const createUser = async (name: string) => {
-    await client.models.Player.create({ name });
+  const fetchUserData = async () => {
+    const { username } = await getCurrentUser();
+    const userAttributes = await fetchUserAttributes();
+    setProfileName(userAttributes.nickname || username);
   };
 
-  // Handler when user presses confirm button
-  const handleConfirm = () => {
-    setProfileName(enteredName);
-    createUser(enteredName); // Create user in the database
-    setModalVisible(false);
-  };
+  fetchUserData();
 
-  // Handler when user presses cancel button
-  const handleCancel = () => {
-    setEnteredName(''); // Clear entered name
-    setModalVisible(false);
-  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
@@ -51,47 +38,7 @@ export default function Profile({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        {/* Create USer Button */}
-        <View style={styles.container}>
-          {/* Button to open the dialog */}
-          <Button
-            title='Set Profile Name'
-            onPress={() => setModalVisible(true)}
-          />
-
-          {/* Display the entered profile name */}
-          {profileName ? (
-            <Text style={styles.profileText}>Profile Name: {profileName}</Text>
-          ) : null}
-
-          {/* Modal for input dialog */}
-          <Modal
-            animationType='slide'
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalTitle}>Enter Profile Name</Text>
-
-                {/* Text input for the profile name */}
-                <TextInput
-                  style={styles.input}
-                  placeholder='Type your name...'
-                  value={enteredName}
-                  onChangeText={setEnteredName}
-                />
-
-                {/* Confirm and Cancel buttons */}
-                <View style={styles.buttonContainer}>
-                  <Button title='Confirm' onPress={handleConfirm} />
-                  <Button title='Cancel' onPress={handleCancel} />
-                </View>
-              </View>
-            </View>
-          </Modal>
-        </View>
+        <Text style={{ color: 'white', zIndex: 3 }}>{profileName}</Text>
       </ImageBackground>
     </SafeAreaView>
   );
