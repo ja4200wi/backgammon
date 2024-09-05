@@ -17,21 +17,21 @@ export interface DiceProps {
 }
 
 const WHITE_DICE_IMAGES: { [key: number]: ImageSourcePropType } = {
-  1: require('../images/diceOne.png'),
-  2: require('../images/diceTwo.png'),
-  3: require('../images/diceThree.png'),
-  4: require('../images/diceFour.png'),
-  5: require('../images/diceFive.png'),
-  6: require('../images/diceSix.png'),
+  1: require('../../images/diceOne.png'),
+  2: require('../../images/diceTwo.png'),
+  3: require('../../images/diceThree.png'),
+  4: require('../../images/diceFour.png'),
+  5: require('../../images/diceFive.png'),
+  6: require('../../images/diceSix.png'),
 };
 
 const BLACK_DICE_IMAGES: { [key: number]: ImageSourcePropType } = {
-  1: require('../images/diceBlackOne.png'),
-  2: require('../images/diceBlackTwo.png'),
-  3: require('../images/diceBlackThree.png'),
-  4: require('../images/diceBlackFour.png'),
-  5: require('../images/diceBlackFive.png'),
-  6: require('../images/diceBlackSix.png'),
+  1: require('../../images/diceBlackOne.png'),
+  2: require('../../images/diceBlackTwo.png'),
+  3: require('../../images/diceBlackThree.png'),
+  4: require('../../images/diceBlackFour.png'),
+  5: require('../../images/diceBlackFive.png'),
+  6: require('../../images/diceBlackSix.png'),
 };
 
 const Dice: React.FC<DiceProps> = ({

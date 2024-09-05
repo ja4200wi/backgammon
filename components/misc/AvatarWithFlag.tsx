@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import CountryFlag from 'react-native-country-flag'; // Ensure this is installed and set up
-import Profile from '../images/profile.svg'; // Ensure your SVG import is correct
+import Profile from '../../images/profile.svg'; // Ensure your SVG import is correct
 import { APP_COLORS, COUNTRIES } from '../../utils/constants';
 
 const AvatarWithFlag = ({ country }: { country: COUNTRIES }) => {
