@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,31 +7,43 @@ import {
   SafeAreaView,
   ImageBackground,
 } from 'react-native';
-import {Button, Card, Divider} from '@rneui/themed';
+import { Button, Card, Divider } from '@rneui/themed';
 import AvatarWithFlag from '../components/AvatarWithFlag';
 import AvatarWithPuzzle from '../components/AvatarWithPuzzle';
-import {APP_COLORS, DIMENSIONS} from '../utils/constants';
+import { APP_COLORS, DIMENSIONS } from '../utils/constants';
 import Header from '../components/Header';
-import {GLOBAL_STYLES} from '../utils/globalStyles';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
+import { getCurrentUser } from 'aws-amplify/auth';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
-export default function HomeScr({navigation}: {navigation: any}) {
+export default function HomeScr({ navigation }: { navigation: any }) {
+  const [profileName, setProfileName] = useState(''); // To store the profile name
+
+  const fetchUserData = async () => {
+    const { username } = await getCurrentUser();
+    const userAttributes = await fetchUserAttributes();
+    setProfileName(userAttributes.nickname || username);
+  };
+
+  fetchUserData();
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle='light-content' />
       <Header navigation={navigation} />
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
         style={styles.bodyContainer}
-        resizeMode="cover">
+        resizeMode='cover'
+      >
         {/* Semi-transparent Square for the overlay look */}
         <View style={styles.overlaySquare} />
         {/* User Info Card */}
-        <Card containerStyle={[GLOBAL_STYLES.card, {zIndex: 2}]}>
+        <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
           <View style={styles.userRow}>
             <AvatarWithFlag />
-            <Text style={[GLOBAL_STYLES.headline, , {marginLeft: 16}]}>
-              GubiGammer
+            <Text style={[GLOBAL_STYLES.headline, { marginLeft: 16 }]}>
+              {profileName}
             </Text>
           </View>
           <View style={styles.statsRow}>
@@ -50,10 +62,10 @@ export default function HomeScr({navigation}: {navigation: any}) {
           </View>
         </Card>
         {/* Daily Puzzle Card */}
-        <Card containerStyle={[GLOBAL_STYLES.card, {zIndex: 2}]}>
+        <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
           <View style={styles.puzzleRow}>
             <AvatarWithPuzzle />
-            <Text style={[GLOBAL_STYLES.headline, , {marginLeft: 16}]}>
+            <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
               Daily Puzzle
             </Text>
           </View>
@@ -61,11 +73,11 @@ export default function HomeScr({navigation}: {navigation: any}) {
         {/* Play Button */}
         <View style={styles.buttonContainer}>
           <Button
-            title="Play"
+            title='Play'
             loading={false}
-            loadingProps={{size: 'small', color: 'white'}}
+            loadingProps={{ size: 'small', color: 'white' }}
             buttonStyle={styles.playButton}
-            titleStyle={{fontWeight: 'bold', fontSize: 23}}
+            titleStyle={{ fontWeight: 'bold', fontSize: 23 }}
             onPress={() => navigation.navigate('GameSelection')}
           />
         </View>
@@ -122,8 +134,8 @@ const styles = StyleSheet.create({
     height: 60,
   },
   buttonContainer: {
-    marginTop: 'auto', // Pushes the button to the bottom of the container
-    marginBottom: 0, // Adds a 24px margin above the footer
-    zIndex: 3, // Ensures the button is above the overlay square
+    marginTop: 'auto',
+    marginBottom: 0,
+    zIndex: 3,
   },
 });
