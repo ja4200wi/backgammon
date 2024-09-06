@@ -82,8 +82,21 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       const { errors, data: game } = await client.models.Session.create({
         playerOneID: userName,
         playerTwoID: 'filler',
-        gameState:
-          '[{ "index": 0, "color": "WHITE", "count": 2 },{ "index": 11, "color": "WHITE", "count": 5 },{ "index": 16, "color": "WHITE", "count": 3 },{ "index": 18, "color": "WHITE", "count": 5 },{ "index": 23, "color": "BLACK", "count": 2 },{ "index": 12, "color": "BLACK", "count": 5 },{ "index": 7, "color": "BLACK", "count": 3 },{ "index": 5, "color": "BLACK", "count": 5 }]',
+        gameState: {
+          board: [
+            { index: 0, color: 'WHITE', count: 2 },
+            { index: 5, color: 'BLACK', count: 5 },
+            { index: 7, color: 'BLACK', count: 3 },
+            { index: 11, color: 'WHITE', count: 5 },
+            { index: 12, color: 'BLACK', count: 5 },
+            { index: 16, color: 'WHITE', count: 3 },
+            { index: 18, color: 'WHITE', count: 5 },
+            { index: 23, color: 'BLACK', count: 2 },
+          ],
+          dice: { dieOne: 0, dieTwo: 0 },
+          currentPlayer: 'WHITE',
+        },
+        turns: [],
       });
       navigation.navigate('Online', { gameId: game!.id });
     };
