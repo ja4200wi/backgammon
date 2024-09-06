@@ -78,13 +78,11 @@ export const useGameLogic = () => {
     setDice(currentgame.getDice());
     checkForLegalMove(currentgame, true)
   }
-
   const showAcceptMoveButton = (currentGame: Game) => {
     console.log('Checking if moves left');
     if(game) {return !(currentGame.getMovesLeft().length === 0);}
     return true
   };
-
   const showUndoMoveButton = (currentGame: Game) => {
     console.log('Checking undo button state');
     if (game === null) {
@@ -92,12 +90,10 @@ export const useGameLogic = () => {
     }
     return currentGame.getLastMoves().length === 0;
   };
-
   const updatePipCount = (distBlack: number, distWhite: number) => {
     console.log('Updating pipCount, Black:', distBlack, 'White:', distWhite);
     setPipCount([distWhite, distBlack]);
   };
-
   const updateMoveIsOver = () => {
     console.log('Updating move is over');
     if (firstRoll) {
@@ -105,7 +101,6 @@ export const useGameLogic = () => {
     }
     if(game) {switchplayer(game)}
   };
-
   const updateHomeCheckers = (game: Game) => {
     if (game) {
       console.log('Updating home checkers');
@@ -115,17 +110,16 @@ export const useGameLogic = () => {
       ]);
     }
   };
-
   const undoMove = () => {
     if(game) {console.log('Undoing move');
       game.undoMove();
       updateGameState()
   };
 }
-
   const legalMovesFrom = (from: number): number[] => {
     console.log('Getting legal moves from', from);
-    return game?.getLegalMovesFrom(from) ?? [];
+    if(game) {return game?.getLegalMovesFrom(from) ?? [];}
+    else return []
   };
 
   return {
