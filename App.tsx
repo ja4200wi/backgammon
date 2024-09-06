@@ -40,8 +40,6 @@ function HomeTabs() {
           <Tab.Screen name='Home' component={HomeScr} />
           <Tab.Screen name='Profile' component={ProfileScr} />
           <Tab.Screen name='Settings' component={Settings} />
-          <Tab.Screen name='PlayFriend' component={PlayFriend} />
-          <Tab.Screen name='Online' component={OnlineGameScr} />
         </Tab.Navigator>
       </Authenticator>
     </Authenticator.Provider>
@@ -58,6 +56,8 @@ export default function App() {
           <Stack.Screen name='Main' component={HomeTabs} />
           <Stack.Screen name='GameSelection' component={GameSelectionScr} />
           <Stack.Screen name='Game' component={GameScreen} />
+          <Stack.Screen name='PlayFriend' component={PlayFriend} />
+          <Stack.Screen name='Online' component={OnlineGameScr} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
