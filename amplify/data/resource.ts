@@ -4,13 +4,36 @@ import { joinGame } from '../functions/joinGame/resource';
 
 const schema = a
   .schema({
+    Position: a.customType({
+      index: a.integer(),
+      color: a.enum(['WHITE', 'BLACK']),
+      count: a.integer(),
+    }),
+    Dice: a.customType({
+      dieOne: a.integer(),
+      dieTwo: a.integer(),
+    }),
+    Move: a.customType({
+      from: a.integer(),
+      to: a.integer(),
+    }),
+    Turn: a.customType({
+      moves: a.ref('Move').array(),
+      type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE']),
+      player: a.enum(['WHITE', 'BLACK']),
+    }),
     Session: a
       .model({
         playerOneID: a.id(),
         playerOne: a.belongsTo('Player', 'playerOneID'),
         playerTwoID: a.id(),
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
-        gameState: a.json(),
+        gameState: a.customType({
+          board: a.ref('Position').array(),
+          dice: a.ref('Dice'),
+          currentPlayer: a.enum(['WHITE', 'BLACK']),
+        }),
+        turns: a.ref('Turn').array(),
       })
       .authorization((allow) => [allow.authenticated()]),
     Player: a

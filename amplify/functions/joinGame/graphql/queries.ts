@@ -30,7 +30,10 @@ export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
 export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
   getSession(id: $id) {
     createdAt
-    gameState
+    gameState {
+      currentPlayer
+      __typename
+    }
     id
     playerOne {
       createdAt
@@ -50,6 +53,11 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
       __typename
     }
     playerTwoID
+    turns {
+      player
+      type
+      __typename
+    }
     updatedAt
     __typename
   }
@@ -92,7 +100,6 @@ export const listSessions = /* GraphQL */ `query ListSessions(
   listSessions(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       createdAt
-      gameState
       id
       playerOneID
       playerTwoID

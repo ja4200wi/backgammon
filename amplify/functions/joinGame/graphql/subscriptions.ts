@@ -36,7 +36,10 @@ export const onCreatePlayer = /* GraphQL */ `subscription OnCreatePlayer(
 export const onCreateSession = /* GraphQL */ `subscription OnCreateSession($filter: ModelSubscriptionSessionFilterInput) {
   onCreateSession(filter: $filter) {
     createdAt
-    gameState
+    gameState {
+      currentPlayer
+      __typename
+    }
     id
     playerOne {
       createdAt
@@ -56,6 +59,11 @@ export const onCreateSession = /* GraphQL */ `subscription OnCreateSession($filt
       __typename
     }
     playerTwoID
+    turns {
+      player
+      type
+      __typename
+    }
     updatedAt
     __typename
   }
@@ -92,7 +100,10 @@ export const onDeletePlayer = /* GraphQL */ `subscription OnDeletePlayer(
 export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession($filter: ModelSubscriptionSessionFilterInput) {
   onDeleteSession(filter: $filter) {
     createdAt
-    gameState
+    gameState {
+      currentPlayer
+      __typename
+    }
     id
     playerOne {
       createdAt
@@ -112,6 +123,11 @@ export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession($filt
       __typename
     }
     playerTwoID
+    turns {
+      player
+      type
+      __typename
+    }
     updatedAt
     __typename
   }
@@ -148,7 +164,10 @@ export const onUpdatePlayer = /* GraphQL */ `subscription OnUpdatePlayer(
 export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession($filter: ModelSubscriptionSessionFilterInput) {
   onUpdateSession(filter: $filter) {
     createdAt
-    gameState
+    gameState {
+      currentPlayer
+      __typename
+    }
     id
     playerOne {
       createdAt
@@ -168,6 +187,11 @@ export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession($filt
       __typename
     }
     playerTwoID
+    turns {
+      player
+      type
+      __typename
+    }
     updatedAt
     __typename
   }
