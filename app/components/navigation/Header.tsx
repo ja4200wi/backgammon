@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { APP_COLORS } from '../../utils/constants';
-import { GLOBAL_STYLES } from '../../utils/globalStyles';
 
 export default function Header({ navigation }: { navigation: any }) {
   return (
-    <View style={styles.headerContainer}>
+    <View className='flex flex-row justify-between py-2 px-4 z-10 items-center'>
       <TouchableOpacity onPress={() => console.log('Friends')}>
         <Icon
           name='people'
@@ -15,7 +14,7 @@ export default function Header({ navigation }: { navigation: any }) {
           size={30}
         />
       </TouchableOpacity>
-      <Text style={GLOBAL_STYLES.headline}>Gammon.com</Text>
+      <Text className='font-bold text-white text-2xl'>Gammon.com</Text>
       <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
         <Icon
           name='settings'
@@ -27,22 +26,3 @@ export default function Header({ navigation }: { navigation: any }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  headerText: {
-    color: '#FFF',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  headerContainer: {
-    paddingRight: 16,
-    paddingLeft: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
-    backgroundColor: APP_COLORS.headerBackGroundColor,
-    zIndex: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-});
