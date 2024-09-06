@@ -1,20 +1,23 @@
 import { Move } from "./move";
 
 export class Turn {
-  firstMove: Move;
-  secondMove: Move;
+  firstMove?: Move;
+  secondMove?: Move;
   thirdMove?: Move;
   fourthMove?: Move;
 
-  constructor(moves: Move[]) {
-    if (moves.length < 2) {
-      throw new Error("At least two moves are required to create a Turn.");
+  constructor(moves: Move[] = []) {
+    if (moves.length >= 1) {
+      this.firstMove = moves[0];
     }
-    this.firstMove = moves[0];
-    this.secondMove = moves[1];
-    if(moves.length === 4) {
-        this.thirdMove = moves[2];
-        this.fourthMove = moves[3];
+    if (moves.length >= 2) {
+      this.secondMove = moves[1];
+    }
+    if (moves.length >= 3) {
+      this.thirdMove = moves[2];
+    }
+    if (moves.length >= 4) {
+      this.fourthMove = moves[3];
     }
   }
 }
