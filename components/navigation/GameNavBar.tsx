@@ -15,13 +15,13 @@ import { hashMapper } from 'aws-cdk-lib';
 interface GameNavBarProps {
   onAcceptMove: () => void;
   onUndoMove: () => void;
-  noMovesLeft: boolean;
-  noMoveDone: boolean;
+  showAcceptMoveButton: boolean;
+  showUndoMoveButton: boolean;
 }
 
-const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, noMovesLeft, noMoveDone }) => {
-  const acceptButtonColor = noMovesLeft ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
-  const undoButtonColor = noMoveDone ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
+const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showAcceptMoveButton, showUndoMoveButton }) => {
+  const acceptButtonColor = showAcceptMoveButton ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
+  const undoButtonColor = showUndoMoveButton ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   return (
     <View style={styles.footerContainer}>
       <TouchableOpacity
@@ -76,7 +76,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, noMov
         onPress={() =>
           onUndoMove()
         }
-        disabled={noMoveDone}
+        disabled={showUndoMoveButton}
       >
         <Icon
           name='replay'
@@ -90,7 +90,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, noMov
         onPress={() =>
           onAcceptMove()
         }
-        disabled = {noMovesLeft} 
+        disabled = {showAcceptMoveButton} 
       >
         <Icon
           name='done'

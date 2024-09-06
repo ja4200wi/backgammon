@@ -39,16 +39,6 @@ export const useGameLogic = () => {
     }
     return false;
   };
-  const updateGameState = () => {
-    if(game) {
-      setPositions(game.getCurrentPositions());
-      const distances = game.getDistances();
-      updatePipCount(distances.distBlack, distances.distWhite);
-      updateHomeCheckers(game);
-      checkForLegalMove(game, true);
-    }
-  }
-
   const doStartingPhase = (currentGame: Game) => {
     if (currentGame.getDice()[0] > currentGame.getDice()[1]) {
       currentGame.setPlayer(PLAYER_COLORS.WHITE);
@@ -60,6 +50,15 @@ export const useGameLogic = () => {
       setDice(currentGame.getDice());
       console.log('Black starts, dice:', currentGame.getDice());
       setTimeout(() => setStartingPhase(false), 2250);
+    }
+  }
+  const updateGameState = () => {
+    if(game) {
+      setPositions(game.getCurrentPositions());
+      const distances = game.getDistances();
+      updatePipCount(distances.distBlack, distances.distWhite);
+      updateHomeCheckers(game);
+      checkForLegalMove(game, true);
     }
   }
   const checkForLegalMove = async (currentGame: Game, fastSwitch: boolean) => {
@@ -80,15 +79,13 @@ export const useGameLogic = () => {
     checkForLegalMove(currentgame, true)
   }
 
-  const hasMovesLeft = (currentGame: Game) => {
+  const showAcceptMoveButton = (currentGame: Game) => {
     console.log('Checking if moves left');
-    if (game === null) {
-      return true;
-    }
-    return !(currentGame.getMovesLeft().length === 0);
+    if(game) {return !(currentGame.getMovesLeft().length === 0);}
+    return true
   };
 
-  const undoMoveButtonState = (currentGame: Game) => {
+  const showUndoMoveButton = (currentGame: Game) => {
     console.log('Checking undo button state');
     if (game === null) {
       return true;
@@ -120,13 +117,11 @@ export const useGameLogic = () => {
   };
 
   const undoMove = () => {
-    console.log('Undoing move');
-    game?.undoMove();
-    setPositions(game!.getCurrentPositions());
-    const distances = game!.getDistances();
-    updatePipCount(distances.distBlack, distances.distWhite);
-    updateHomeCheckers(game!);
+    if(game) {console.log('Undoing move');
+      game.undoMove();
+      updateGameState()
   };
+}
 
   const legalMovesFrom = (from: number): number[] => {
     console.log('Getting legal moves from', from);
@@ -141,9 +136,9 @@ export const useGameLogic = () => {
     homeCheckers,
     onMoveChecker,
     startGame,
-    hasMovesLeft,
+    showAcceptMoveButton,
     updateMoveIsOver,
-    undoMoveButtonState,
+    showUndoMoveButton,
     undoMove,
     legalMovesFrom,
     isStartingPhase,

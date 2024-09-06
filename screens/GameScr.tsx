@@ -34,9 +34,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
     homeCheckers,
     onMoveChecker,
     startGame,
-    hasMovesLeft,
+    showAcceptMoveButton,
     updateMoveIsOver,
-    undoMoveButtonState,
+    showUndoMoveButton,
     undoMove,
     legalMovesFrom,
     isStartingPhase,
@@ -111,8 +111,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
       <GameNavBar
         onAcceptMove={updateMoveIsOver}
         onUndoMove={undoMove}
-        noMovesLeft={hasMovesLeft(game!)}
-        noMoveDone={undoMoveButtonState(game!)}
+        showAcceptMoveButton={showAcceptMoveButton(game!)}
+        showUndoMoveButton={showUndoMoveButton(game!)}
       />
     </SafeAreaView>
   );
