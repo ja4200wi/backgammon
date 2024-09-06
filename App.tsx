@@ -17,6 +17,7 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import PlayFriend from './screens/PlayFriendScr';
 import OnlineGameScr from './screens/OnlineGameScr';
+import { Text } from 'react-native';
 
 Amplify.configure(outputs);
 

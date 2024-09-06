@@ -36,9 +36,7 @@ function UserCard({
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
         <AvatarWithFlag country={COUNTRIES.JAPAN} />
-        <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
-          {profileName}
-        </Text>
+        <Text className='text-red-500'>{profileName}</Text>
       </View>
       <View style={styles.statsRow}>
         <Text style={GLOBAL_STYLES.lineItems}>ELO</Text>
