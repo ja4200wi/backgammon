@@ -2,21 +2,21 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScr from './screens/HomeScr';
-import GameScreen from './screens/GameScr';
-import GameSelectionScr from './screens/GameSelectionScr';
-import ProfileScr from './screens/Profile';
-import NavBar from './components/navigation/NavBar';
-import Settings from './screens/SettingsScr';
+import HomeScr from './app/screens/HomeScr';
+import GameScreen from './app/screens/GameScr';
+import GameSelectionScr from './app/screens/GameSelectionScr';
+import ProfileScr from './app/screens/Profile';
+import NavBar from './app/components/navigation/NavBar';
+import Settings from './app/screens/SettingsScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { APP_COLORS } from './utils/constants';
+import { APP_COLORS } from './app/utils/constants';
 
 import { Amplify } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 
 import outputs from './amplify_outputs.json';
-import PlayFriend from './screens/PlayFriendScr';
-import OnlineGameScr from './screens/OnlineGameScr';
+import PlayFriend from './app/screens/PlayFriendScr';
+import OnlineGameScr from './app/screens/OnlineGameScr';
 import { Text } from 'react-native';
 
 Amplify.configure(outputs);
