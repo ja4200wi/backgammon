@@ -86,8 +86,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
       <HeaderSecondary navigation={navigation} headline='Press & Play' />
       <View style={styles.boardContainer}>
         <Board
-          width={DIMENSIONS.boardWidth}
-          height={DIMENSIONS.boardHeight}
           positions={positions}
           currentPlayer={game?.getCurrentPlayer()!}
           pipCount={scores}

@@ -173,8 +173,6 @@ export default function OnlineGameScr({
         </Text>
       </View>
       <Board
-        width={DIMENSIONS.boardWidth}
-        height={DIMENSIONS.boardHeight}
         positions={positions_new}
         currentPlayer={currentPlayer}
         pipCount={scores}
