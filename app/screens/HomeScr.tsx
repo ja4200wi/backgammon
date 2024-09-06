@@ -60,7 +60,7 @@ function UserCard({
 function PuzzleCard() {
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
-      <View style={styles.puzzleRow}>
+      <View className='flex-row items-center'>
         <AvatarWithPuzzle />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
           Daily Puzzle
@@ -71,7 +71,7 @@ function PuzzleCard() {
 }
 function PlayButton({ navigation }: { navigation: any }) {
   return (
-    <View style={styles.buttonContainer}>
+    <View className='z-10 mt-auto'>
       <Button
         title='Play'
         loading={false}
@@ -86,7 +86,7 @@ function PlayButton({ navigation }: { navigation: any }) {
 
 export default function HomeScr({ navigation }: { navigation: any }) {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className='flex-1'>
       <StatusBar barStyle='light-content' />
       <Header navigation={navigation} />
       <ImageBackground
@@ -104,10 +104,6 @@ export default function HomeScr({ navigation }: { navigation: any }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: APP_COLORS.headerBackGroundColor,
-  },
   bodyContainer: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -120,10 +116,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(48, 46, 43, .9)',
     zIndex: 1,
   },
-  puzzleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   divider: {
     backgroundColor: APP_COLORS.iconGrey,
     marginVertical: 4,
@@ -132,9 +124,5 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLORS.appGreen,
     borderRadius: 5,
     height: 60,
-  },
-  buttonContainer: {
-    marginTop: 'auto',
-    zIndex: 3,
   },
 });
