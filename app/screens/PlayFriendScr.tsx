@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
   StatusBar,
   SafeAreaView,
   ImageBackground,
-  Text,
 } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';

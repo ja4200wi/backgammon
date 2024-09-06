@@ -10,7 +10,6 @@ import {
 import { Icon } from '@rneui/themed';
 import { APP_COLORS } from '../../utils/constants';
 import { Divider } from '@rneui/themed';
-import { DebugInstructions } from 'react-native/Libraries/NewAppScreen';
 
 export default function GameNavBar({ navigation }: { navigation: any }) {
   return (

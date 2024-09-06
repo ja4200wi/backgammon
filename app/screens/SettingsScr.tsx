@@ -25,7 +25,7 @@ export default function Settings({ navigation }: { navigation: any }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
-      <Header />
+      <Header navigation={navigation} />
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}

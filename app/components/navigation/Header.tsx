@@ -1,17 +1,7 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  SafeAreaView,
-  TouchableOpacity,
-  ImageBackground,
-} from 'react-native';
-import { Card, Icon, Button, Tooltip } from '@rneui/themed';
-import { APP_COLORS, DIMENSIONS } from '../../utils/constants';
-import NavBar from './NavBar';
-import Friends from '../images/group.svg';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Icon } from '@rneui/themed';
+import { APP_COLORS } from '../../utils/constants';
 import { GLOBAL_STYLES } from '../../utils/globalStyles';
 
 export default function Header({ navigation }: { navigation: any }) {

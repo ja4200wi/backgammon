@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 
 import { generateClient, SelectionSet } from 'aws-amplify/data';
-import { Schema } from '../amplify/data/resource';
+import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { getCurrentUser } from 'aws-amplify/auth';
 

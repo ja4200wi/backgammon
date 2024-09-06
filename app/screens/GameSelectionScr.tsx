@@ -14,7 +14,7 @@ import { GLOBAL_STYLES } from '../utils/globalStyles';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
-import { Schema } from '../amplify/data/resource';
+import { Schema } from '../../amplify/data/resource';
 
 const client = generateClient<Schema>();
 

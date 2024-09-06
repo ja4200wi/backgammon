@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, Text } from 'react-native';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
 import Board, { Position } from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
-import {
-  DIMENSIONS,
-  APP_COLORS,
-  PLAYER_COLORS,
-  DICE_COLORS,
-  BOARD_COLORS,
-} from '../utils/constants';
+import { APP_COLORS, PLAYER_COLORS, DICE_COLORS } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
-import { generateClient, SelectionSet } from 'aws-amplify/api';
-import { Schema } from '../amplify/data/resource';
+import { generateClient } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
   .fill(null)
