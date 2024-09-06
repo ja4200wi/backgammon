@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import { GAME_SETTINGS, PLAYER_COLORS } from '../utils/constants';
+import { Turn } from '../gameLogic/turn';
+import { Move } from '../gameLogic/move';
 import { custom_resources } from 'aws-cdk-lib';
 
 export const useGameLogic = () => {
@@ -10,6 +12,8 @@ export const useGameLogic = () => {
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
   const [pipCount, setPipCount] = useState(GAME_SETTINGS.startScores);
   const [firstRoll, setFirstRoll] = useState(true);
+  const [moves, setMoves] = useState<Move[]>([])
+  const [turnes,setTurnes] = useState<Turn[]>([])
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
   );
@@ -18,19 +22,24 @@ export const useGameLogic = () => {
     startGame();
   }, []);
 
+  useEffect(() => {
+    //here to make sure moves and turnes are getting updated in time
+    console.log('current moves',moves)
+    console.log('current turn',turnes)
+  }, [moves,turnes])
+
   const startGame = () => {
     const newGame = new Game();
     setGame(newGame);
     setPositions(newGame.getCurrentPositions());
-    console.log('Game started:');
     doStartingPhase(newGame)
   };
 
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
-    console.log('Attempting to move checker from', sourceIndex, 'to', targetIndex);
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       if(success) {
+        setMoves([...moves, new Move(sourceIndex,targetIndex)])
         updateGameState()
         return success
       } else {
@@ -43,12 +52,10 @@ export const useGameLogic = () => {
     if (currentGame.getDice()[0] > currentGame.getDice()[1]) {
       currentGame.setPlayer(PLAYER_COLORS.WHITE);
       setDice(currentGame.getDice());
-      console.log('White starts, dice:', currentGame.getDice());
       setTimeout(() => setStartingPhase(false), 2250);
     } else {
       currentGame.setPlayer(PLAYER_COLORS.BLACK);
       setDice(currentGame.getDice());
-      console.log('Black starts, dice:', currentGame.getDice());
       setTimeout(() => setStartingPhase(false), 2250);
     }
   }
@@ -62,9 +69,7 @@ export const useGameLogic = () => {
     }
   }
   const checkForLegalMove = async (currentGame: Game, fastSwitch: boolean) => {
-    console.log('Checking for legal moves');
     if (!currentGame.hasLegalMove()) {
-      console.log('No legal moves, switching player');
       if (fastSwitch) {
         switchplayer(currentGame)
       } else {
@@ -74,53 +79,60 @@ export const useGameLogic = () => {
     }
   };
   const switchplayer = (currentgame: Game) => {
+    safeTurn()
     currentgame.switchPlayer();
     setDice(currentgame.getDice());
-    checkForLegalMove(currentgame, true)
+    checkForLegalMove(currentgame, false)
   }
   const showAcceptMoveButton = (currentGame: Game) => {
-    console.log('Checking if moves left');
     if(game) {return !(currentGame.getMovesLeft().length === 0);}
     return true
   };
   const showUndoMoveButton = (currentGame: Game) => {
-    console.log('Checking undo button state');
     if (game === null) {
       return true;
     }
     return currentGame.getLastMoves().length === 0;
   };
   const updatePipCount = (distBlack: number, distWhite: number) => {
-    console.log('Updating pipCount, Black:', distBlack, 'White:', distWhite);
     setPipCount([distWhite, distBlack]);
   };
   const updateMoveIsOver = () => {
-    console.log('Updating move is over');
     if (firstRoll) {
       setFirstRoll(false);
     }
-    if(game) {switchplayer(game)}
+    if(game) {
+      switchplayer(game)
+      console.log('current turnes',turnes)
+    }
   };
   const updateHomeCheckers = (game: Game) => {
     if (game) {
-      console.log('Updating home checkers');
       setHomeCheckers([
         game.getHomeCheckers(PLAYER_COLORS.WHITE),
         game.getHomeCheckers(PLAYER_COLORS.BLACK),
       ]);
     }
   };
+  const removeLastMove = () => {
+    setMoves(prevMoves => prevMoves.slice(0, -1));
+  };
   const undoMove = () => {
-    if(game) {console.log('Undoing move');
+    if(game) {
+      removeLastMove()
+      console.log('poped Move:',moves)
       game.undoMove();
       updateGameState()
   };
 }
   const legalMovesFrom = (from: number): number[] => {
-    console.log('Getting legal moves from', from);
     if(game) {return game?.getLegalMovesFrom(from) ?? [];}
     else return []
   };
+  const safeTurn = () => {
+    setTurnes([... turnes, new Turn(moves)])
+    setMoves([])
+  }
 
   return {
     game,

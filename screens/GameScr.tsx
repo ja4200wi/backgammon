@@ -45,7 +45,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
 
   const showWinnerScreen = (success: boolean) => {
     const winner = game!.whoIsWinner();
-    console.log('Winner: ', winner);
     Alert.alert(
       `${winner} wins the Game`,
       'What would you like to do?',
@@ -53,7 +52,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         {
           text: 'Restart',
           onPress: () => {
-            console.log('Restarting game');
             startGame();
           },
           style: 'cancel',
@@ -61,7 +59,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         {
           text: 'Go to Home',
           onPress: () => {
-            console.log('Navigating to Home');
             navigation.navigate('Home');
           },
           style: 'default',
@@ -75,11 +72,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
     sourceIndex: number,
     targetIndex: number
   ) => {
-    console.log('Moving checker from', sourceIndex, 'to', targetIndex);
     const success = await onMoveChecker(sourceIndex, targetIndex);
-    console.log('Move success:', success);
     if (success && game?.isGameOver()) {
-      console.log('Game over');
       showWinnerScreen(success);
     }
     return success;
