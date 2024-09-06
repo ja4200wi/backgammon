@@ -56,14 +56,6 @@ const Board: React.FC<BoardProps> = ({
   );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
 
-  const handleSpikePress = (index: number) => {
-    if (selectedSource === null && spikes[index].checkers.length > 0) {
-      setSelectedSource(index);
-    } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index);
-    }
-  };
-
   const moveChecker = async (sourceIndex: number, targetIndex: number) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
@@ -73,7 +65,6 @@ const Board: React.FC<BoardProps> = ({
       setSelectedSource(null);
     }
   };
-
   const handlePrisonPress = (index: number) => {
     if (selectedSource === null && prisonCheckers.length > 0) {
       if (currentPlayer === PLAYER_COLORS.WHITE) {
@@ -81,6 +72,13 @@ const Board: React.FC<BoardProps> = ({
       } else {
         setSelectedSource(25);
       }
+    } else if (selectedSource !== null) {
+      moveChecker(selectedSource, index);
+    }
+  };
+  const handleSpikePress = (index: number) => {
+    if (selectedSource === null && spikes[index].checkers.length > 0) {
+      setSelectedSource(index);
     } else if (selectedSource !== null) {
       moveChecker(selectedSource, index);
     }
