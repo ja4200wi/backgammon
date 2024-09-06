@@ -13,22 +13,18 @@ import AvatarWithPuzzle from '../components/misc/AvatarWithPuzzle';
 import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
 import Header from '../components/navigation/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
-import { getCurrentUser } from 'aws-amplify/auth';
-import { fetchUserAttributes } from 'aws-amplify/auth';
 import { getUserNickname } from '../service/profileService';
 
 function UserCard({
   ELO,
   Coins,
   GlobalRank,
-  Username,
 }: {
   ELO: number;
   Coins: number;
   GlobalRank: number;
-  Username: string;
 }) {
-  const [profileName, setProfileName] = useState(''); // To store the profile name
+  const [profileName, setProfileName] = useState('');
 
   const fetchUserData = async () => {
     const nickname = await getUserNickname();
@@ -99,13 +95,7 @@ export default function HomeScr({ navigation }: { navigation: any }) {
         resizeMode='cover'
       >
         <View style={styles.overlaySquare} />
-
-        <UserCard
-          Username='GubiGammer'
-          ELO={1354}
-          Coins={394}
-          GlobalRank={39459}
-        />
+        <UserCard ELO={1354} Coins={394} GlobalRank={39459} />
         <PuzzleCard />
         <PlayButton navigation={navigation} />
       </ImageBackground>

@@ -15,6 +15,8 @@ import { Amplify } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 
 import outputs from './amplify_outputs.json';
+import PlayFriend from './screens/PlayFriendScr';
+import OnlineGameScr from './screens/OnlineGameScr';
 
 Amplify.configure(outputs);
 
@@ -37,6 +39,8 @@ function HomeTabs() {
           <Tab.Screen name='Home' component={HomeScr} />
           <Tab.Screen name='Profile' component={ProfileScr} />
           <Tab.Screen name='Settings' component={Settings} />
+          <Tab.Screen name='PlayFriend' component={PlayFriend} />
+          <Tab.Screen name='Online' component={OnlineGameScr} />
         </Tab.Navigator>
       </Authenticator>
     </Authenticator.Provider>

@@ -19,7 +19,6 @@ const initialSpikes: React.ReactElement[][] = new Array(24)
   .fill(null)
   .map(() => []);
 
-// Initial distribution of checkers
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
@@ -150,12 +149,6 @@ export default function OnlineGameScr({
         </Text>
       </View>
       <Board
-        colors={{
-          backgroundColor: BOARD_COLORS.BACKGROUND,
-          spikeLightColor: BOARD_COLORS.SPIKELIGHT,
-          spikeDarkColor: BOARD_COLORS.SPIKEDARK,
-          prisonColor: BOARD_COLORS.PRISON,
-        }}
         width={DIMENSIONS.boardWidth}
         height={DIMENSIONS.boardHeight}
         positions={positions}
