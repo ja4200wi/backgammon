@@ -28,11 +28,9 @@ export interface Position {
 
 interface BoardProps {
   positions: Position[];
-  width: number;
   currentPlayer: PLAYER_COLORS;
   pipCount: number[];
   homeCount: number[];
-  height: number;
   dice: DiceProps;
   noMovesLeft: boolean;
   hasDoneMove: boolean;
@@ -43,8 +41,6 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({
-  width,
-  height,
   dice,
   currentPlayer,
   positions,
@@ -240,8 +236,8 @@ const Board: React.FC<BoardProps> = ({
           styles.board,
           {
             backgroundColor: colors.backgroundColor,
-            width: width,
-            height: height,
+            width: DIMENSIONS.boardWidth,
+            height: DIMENSIONS.boardHeight,
           },
         ]}
       >
@@ -279,7 +275,7 @@ const Board: React.FC<BoardProps> = ({
         <Prison
           backgroundColor={colors.prisonColor}
           width={DIMENSIONS.spikeWidth}
-          height={height}
+          height={DIMENSIONS.boardHeight}
           checkers={prisonCheckers}
           onPress={handlePrisonPress}
         />
