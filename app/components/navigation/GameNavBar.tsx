@@ -13,7 +13,9 @@ import { Divider } from '@rneui/themed';
 
 export default function GameNavBar({ navigation }: { navigation: any }) {
   return (
-    <View style={styles.footerContainer}>
+    <View
+      className={`w-full bg-background py-4 flex flex-row justify-evenly items-center`}
+    >
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Icon
           name='arrow-back'
@@ -85,28 +87,8 @@ export default function GameNavBar({ navigation }: { navigation: any }) {
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
       <TouchableOpacity onPress={() => console.log('double')}>
-        <Text
-          style={{
-            fontSize: 30,
-            color: APP_COLORS.iconGrey,
-            fontWeight: '600',
-          }}
-        >
-          x2
-        </Text>
+        <Text className='font-bold text-3xl text-iconGrey'>x2</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  footerContainer: {
-    backgroundColor: APP_COLORS.backgroundColor,
-    paddingTop: 16,
-    paddingBottom: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    width: '100%',
-  },
-});
