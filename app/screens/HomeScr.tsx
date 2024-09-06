@@ -31,27 +31,29 @@ function UserCard({
     setProfileName(nickname);
   };
 
+  function StatsRow({ label, value }: { label: string; value: string }) {
+    return (
+      <View className='flex flex-row justify-between'>
+        <Text className='text-xl font-semibold text-white'>{label}</Text>
+        <Text className='text-xl font-semibold text-white'>{value}</Text>
+      </View>
+    );
+  }
+
   fetchUserData();
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
-      <View style={styles.userRow}>
+      <View className='flex-row items-center mb-2'>
         <AvatarWithFlag country={COUNTRIES.JAPAN} />
-        <Text className='text-red-500'>{profileName}</Text>
+        <Text className='text-white font-bold text-2xl ml-2'>
+          {profileName}
+        </Text>
       </View>
-      <View style={styles.statsRow}>
-        <Text style={GLOBAL_STYLES.lineItems}>ELO</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{ELO} GP</Text>
-      </View>
+      <StatsRow label={'ELO'} value={`${ELO} GP`} />
       <Divider style={styles.divider} />
-      <View style={styles.statsRow}>
-        <Text style={GLOBAL_STYLES.lineItems}>Coins</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Coins}</Text>
-      </View>
+      <StatsRow label={'Coins'} value={`${Coins}`} />
       <Divider style={styles.divider} />
-      <View style={styles.statsRow}>
-        <Text style={GLOBAL_STYLES.lineItems}>Global Ranking</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{GlobalRank}</Text>
-      </View>
+      <StatsRow label={'Global Ranking'} value={`${GlobalRank}`} />
     </Card>
   );
 }
@@ -118,18 +120,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(48, 46, 43, .9)',
     zIndex: 1,
   },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
   puzzleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   divider: {
     backgroundColor: APP_COLORS.iconGrey,
