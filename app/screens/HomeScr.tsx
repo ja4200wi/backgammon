@@ -31,36 +31,36 @@ function UserCard({
     setProfileName(nickname);
   };
 
-  function StatsRow({ label, value }: { label: string; value: string }) {
-    return (
-      <View className='flex flex-row justify-between'>
-        <Text className='text-xl font-semibold text-white'>{label}</Text>
-        <Text className='text-xl font-semibold text-white'>{value}</Text>
-      </View>
-    );
-  }
-
   fetchUserData();
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
-      <View className='flex-row items-center mb-2'>
+      <View style={styles.userRow}>
         <AvatarWithFlag country={COUNTRIES.JAPAN} />
-        <Text className='text-white font-bold text-2xl ml-2'>
+        <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
           {profileName}
         </Text>
       </View>
-      <StatsRow label={'ELO'} value={`${ELO} GP`} />
+      <View style={styles.statsRow}>
+        <Text style={GLOBAL_STYLES.lineItems}>ELO</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{ELO} GP</Text>
+      </View>
       <Divider style={styles.divider} />
-      <StatsRow label={'Coins'} value={`${Coins}`} />
+      <View style={styles.statsRow}>
+        <Text style={GLOBAL_STYLES.lineItems}>Coins</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{Coins}</Text>
+      </View>
       <Divider style={styles.divider} />
-      <StatsRow label={'Global Ranking'} value={`${GlobalRank}`} />
+      <View style={styles.statsRow}>
+        <Text style={GLOBAL_STYLES.lineItems}>Global Ranking</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{GlobalRank}</Text>
+      </View>
     </Card>
   );
 }
 function PuzzleCard() {
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
-      <View className='flex-row items-center'>
+      <View style={styles.puzzleRow}>
         <AvatarWithPuzzle />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
           Daily Puzzle
@@ -71,7 +71,7 @@ function PuzzleCard() {
 }
 function PlayButton({ navigation }: { navigation: any }) {
   return (
-    <View className='z-10 mt-auto'>
+    <View style={styles.buttonContainer}>
       <Button
         title='Play'
         loading={false}
@@ -86,7 +86,7 @@ function PlayButton({ navigation }: { navigation: any }) {
 
 export default function HomeScr({ navigation }: { navigation: any }) {
   return (
-    <SafeAreaView className='flex-1'>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
       <Header navigation={navigation} />
       <ImageBackground
@@ -104,6 +104,10 @@ export default function HomeScr({ navigation }: { navigation: any }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: APP_COLORS.headerBackGroundColor,
+  },
   bodyContainer: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -116,6 +120,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(48, 46, 43, .9)',
     zIndex: 1,
   },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  puzzleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   divider: {
     backgroundColor: APP_COLORS.iconGrey,
     marginVertical: 4,
@@ -124,5 +141,9 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLORS.appGreen,
     borderRadius: 5,
     height: 60,
+  },
+  buttonContainer: {
+    marginTop: 'auto',
+    zIndex: 3,
   },
 });
