@@ -11,48 +11,18 @@ import { Icon } from '@rneui/themed';
 import { APP_COLORS } from '../../utils/constants';
 import { Divider } from '@rneui/themed';
 
-export default function GameNavBar({ navigation }: { navigation: any }) {
+interface GameNavBarProps {
+  onAcceptMove: () => void;
+  onUndoMove: () => void;
+  showAcceptMoveButton: boolean;
+  showUndoMoveButton: boolean;
+}
+
+const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showAcceptMoveButton, showUndoMoveButton }) => {
+  const acceptButtonColor = showAcceptMoveButton ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
+  const undoButtonColor = showUndoMoveButton ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   return (
-    <View
-      className={`w-full bg-background py-4 flex flex-row justify-evenly items-center`}
-    >
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Icon
-          name='arrow-back'
-          type='material'
-          color={APP_COLORS.iconGrey}
-          size={36}
-        />
-      </TouchableOpacity>
-      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity
-        onPress={() =>
-          Alert.alert(
-            'Restart Game',
-            'Are you sure you want to restart the game? Your current Game will be lost.',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-              {
-                text: 'Restart',
-                onPress: () => console.log('Restart Pressed'),
-              },
-            ],
-            { cancelable: false }
-          )
-        }
-      >
-        <Icon
-          name='sync'
-          type='material'
-          color={APP_COLORS.iconGrey}
-          size={36}
-        />
-      </TouchableOpacity>
-      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
+    <View style={styles.footerContainer}>
       <TouchableOpacity
         onPress={() =>
           ActionSheetIOS.showActionSheetWithOptions(
@@ -62,6 +32,7 @@ export default function GameNavBar({ navigation }: { navigation: any }) {
                 'Give up (-1)',
                 'Give up as a Gammon (-2)',
                 'Give up as a Backgammon (-3)',
+                'Restart Game'
               ],
               cancelButtonIndex: 0,
               userInterfaceStyle: 'dark',
@@ -73,6 +44,8 @@ export default function GameNavBar({ navigation }: { navigation: any }) {
                 console.log('Give up as a Gammon (-2)');
               } else if (buttonIndex === 3) {
                 console.log('Give up as a Backgammon (-3)');
+              } else if (buttonIndex === 4) {
+                console.log('Restart');
               }
             }
           )
@@ -87,8 +60,58 @@ export default function GameNavBar({ navigation }: { navigation: any }) {
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
       <TouchableOpacity onPress={() => console.log('double')}>
-        <Text className='font-bold text-3xl text-iconGrey'>x2</Text>
+        <Text
+          style={{
+            fontSize: 30,
+            color: APP_COLORS.iconGrey,
+            fontWeight: '600',
+          }}
+        >
+          x2
+        </Text>
+      </TouchableOpacity>
+      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
+      <TouchableOpacity
+        onPress={() =>
+          onUndoMove()
+        }
+        disabled={showUndoMoveButton}
+      >
+        <Icon
+          name='replay'
+          type='material'
+          color={undoButtonColor}
+          size={36}
+        />
+      </TouchableOpacity>
+      <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
+      <TouchableOpacity
+        onPress={() =>
+          onAcceptMove()
+        }
+        disabled = {showAcceptMoveButton} 
+      >
+        <Icon
+          name='done'
+          type='material'
+          color={acceptButtonColor}
+          size={36}
+        />
       </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  footerContainer: {
+    backgroundColor: APP_COLORS.backgroundColor,
+    paddingTop: 16,
+    paddingBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    width: '100%',
+  },
+});
+
+export default GameNavBar
