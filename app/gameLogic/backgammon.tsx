@@ -1,7 +1,7 @@
 import { PLAYER_COLORS } from '../utils/constants';
 import { Turn } from './turn';
 import { Move } from './move';
-import { Checker } from './Checker';
+import { Checker } from './checker';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
 const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
