@@ -14,10 +14,9 @@ import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
 
-type GameScrRouteProp = RouteProp<{ [key: string]: { gameMode: GAME_TYPE } }, string>;
 interface GameScrProps {
-  navigation: NavigationProp<ParamListBase>;
-  route: GameScrRouteProp;
+  navigation: any
+  route: any
 }
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
@@ -45,7 +44,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     isStartingPhase,
     firstRoll,
   } = useGameLogic();
-  const gameMode = route.params?.gameMode;
+  const { gameMode } = route.params;
   useEffect(() => {
     startGame(gameMode);
   }, []);
