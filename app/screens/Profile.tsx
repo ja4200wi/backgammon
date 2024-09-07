@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,19 +19,26 @@ import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
+import { getUserJoined, getUserNickname } from '../service/profileService';
 
-function UserProfile({
-  username,
-  dateJoined,
-}: {
-  username: string;
-  dateJoined: Date;
-}) {
+function UserProfile({ dateJoined }: { dateJoined: Date }) {
   const formattedDate = dateJoined.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  const [nickname, setProfileName] = useState('');
+  const [userJoinedDate, setUserJoinedDate] = useState('');
+
+  const fetchUserData = async () => {
+    const nickname = await getUserNickname();
+    const joined = await getUserJoined();
+    setProfileName(nickname);
+    setUserJoinedDate(joined);
+  };
+
+  fetchUserData();
 
   return (
     <View style={[styles.content, { padding: 16 }]}>
@@ -44,9 +51,9 @@ function UserProfile({
             marginLeft: 16,
           }}
         >
-          <Text style={[GLOBAL_STYLES.headline]}>{username}</Text>
+          <Text style={[GLOBAL_STYLES.headline]}>{nickname}</Text>
           <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-            Joined {formattedDate}
+            Joined {userJoinedDate}
           </Text>
         </View>
         <Icon
@@ -209,10 +216,18 @@ function HistoryContent() {
 }
 
 export default function Profile({ navigation }: { navigation: any }) {
+  const [nickname, setProfileName] = useState('');
+
+  const fetchUserData = async () => {
+    const nickname = await getUserNickname();
+    setProfileName(nickname);
+  };
+
+  fetchUserData();
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
-      <Header />
+      <Header navigation={navigation} />
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
@@ -222,10 +237,7 @@ export default function Profile({ navigation }: { navigation: any }) {
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
         <ScrollView style={{ zIndex: 2 }}>
-          <UserProfile
-            username='GubiGammer'
-            dateJoined={new Date('2018-03-11')}
-          />
+          <UserProfile dateJoined={new Date('2018-03-11')} />
           <Headline headline='Statistics' />
           <ProfileContent
             GamesPlayed='243'

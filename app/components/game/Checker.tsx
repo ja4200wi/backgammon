@@ -10,11 +10,12 @@ interface CheckerProps {
 }
 
 const Checker: React.FC<CheckerProps> = ({ color, width, height }) => {
+  const colorCode = color === PLAYER_COLORS.WHITE ? 'white' : 'black';
   return (
     <View
       style={[
         styles.checker,
-        { backgroundColor: color, width: width, height: height },
+        { backgroundColor: colorCode, width: width, height: height },
       ]}
     >
       <View
@@ -22,7 +23,7 @@ const Checker: React.FC<CheckerProps> = ({ color, width, height }) => {
           borderRadius: 100,
           width: 0.5 * width,
           height: 0.5 * height,
-          backgroundColor: color == 'white' ? '#E1E1E1' : '#3F3F3F',
+          backgroundColor: color == PLAYER_COLORS.WHITE ? '#E1E1E1' : '#3F3F3F',
         }}
       ></View>
     </View>

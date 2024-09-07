@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, TouchableOpacity, StyleSheet} from 'react-native';
-import Checker from './Checker';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface PrisonProps {
   backgroundColor: string;
@@ -25,7 +24,8 @@ const Prison: React.FC<PrisonProps> = ({
         height: height,
         justifyContent: 'center',
         alignItems: 'center',
-      }}>
+      }}
+    >
       {checkers.map((CheckerComponent, index) => (
         <TouchableOpacity key={index} onPress={() => onPress(-1)}>
           {CheckerComponent}

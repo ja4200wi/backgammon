@@ -1,32 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert, Text } from 'react-native';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { HeaderBackButton } from '@react-navigation/elements';
-import Board from '../components/game/Board';
+import Board, { Position } from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
-import {
-  DIMENSIONS,
-  APP_COLORS,
-  PLAYER_COLORS,
-  DICE_COLORS,
-  BOARD_COLORS,
-} from '../utils/constants';
+import { APP_COLORS, PLAYER_COLORS, DICE_COLORS } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
-import { generateClient, SelectionSet } from 'aws-amplify/api';
-import { Schema } from '../amplify/data/resource';
+import { generateClient } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
   .fill(null)
   .map(() => []);
 
-// Initial distribution of checkers
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
 const client = generateClient<Schema>();
 
-const selectionSet = ['id', 'playerOneID', 'playerTwoID', 'gameState'] as const;
-type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
+type Session = Schema['Session']['type'];
 
 export default function OnlineGameScr({
   route,
@@ -37,6 +28,12 @@ export default function OnlineGameScr({
 }) {
   const gameId = route?.params?.gameId;
   const [games, setGames] = useState<Session[]>();
+
+  const [currentPlayer, setCurrentPlayer] = useState<PLAYER_COLORS>(
+    PLAYER_COLORS.NAP
+  );
+  const [positions_new, setPositions] = useState<Position[]>([]);
+  const [dice_new, setDice] = useState<number[]>([]);
 
   const deleteSession = async () => {
     const toBeDeletedSession = {
@@ -53,7 +50,6 @@ export default function OnlineGameScr({
   };
 
   useEffect(() => {
-    console.log(' Trying to delete session', gameId);
     const unsubscribe = navigation.addListener('blur', () => {
       deleteSession();
     });
@@ -66,16 +62,36 @@ export default function OnlineGameScr({
     }).subscribe({
       next: ({ items, isSynced }) => {
         setGames([...items]);
+        translateGamestate(items[0]);
       },
     });
     return () => sub.unsubscribe();
   }, []);
 
+  const translateGamestate = (gameSession: Session) => {
+    const gameState = gameSession.gameState;
+    if (gameState === undefined || gameState === null) {
+      return;
+    }
+    const positions_new: Position[] = gameState.board!.map((position) => {
+      return {
+        index: position!.index as number,
+        color: position!.color as PLAYER_COLORS,
+        count: position!.count as number,
+      };
+    });
+    const dice_new: number[] = gameState.dice! as number[];
+    const currentPlayer_new: PLAYER_COLORS =
+      gameState.currentPlayer as PLAYER_COLORS;
+    setCurrentPlayer(currentPlayer_new);
+    setDice(dice_new);
+    setPositions(positions_new);
+  };
+
   const {
     game,
     dice,
     moveIsOver,
-    positions,
     scores,
     homeCheckers,
     onMoveChecker,
@@ -150,23 +166,15 @@ export default function OnlineGameScr({
         </Text>
       </View>
       <Board
-        colors={{
-          backgroundColor: BOARD_COLORS.BACKGROUND,
-          spikeLightColor: BOARD_COLORS.SPIKELIGHT,
-          spikeDarkColor: BOARD_COLORS.SPIKEDARK,
-          prisonColor: BOARD_COLORS.PRISON,
-        }}
-        width={DIMENSIONS.boardWidth}
-        height={DIMENSIONS.boardHeight}
-        positions={positions}
-        currentPlayer={game?.getCurrentPlayer()!}
+        positions={positions_new}
+        currentPlayer={currentPlayer}
         pipCount={scores}
         homeCount={homeCheckers}
         dice={{
           firstRoll: true,
           startingSeq: true,
-          diceOne: dice[0],
-          diceTwo: dice[1],
+          diceOne: dice_new[0],
+          diceTwo: dice_new[1],
           color:
             game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
               ? DICE_COLORS.WHITE

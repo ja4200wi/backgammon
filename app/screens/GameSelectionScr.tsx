@@ -12,6 +12,11 @@ import { Card, Icon, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
+import { getCurrentUser } from 'aws-amplify/auth';
+import { generateClient } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+
+const client = generateClient<Schema>();
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
   const [selectedMode, setSelectedMode] = useState<GAME_TYPE>(GAME_TYPE.ELO); // Default selection
@@ -65,7 +70,40 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       </TouchableOpacity>
     );
   }
-  function OnlineGameCard() {
+  function OnlineGameCard({ navigation }: { navigation: any }) {
+    const [userName, setUserName] = useState(''); // To store the profile name
+
+    const fetchUserData = async () => {
+      const { username } = await getCurrentUser();
+      setUserName(username);
+    };
+    const createSession = async () => {
+      fetchUserData();
+      const { errors, data: game } = await client.models.Session.create({
+        playerOneID: userName,
+        playerTwoID: 'filler',
+        gameState: {
+          board: [
+            { index: 1, color: 'WHITE', count: 2 },
+            { index: 6, color: 'BLACK', count: 5 },
+            { index: 8, color: 'BLACK', count: 3 },
+            { index: 12, color: 'WHITE', count: 5 },
+            { index: 13, color: 'BLACK', count: 5 },
+            { index: 17, color: 'WHITE', count: 3 },
+            { index: 19, color: 'WHITE', count: 5 },
+            { index: 24, color: 'BLACK', count: 2 },
+          ],
+          dice: { dieOne: 1, dieTwo: 2 },
+          currentPlayer: 'WHITE',
+        },
+        turns: [],
+      });
+      navigation.navigate('Online', { gameId: game!.id });
+    };
+
+    const listSessions = () => {
+      navigation.navigate('PlayFriend');
+    };
     return (
       <TouchableOpacity
         onPress={() => handleSelectMode(GAME_TYPE.ONLINE)}
@@ -103,7 +141,12 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => console.log('Start Game')}
+                onPress={() => createSession()}
+              />
+              <Button
+                title='Join Game'
+                buttonStyle={styles.startButton}
+                onPress={() => listSessions()}
               />
             </>
           )}
@@ -262,7 +305,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
         {/* Body */}
         <View style={styles.bodyContent}>
           <EloGameCard Elo={1342} League='Gold League' />
-          <OnlineGameCard />
+          <OnlineGameCard navigation={navigation} />
           <FriendsGameCard />
           <ComputerGameCard />
           <PassAndPlayGameCard />
