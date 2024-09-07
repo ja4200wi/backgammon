@@ -7,23 +7,18 @@ import { DiceProps } from './Dice';
 import Prison from './Prison';
 import Home from './Home';
 import PipCount from './PipCount';
-import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS } from '../../utils/constants';
-import AcceptMoveButton from './AcceptMoveButton';
-import DoubleButton from './DoulbeButton';
-import UndoMoveButton from './UndoMoveButton';
-import { BOARD_COLORS } from '../../utils/constants';
-
-const colors = {
-  backgroundColor: BOARD_COLORS.BACKGROUND,
-  spikeLightColor: BOARD_COLORS.SPIKEDARK,
-  spikeDarkColor: BOARD_COLORS.SPIKELIGHT,
-  prisonColor: BOARD_COLORS.PRISON,
-};
+import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS, BOARD_COLORS } from '../../utils/constants';
 
 export interface Position {
   index: number;
   color: PLAYER_COLORS;
   count: number;
+}
+const colors = {
+  backgroundColor: BOARD_COLORS.BACKGROUND,
+  spikeDarkColor: BOARD_COLORS.SPIKEDARK,
+  spikeLightColor: BOARD_COLORS.SPIKELIGHT,
+  prisonColor: BOARD_COLORS.PRISON, 
 }
 
 interface BoardProps {
@@ -32,11 +27,7 @@ interface BoardProps {
   pipCount: number[];
   homeCount: number[];
   dice: DiceProps;
-  noMovesLeft: boolean;
-  hasDoneMove: boolean;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
-  onAcceptMove: () => void;
-  onUndoMove: () => void;
   legalMovesFrom: (sourceIndex: number) => number[];
 }
 
@@ -44,18 +35,14 @@ const Board: React.FC<BoardProps> = ({
   dice,
   currentPlayer,
   positions,
-  onMoveChecker,
-  onAcceptMove,
-  onUndoMove,
   pipCount,
   homeCount,
-  noMovesLeft,
-  hasDoneMove,
   legalMovesFrom,
+  onMoveChecker,
 }) => {
   const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
-    color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
+    color: index % 2 === 0 ? colors.spikeDarkColor : colors.spikeLightColor,
     width: DIMENSIONS.spikeWidth,
     invert: index >= 12 ? true : false,
     checkers: [] as React.ReactElement[],
@@ -68,31 +55,16 @@ const Board: React.FC<BoardProps> = ({
     []
   );
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
-  const [usedDice, setUsedDice] = useState<{ [key: number]: number }>({}); //
-
-  const handleSpikePress = (index: number) => {
-    if (selectedSource === null && spikes[index].checkers.length > 0) {
-      setSelectedSource(index);
-    } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index);
-    }
-  };
 
   const moveChecker = async (sourceIndex: number, targetIndex: number) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success) {
-      const moveDistance = Math.abs(targetIndex - sourceIndex);
-      setUsedDice((prevUsedDice) => ({
-        ...prevUsedDice,
-        [moveDistance]: (prevUsedDice[moveDistance] || 0) + 1,
-      }));
       setPossibleMoves([]);
       setSelectedSource(null);
     } else {
       setSelectedSource(null);
     }
   };
-
   const handlePrisonPress = (index: number) => {
     if (selectedSource === null && prisonCheckers.length > 0) {
       if (currentPlayer === PLAYER_COLORS.WHITE) {
@@ -100,6 +72,13 @@ const Board: React.FC<BoardProps> = ({
       } else {
         setSelectedSource(25);
       }
+    } else if (selectedSource !== null) {
+      moveChecker(selectedSource, index);
+    }
+  };
+  const handleSpikePress = (index: number) => {
+    if (selectedSource === null && spikes[index].checkers.length > 0) {
+      setSelectedSource(index);
     } else if (selectedSource !== null) {
       moveChecker(selectedSource, index);
     }
@@ -112,23 +91,11 @@ const Board: React.FC<BoardProps> = ({
       moveChecker(selectedSource, index);
     }
   };
-  const handleAcceptMovePress = () => {
-    onAcceptMove();
-  };
-  const handleUndoMovePress = () => {
-    onUndoMove();
-  };
-
-  /**
-   * 1. Prevent moves from empty spikes
-   * 2. Prevent moves to spikes with more than one opponent's checker
-   * 3. Prevent moves in the wrong direction
-   */
 
   const distributeCheckers = () => {
     const newSpikes = Array.from({ length: 26 }, (_, index) => ({
       height: DIMENSIONS.spikeHeight,
-      color: index % 2 === 0 ? colors.spikeLightColor : colors.spikeDarkColor,
+      color: index % 2 === 0 ? colors.spikeDarkColor : colors.spikeLightColor,
       width: DIMENSIONS.spikeWidth,
       invert: index >= 13 ? true : false,
       checkers: [] as React.ReactElement[],
@@ -172,10 +139,6 @@ const Board: React.FC<BoardProps> = ({
   }, [positions]);
 
   useEffect(() => {
-    setUsedDice([]);
-  }, [currentPlayer]);
-
-  useEffect(() => {
     if (selectedSource !== null) {
       calculatePossibleMoves(selectedSource);
     }
@@ -184,31 +147,11 @@ const Board: React.FC<BoardProps> = ({
     }
   }, [selectedSource]);
 
-  function ButtonView() {
-    return (
-      <View
-        style={{
-          height: DIMENSIONS.spikeHeight,
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
-      >
-        <AcceptMoveButton
-          onPress={handleAcceptMovePress}
-          disabled={noMovesLeft}
-        />
-        <UndoMoveButton onPress={handleUndoMovePress} disabled={hasDoneMove} />
-        <DoubleButton onPress={() => {}} disabled={true} />
-      </View>
-    );
-  }
-
   const SixSpikes = (startIndex: number) => (
     <>
       {spikes.slice(startIndex, startIndex + 6).map((spike, idx) => (
         <Spike
-          key={startIndex + idx} // Ensure unique keys by combining startIndex and idx
+          key={startIndex + idx}
           height={spike.height}
           color={spike.color}
           width={spike.width}
@@ -257,18 +200,15 @@ const Board: React.FC<BoardProps> = ({
           <View
             style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}
           >
-            {!dice.startingSeq &&
-              (dice.color === DICE_COLORS.WHITE ? (
-                <Dice
-                  diceOne={dice.diceOne}
-                  diceTwo={dice.diceTwo}
-                  color={dice.color}
-                  startingSeq={dice.startingSeq}
-                  firstRoll={dice.firstRoll}
-                />
-              ) : (
-                <ButtonView />
-              ))}
+            {!dice.startingSeq && dice.color === DICE_COLORS.WHITE && (
+              <Dice
+                diceOne={dice.diceOne}
+                diceTwo={dice.diceTwo}
+                color={dice.color}
+                startingSeq={dice.startingSeq}
+                firstRoll={dice.firstRoll}
+              />
+            )}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
         </View>
@@ -284,18 +224,15 @@ const Board: React.FC<BoardProps> = ({
           <View
             style={{ height: DIMENSIONS.spikeHeight, justifyContent: 'center' }}
           >
-            {!dice.startingSeq &&
-              (dice.color === DICE_COLORS.BLACK && !dice.startingSeq ? (
-                <Dice
-                  diceOne={dice.diceOne}
-                  diceTwo={dice.diceTwo}
-                  color={dice.color}
-                  startingSeq={dice.startingSeq}
-                  firstRoll={dice.firstRoll}
-                />
-              ) : (
-                <ButtonView />
-              ))}
+            {!dice.startingSeq && dice.color === DICE_COLORS.BLACK && (
+              <Dice
+                diceOne={dice.diceOne}
+                diceTwo={dice.diceTwo}
+                color={dice.color}
+                startingSeq={dice.startingSeq}
+                firstRoll={dice.firstRoll}
+              />
+            )}
           </View>
           <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
         </View>

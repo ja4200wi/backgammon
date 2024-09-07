@@ -29,27 +29,44 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
   const {
     game,
     dice,
-    moveIsOver,
     positions,
-    scores,
+    pipCount,
     homeCheckers,
     onMoveChecker,
     startGame,
-    runGame,
-    hasMovesLeft,
+    showAcceptMoveButton,
     updateMoveIsOver,
-    undoMoveButtonState,
+    showUndoMoveButton,
     undoMove,
     legalMovesFrom,
     isStartingPhase,
     firstRoll,
   } = useGameLogic();
 
-  useEffect(() => {
-    if (game && moveIsOver) {
-      runGame(game);
-    }
-  }, [moveIsOver, game, dice]);
+  const showWinnerScreen = (success: boolean) => {
+    const winner = game!.whoIsWinner();
+    Alert.alert(
+      `${winner} wins the Game`,
+      'What would you like to do?',
+      [
+        {
+          text: 'Restart',
+          onPress: () => {
+            startGame();
+          },
+          style: 'cancel',
+        },
+        {
+          text: 'Go to Home',
+          onPress: () => {
+            navigation.navigate('Home');
+          },
+          style: 'default',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   const handleMoveChecker = async (
     sourceIndex: number,
@@ -57,24 +74,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
   ) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     if (success && game?.isGameOver()) {
-      const winner = game.whoIsWinner();
-      Alert.alert(
-        `${winner} wins the Game`,
-        'What would you like to do?',
-        [
-          {
-            text: 'Restart',
-            onPress: () => startGame(),
-            style: 'cancel',
-          },
-          {
-            text: 'Go to Home',
-            onPress: () => navigation.navigate('Home'),
-            style: 'default',
-          },
-        ],
-        { cancelable: false }
-      );
+      showWinnerScreen(success);
     }
     return success;
   };
@@ -86,7 +86,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         <Board
           positions={positions}
           currentPlayer={game?.getCurrentPlayer()!}
-          pipCount={scores}
+          pipCount={pipCount}
           homeCount={homeCheckers}
           dice={{
             diceOne: dice[0],
@@ -99,14 +99,15 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
             firstRoll: firstRoll,
           }}
           onMoveChecker={handleMoveChecker}
-          noMovesLeft={hasMovesLeft(game!)}
-          onAcceptMove={updateMoveIsOver}
-          hasDoneMove={undoMoveButtonState(game!)}
-          onUndoMove={undoMove}
           legalMovesFrom={legalMovesFrom}
         />
       </View>
-      <GameNavBar navigation={navigation} />
+      <GameNavBar
+        onAcceptMove={updateMoveIsOver}
+        onUndoMove={undoMove}
+        showAcceptMoveButton={showAcceptMoveButton(game!)}
+        showUndoMoveButton={showUndoMoveButton(game!)}
+      />
     </SafeAreaView>
   );
 };

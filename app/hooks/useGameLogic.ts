@@ -1,110 +1,111 @@
-// hooks/useGameLogic.ts
-import {useState, useEffect} from 'react';
-import {Game} from '../gameLogic/backgammon';
-import {GAME_SETTINGS, PLAYER_COLORS} from '../utils/constants';
+import { useState, useEffect } from 'react';
+import { Game } from '../gameLogic/backgammon';
+import { GAME_SETTINGS, PLAYER_COLORS } from '../utils/constants';
+import { Turn } from '../gameLogic/turn';
+import { Move } from '../gameLogic/move';
+import { custom_resources } from 'aws-cdk-lib';
 
 export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
-  const [isStartingPhase, setStartingPhase] =  useState<boolean>(true)
-  const [moveIsOver, setMoveIsOver] = useState(true);
+  const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
-  const [scores, setScores] = useState(GAME_SETTINGS.startScores);
+  const [pipCount, setPipCount] = useState(GAME_SETTINGS.startScores);
   const [firstRoll, setFirstRoll] = useState(true);
+  const [moves, setMoves] = useState<Move[]>([])
+  const [turnes,setTurnes] = useState<Turn[]>([])
+  const [lastturn, setLastTurn] = useState<Turn>()
   const [homeCheckers, setHomeCheckers] = useState(
-    GAME_SETTINGS.startHomeCheckerCount,
+    GAME_SETTINGS.startHomeCheckerCount
   );
 
   useEffect(() => {
     startGame();
   }, []);
 
+  useEffect(() => {
+    //here to make sure moves and turnes are getting updated in time
+    console.log('sending lastturn to server:',lastturn)
+  }, [lastturn])
+
   const startGame = () => {
     const newGame = new Game();
     setGame(newGame);
     setPositions(newGame.getCurrentPositions());
-    runGame(newGame);
-  };
-
-  const runGame = async (currentGame: Game) => {
-    if(isStartingPhase) {
-      if(currentGame.getDice()[0] > currentGame.getDice()[1]){
-        currentGame.setPlayer(PLAYER_COLORS.WHITE)
-        setDice(currentGame.getDice())
-        setTimeout(() => {setStartingPhase(false)},2250)
-        setMoveIsOver(false)
-      }
-      else {
-        currentGame.setPlayer(PLAYER_COLORS.BLACK)
-        setDice(currentGame.getDice())
-        setTimeout(() => {setStartingPhase(false)},2250)
-        setMoveIsOver(false)
-      }
-    }
-    const distances = currentGame.getDistances();
-    updateScores(distances.distBlack, distances.distWhite);
-    //check if game is over
-    if (currentGame.isGameOver()) return;
-    //check if there is a legal move
-    checkForLegalMoveHelper(currentGame,true);
-
-    if (currentGame.getMovesLeft().length === 0 && moveIsOver && !isStartingPhase) {
-      setMoveIsOver(false);
-      currentGame.switchPlayer();
-      setDice(currentGame.getDice());
-      checkForLegalMoveHelper(currentGame,false);
-    }
-  };
-
-  const checkForLegalMoveHelper = async (game: Game, afterMove: boolean) => {
-    if (!game.hasLegalMove()) {
-      if(afterMove) {
-        game.switchPlayer();
-        setDice(game.getDice());
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        game.switchPlayer();
-        setDice(game.getDice());
-      }
-    }
+    doStartingPhase(newGame)
   };
 
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     if (game) {
-      runGame(game);
       const success = game.moveStone(sourceIndex, targetIndex);
-      setPositions(game.getCurrentPositions());
-      const distances = game.getDistances();
-      updateScores(distances.distBlack, distances.distWhite);
-      updateHomeCheckers(game!);
-      checkForLegalMoveHelper(game,true);
-
-      return success;
+      if(success) {
+        updateGameState()
+        return success
+      } else {
+        return success
+      }
     }
     return false;
   };
-
-  const hasMovesLeft = (currentGame: Game) => {
-    if (game === null) {
-      return true;
+  const doStartingPhase = (currentGame: Game) => {
+    if (currentGame.getDice()[0] > currentGame.getDice()[1]) {
+      currentGame.setPlayer(PLAYER_COLORS.WHITE);
+      setDice(currentGame.getDice());
+      setTimeout(() => setStartingPhase(false), 2250);
+    } else {
+      currentGame.setPlayer(PLAYER_COLORS.BLACK);
+      setDice(currentGame.getDice());
+      setTimeout(() => setStartingPhase(false), 2250);
     }
-    return !(currentGame.getMovesLeft().length === 0);
+  }
+  const updateGameState = () => {
+    if(game) {
+      setPositions(game.getCurrentPositions());
+      const distances = game.getDistances();
+      updatePipCount(distances.distBlack, distances.distWhite);
+      updateHomeCheckers(game);
+      checkForLegalMove(game, true);
+    }
+  }
+  const checkForLegalMove = async (currentGame: Game, fastSwitch: boolean) => {
+    if (!currentGame.hasLegalMove()) {
+      if (fastSwitch) {
+        console.log('No legal move, fastswitching...')
+        switchplayer(currentGame)
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        switchplayer(currentGame)
+      }
+    }
   };
-  const undoMoveButtonState = (currentGame: Game) => {
+  const switchplayer = (currentgame: Game) => {
+    console.log('Switching player...safing turn')
+    const turn = currentgame.switchPlayer();
+    setLastTurn(turn)
+    setDice(currentgame.getDice());
+    checkForLegalMove(currentgame, false)
+  }
+  const showAcceptMoveButton = (currentGame: Game) => {
+    if(game) {return !(currentGame.getMovesLeft().length === 0);}
+    return true
+  };
+  const showUndoMoveButton = (currentGame: Game) => {
     if (game === null) {
       return true;
     }
     return currentGame.getLastMoves().length === 0;
   };
-
-  const updateScores = (distBlack: number, distWhite: number) => {
-    setScores([distWhite, distBlack]);
+  const updatePipCount = (distBlack: number, distWhite: number) => {
+    setPipCount([distWhite, distBlack]);
   };
   const updateMoveIsOver = () => {
-    if(firstRoll) {
-      setFirstRoll(false)
-    };
-    setMoveIsOver(true);
+    if (firstRoll) {
+      setFirstRoll(false);
+    }
+    if(game) {
+      switchplayer(game)
+      console.log('current turnes',turnes)
+    }
   };
   const updateHomeCheckers = (game: Game) => {
     if (game) {
@@ -114,32 +115,33 @@ export const useGameLogic = () => {
       ]);
     }
   };
-
-  const undoMove = () => {
-    game?.undoMove();
-    setPositions(game!.getCurrentPositions());
-    const distances = game!.getDistances();
-    updateScores(distances.distBlack, distances.distWhite);
-    updateHomeCheckers(game!);
+  const removeLastMove = () => {
+    setMoves(prevMoves => prevMoves.slice(0, -1));
   };
-
+  const undoMove = () => {
+    if(game) {
+      removeLastMove()
+      console.log('poped Move:',moves)
+      game.undoMove();
+      updateGameState()
+  };
+}
   const legalMovesFrom = (from: number): number[] => {
-    return game?.getLegalMovesFrom(from) ?? [];
+    if(game) {return game?.getLegalMovesFrom(from) ?? [];}
+    else return []
   };
 
   return {
     game,
     dice,
-    moveIsOver,
     positions,
-    scores,
+    pipCount,
     homeCheckers,
     onMoveChecker,
     startGame,
-    runGame,
-    hasMovesLeft,
+    showAcceptMoveButton,
     updateMoveIsOver,
-    undoMoveButtonState,
+    showUndoMoveButton,
     undoMove,
     legalMovesFrom,
     isStartingPhase,

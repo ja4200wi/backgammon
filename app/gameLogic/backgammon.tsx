@@ -1,4 +1,6 @@
 import { PLAYER_COLORS } from '../utils/constants';
+import { Turn } from './turn';
+import { Move } from './move';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
 const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
@@ -7,10 +9,6 @@ const TOTAL_STONES = 15;
 const HOME_AREA_START_INDEX = { WHITE: 19, BLACK: 6 };
 const HOME_AREA_SIZE = 6;
 
-interface Move {
-  from: number;
-  to: number;
-}
 
 export class Game {
   private board: (Stone[] | null)[];
@@ -18,6 +16,7 @@ export class Game {
   private dice: [number, number];
   private movesLeft: number[];
   private lastMoves: [(Stone[] | null)[], number[]][];
+  private moves: Move[];
 
   constructor();
   constructor(board: (Stone[] | null)[], currentPlayer: PLAYER_COLORS);
@@ -38,6 +37,7 @@ export class Game {
     this.dice = tempDice;
     this.movesLeft = tempDice;
     this.lastMoves = [];
+    this.moves = []
   }
 
   private setupDefaultBoard() {
@@ -97,7 +97,7 @@ export class Game {
       // if only one move possible, ensure highest is done, which is still feasible
       const maxStepsFeasible = Math.max(
         ...this.getAllPossibleMoves(this.currentPlayer).map((move) =>
-          Math.abs(move.from - move.to)
+          Math.abs(move.getFrom() - move.getTo())
         )
       );
       const steps = Math.abs(from - to);
@@ -114,7 +114,7 @@ export class Game {
     let maxUsed = diceUsed;
     for (const move of possibleMoves) {
       const newGame = this.deepCopy();
-      newGame.handleMoveStoneWithoutMaxCheck(move.from, move.to);
+      newGame.handleMoveStoneWithoutMaxCheck(move.getFrom(), move.getTo());
       maxUsed = Math.max(maxUsed, newGame.maxDiceUsable(diceUsed + 1));
     }
     return maxUsed;
@@ -168,7 +168,11 @@ export class Game {
     this.handleCapture(to);
     this.board[to]?.push(stone);
     this.updateMovesLeft(steps, from, to);
+    this.updateMoves(from,to)
     return true;
+  }
+  private updateMoves(from:number,to:number) {
+    this.moves.push(new Move(from,to))
   }
 
   private handleMoveStoneWithoutMaxCheck(from: number, to: number): boolean {
@@ -317,7 +321,8 @@ export class Game {
       ) {
         const feasibleTargets = this.getLegalMovesFrom(i);
         for (const to of feasibleTargets) {
-          moves.push({ from: i, to });
+          const tempMove = new Move(i,to)
+          moves.push( tempMove );
         }
       }
     }
@@ -587,13 +592,16 @@ export class Game {
     return 'no one';
   }
 
-  public switchPlayer() {
+  public switchPlayer(): Turn {
     this.dice = this.rollDice();
     this.currentPlayer =
       this.currentPlayer === PLAYER_COLORS.WHITE
         ? PLAYER_COLORS.BLACK
         : PLAYER_COLORS.WHITE;
     this.lastMoves = [];
+    const safeMoves = this.moves
+    this.moves = []
+    return new Turn(safeMoves)
   }
 
   public deepCopy(): Game {
