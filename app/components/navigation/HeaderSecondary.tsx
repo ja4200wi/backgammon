@@ -10,9 +10,9 @@ export default function HeaderSecondary({
   headline: string;
 }) {
   return (
-    <View className='w-full flex flex-row justify-center z-10 px-4 py-2 items-center relative'>
+    <View style={styles.headerContainer}>
       <TouchableOpacity
-        className='absolute left-4'
+        style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
         <Icon
@@ -23,7 +23,34 @@ export default function HeaderSecondary({
         />
       </TouchableOpacity>
 
-      <Text className='text-white text-2xl font-bold'>{headline}</Text>
+      <Text style={styles.headerText}>{headline}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    paddingRight: 16,
+    paddingLeft: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    backgroundColor: APP_COLORS.headerBackGroundColor,
+    zIndex: 2,
+    flexDirection: 'row',
+    justifyContent: 'center', // Centering the content horizontally
+    alignItems: 'center',
+    position: 'relative',
+  },
+  backButton: {
+    position: 'absolute', // Position it absolutely
+    left: 16, // Place it on the left side
+    zIndex: 3,
+  },
+  headerText: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1,
+  },
+});

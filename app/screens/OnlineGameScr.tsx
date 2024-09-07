@@ -7,6 +7,7 @@ import { APP_COLORS, PLAYER_COLORS, DICE_COLORS } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import PipCount from '../components/game/PipCount';
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
   .fill(null)
@@ -91,24 +92,14 @@ export default function OnlineGameScr({
   const {
     game,
     dice,
-    moveIsOver,
-    scores,
     homeCheckers,
     onMoveChecker,
     startGame,
-    runGame,
-    hasMovesLeft,
     updateMoveIsOver,
-    undoMoveButtonState,
     undoMove,
+    pipCount,
     legalMovesFrom,
   } = useGameLogic();
-
-  useEffect(() => {
-    if (game && moveIsOver) {
-      runGame(game);
-    }
-  }, [moveIsOver, game, dice]);
 
   const handleMoveChecker = async (
     sourceIndex: number,
@@ -168,7 +159,7 @@ export default function OnlineGameScr({
       <Board
         positions={positions_new}
         currentPlayer={currentPlayer}
-        pipCount={scores}
+        pipCount={pipCount}
         homeCount={homeCheckers}
         dice={{
           firstRoll: true,
@@ -181,10 +172,6 @@ export default function OnlineGameScr({
               : DICE_COLORS.BLACK,
         }}
         onMoveChecker={handleMoveChecker}
-        noMovesLeft={hasMovesLeft(game!)}
-        onAcceptMove={updateMoveIsOver}
-        hasDoneMove={undoMoveButtonState(game!)}
-        onUndoMove={undoMove}
         legalMovesFrom={legalMovesFrom}
       />
     </View>
