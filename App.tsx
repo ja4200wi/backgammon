@@ -17,7 +17,8 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import PlayFriend from './app/screens/PlayFriendScr';
 import OnlineGameScr from './app/screens/OnlineGameScr';
-import { Text } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { color } from '@rneui/base';
 
 Amplify.configure(outputs);
 
@@ -26,40 +27,62 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   return (
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
+      tabBar={({ navigation, state }) => (
+        <NavBar
+          navigation={navigation}
+          selectedScreen={state.routeNames[state.index]}
+        />
+      )}
+    >
+      <Tab.Screen name='Home' component={HomeScr} />
+      <Tab.Screen name='Profile' component={ProfileScr} />
+      <Tab.Screen name='Settings' component={Settings} />
+    </Tab.Navigator>
+  );
+}
+
+export default function App() {
+  const SignOutButton = () => {
+    const { signOut } = useAuthenticator();
+
+    return (
+      <View style={styles.signOutButton}>
+        <Button title='Sign Out' onPress={signOut} />
+      </View>
+    );
+  };
+  return (
     <Authenticator.Provider>
-      <Authenticator>
-        <Tab.Navigator
-          screenOptions={{ headerShown: false }}
-          tabBar={({ navigation, state }) => (
-            <NavBar
-              navigation={navigation}
-              selectedScreen={state.routeNames[state.index]}
-            />
-          )}
+      <Authenticator
+        Container={(props) => (
+          <Authenticator.Container
+            {...props}
+            className='bg-backgroundTransparent '
+          />
+        )}
+      >
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: APP_COLORS.headerBackGroundColor }}
         >
-          <Tab.Screen name='Home' component={HomeScr} />
-          <Tab.Screen name='Profile' component={ProfileScr} />
-          <Tab.Screen name='Settings' component={Settings} />
-        </Tab.Navigator>
+          <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name='Main' component={HomeTabs} />
+              <Stack.Screen name='GameSelection' component={GameSelectionScr} />
+              <Stack.Screen name='Game' component={GameScreen} />
+              <Stack.Screen name='PlayFriend' component={PlayFriend} />
+              <Stack.Screen name='Online' component={OnlineGameScr} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaView>
       </Authenticator>
     </Authenticator.Provider>
   );
 }
 
-export default function App() {
-  return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: APP_COLORS.headerBackGroundColor }}
-    >
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name='Main' component={HomeTabs} />
-          <Stack.Screen name='GameSelection' component={GameSelectionScr} />
-          <Stack.Screen name='Game' component={GameScreen} />
-          <Stack.Screen name='PlayFriend' component={PlayFriend} />
-          <Stack.Screen name='Online' component={OnlineGameScr} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
-  );
-}
+const styles = StyleSheet.create({
+  signOutButton: {
+    alignSelf: 'flex-end',
+  },
+});
