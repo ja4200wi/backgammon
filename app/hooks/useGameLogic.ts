@@ -27,10 +27,7 @@ export const useGameLogic = () => {
   const startGame = (gamemode: GAME_TYPE) => {
     switch (gamemode) {
       case GAME_TYPE.PASSPLAY:
-        const newGame = new Game();
-        setGame(newGame);
-        setPositions(newGame.getCurrentPositions());
-        doStartingPhase(newGame);
+        setUpGame()
         break;
   
       case GAME_TYPE.COMPUTER:
@@ -57,7 +54,12 @@ export const useGameLogic = () => {
     }
   };
   
-  
+  const setUpGame = () => {
+    const newGame = new Game();
+        setGame(newGame);
+        setPositions(newGame.getCurrentPositions());
+        doStartingPhase(newGame);
+  }
 
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     if (game) {

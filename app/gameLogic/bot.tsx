@@ -1,4 +1,5 @@
 import { BOT_DIFFICULTY } from "../utils/constants";
+import { Game } from "./backgammon";
 import { Checker } from "./checker";
 export class Bot {
     private difficulty: BOT_DIFFICULTY
@@ -7,16 +8,16 @@ export class Bot {
         this.difficulty = difficulty
     }
 
-    public makeMove(positions:(Checker[] | null)[], dice: [number, number]): (Checker[] | null)[] {
+    public makeMove(game:Game): (Checker[] | null)[] {
         switch(this.difficulty) {
             case BOT_DIFFICULTY.EASY:
-                this.makeMoveEasyBot(positions,dice)
+                this.makeMoveEasyBot(game)
                 break
             case BOT_DIFFICULTY.MEDIUM:
-                this.makeMoveMediumBot(positions,dice)
+                this.makeMoveMediumBot(game)
                 break
             case BOT_DIFFICULTY.HARD:
-                this.makeMoveHardBot(positions,dice)
+                this.makeMoveHardBot(game)
                 break
             default:
                 return []
@@ -24,13 +25,14 @@ export class Bot {
         }
         return []
     }
-    private makeMoveEasyBot(positions:(Checker[] | null)[], dice: [number, number]): (Checker[] | null)[] {
+    private makeMoveEasyBot(game:Game): (Checker[] | null)[] {
+        const move = game.getRandomMove()
         return []
     }
-    private makeMoveMediumBot(positions:(Checker[] | null)[], dice: [number, number]): (Checker[] | null)[] {
+    private makeMoveMediumBot(game:Game): (Checker[] | null)[] {
         return []
     }
-    private makeMoveHardBot(positions:(Checker[] | null)[], dice: [number, number]): (Checker[] | null)[] {
+    private makeMoveHardBot(game:Game): (Checker[] | null)[] {
         return []
     }
 }

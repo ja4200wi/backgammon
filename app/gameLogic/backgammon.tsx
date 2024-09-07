@@ -198,7 +198,15 @@ export class Game {
     this.updateMovesLeft(steps, from, to);
     return true;
   }
-
+  public getRandomMove(): Move | null {
+    const possibleMoves = this.getAllPossibleMoves(this.currentPlayer);
+    if (possibleMoves.length === 0) {
+      return null;
+    }
+    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+    return possibleMoves[randomIndex];
+  }
+  
   private safeMoves() {
     const currentBoard = this.board.map((position) =>
       position ? [...position] : null
