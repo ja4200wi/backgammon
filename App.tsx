@@ -8,6 +8,7 @@ import GameSelectionScr from './app/screens/GameSelectionScr';
 import ProfileScr from './app/screens/Profile';
 import NavBar from './app/components/navigation/NavBar';
 import Settings from './app/screens/SettingsScr';
+import PlayVsBotScr from './app/screens/PlayVsBotScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './app/utils/constants';
 
@@ -73,6 +74,7 @@ export default function App() {
               <Stack.Screen name='Game' component={GameScreen} />
               <Stack.Screen name='PlayFriend' component={PlayFriend} />
               <Stack.Screen name='Online' component={OnlineGameScr} />
+              <Stack.Screen name ='PlayBot' component={PlayVsBotScr} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

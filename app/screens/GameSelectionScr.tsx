@@ -236,7 +236,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => console.log('Start Game')}
+                onPress={() => navigation.navigate('PlayBot')}
               />
             </>
           )}
