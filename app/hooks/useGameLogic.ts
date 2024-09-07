@@ -39,19 +39,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
         break;
       case GAME_TYPE.COMPUTER:
         console.log('in run game; gamemode:',gamemode)
-        if(currentGame){
-          console.log('in run game, game is not null:')
-          if(currentGame.getMovesLeft().length === 0) {
-            console.log('not bots turn, switchin players')
-            switchplayer(currentGame)
-          } else {
-            if(currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
-              console.log('BOTS turn, doing moves players; Moves Left:',currentGame.getMovesLeft(),'firstroll:',firstRoll)
-              setDisableScreen(true)
-              setTimeout(() => makeBotMove(currentGame),1000)
-            }
-          }
-        }
+        runBot()
       case GAME_TYPE.ONLINE:
         // Initialize online game logic here
         break;
@@ -65,26 +53,12 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
         break;
     }
   }
-  const makeBotMove = (game:Game) => {
-    const move = bot.makeMove(game)
-    console.log('this move is in useGameLogic:',move)
-    if(!move) {
-      throw new Error('Could not get Move from Bot');
-    }
-    console.log('go into movechecker')
-    onMoveChecker(move.getFrom(),move.getTo())
-  }
   const setUpGame = () => {
     if(game) {
       setPositions(game.getCurrentPositions());
       doStartingPhase(game,gamemode);
     }
   }
-
-  const disabledScreen = (currentGame:Game): boolean => {
-    return (currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK)
-  }
-
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     console.log('in onmovechecker: GAME is',game)
     if (game) {
@@ -110,6 +84,9 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
       setDice(currentGame.getDice());
       setTimeout(() => {setStartingPhase(false); console.log('starting phase is over');runGame(currentGame, gamemode)}, 2250);
     }
+  }
+  const disabledScreen = (currentGame:Game): boolean => {
+    return (currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK)
   }
   const updateGameState = () => {
     if(game) {
@@ -182,6 +159,31 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     if(game) {return game?.getLegalMovesFrom(from) ?? [];}
     else return []
   };
+  { /* BOT FUNCTIONS */}
+  const runBot = () => {
+    if(game){
+      console.log('in run game, game is not null:')
+      if(game.getMovesLeft().length === 0) {
+        console.log('not bots turn, switchin players')
+        switchplayer(game)
+      } else {
+        if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
+          console.log('BOTS turn, doing moves players; Moves Left:',game.getMovesLeft(),'firstroll:',firstRoll)
+          setDisableScreen(true)
+          setTimeout(() => makeBotMove(game),1000)
+        }
+      }
+    }
+  }
+  const makeBotMove = (game:Game) => {
+    const move = bot.makeMove(game)
+    console.log('this move is in useGameLogic:',move)
+    if(!move) {
+      throw new Error('Could not get Move from Bot');
+    }
+    console.log('go into movechecker')
+    onMoveChecker(move.getFrom(),move.getTo())
+  }
 
   return {
     game,
