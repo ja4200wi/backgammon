@@ -41,9 +41,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     showUndoMoveButton,
     undoMove,
     legalMovesFrom,
+    disabledScreen,
     isStartingPhase,
     firstRoll,
+    disableScreen,
   } = useGameLogic();
+
   const { gameMode } = route.params;
   useEffect(() => {
     startGame(gameMode);
@@ -103,6 +106,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
             startingSeq: isStartingPhase,
             firstRoll: firstRoll,
           }}
+          disableScreen={game ? disabledScreen(game) : false}
           onMoveChecker={handleMoveChecker}
           legalMovesFrom={legalMovesFrom}
         />

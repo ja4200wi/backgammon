@@ -27,6 +27,7 @@ interface BoardProps {
   pipCount: number[];
   homeCount: number[];
   dice: DiceProps;
+  disableScreen: boolean;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
   legalMovesFrom: (sourceIndex: number) => number[];
 }
@@ -37,6 +38,7 @@ const Board: React.FC<BoardProps> = ({
   positions,
   pipCount,
   homeCount,
+  disableScreen,
   legalMovesFrom,
   onMoveChecker,
 }) => {
@@ -166,6 +168,7 @@ const Board: React.FC<BoardProps> = ({
 
   return (
     <View>
+      {disableScreen && <View style={styles.overlay} />}
       <View style={styles.row}>
         <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
         <Home
@@ -278,6 +281,11 @@ const styles = StyleSheet.create({
     top: '50%', // Vertically center the dice
     left: '50%', // Horizontally center the dice
     transform: [{ translateX: -125 }, { translateY: -30 }], // Adjust position to the center of the element
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject, // Covers the entire parent View
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Slight transparency if you want
+    zIndex: 100, // Make sure it's on top of other elements
   },
 });
 

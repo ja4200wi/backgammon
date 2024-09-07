@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Game } from '../gameLogic/backgammon';
-import { GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
+import { BOT_DIFFICULTY, GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
 import { Move } from '../gameLogic/move';
 import { custom_resources } from 'aws-cdk-lib';
+import { Bot } from '../gameLogic/bot';
+import { run } from 'jest';
 
 export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
@@ -12,54 +14,79 @@ export const useGameLogic = () => {
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
   const [pipCount, setPipCount] = useState(GAME_SETTINGS.startScores);
   const [firstRoll, setFirstRoll] = useState(true);
-  const [lastturn, setLastTurn] = useState<Turn>()
+  const [lastturn, setLastTurn] = useState<Turn>();
+  const [disableScreen, setDisableScreen] = useState<boolean>(false);
+  const [gamemode, setGameMode] = useState<GAME_TYPE>(GAME_TYPE.PASSPLAY)
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
   );
+const bot = new Bot(BOT_DIFFICULTY.EASY)
 
   useEffect(() => {
-    //here to make sure moves and turnes are getting updated in time
-    console.log('sending lastturn to server:',lastturn)
-  }, [lastturn])
+    if(gamemode && game) {
+      setUpGame()
+    }
+  }, [gamemode,game])
 
-  const startGame = (gamemode: GAME_TYPE) => {
+  const startGame = async (gamemode: GAME_TYPE) => {
+    setGameMode(gamemode)
+    const newGame = new Game();
+    setGame(newGame);
+  };
+  const runGame = (currentGame: Game,gamemode: GAME_TYPE) => {
     switch (gamemode) {
       case GAME_TYPE.PASSPLAY:
-        setUpGame()
         break;
-  
       case GAME_TYPE.COMPUTER:
-        console.log('Starting Computer Game...');
-        // Initialize game against computer logic here
+        console.log('in run game; gamemode:',gamemode)
+        if(currentGame){
+          console.log('in run game, game is not null:')
+          if(currentGame.getMovesLeft().length === 0) {
+            console.log('not bots turn, switchin players')
+            switchplayer(currentGame)
+          } else {
+            if(currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
+              console.log('BOTS turn, doing moves players; Moves Left:',currentGame.getMovesLeft(),'firstroll:',firstRoll)
+              setDisableScreen(true)
+              setTimeout(() => makeBotMove(currentGame),1000)
+            }
+          }
+        }
       case GAME_TYPE.ONLINE:
-        console.log('Starting Online Game...');
         // Initialize online game logic here
         break;
-  
       case GAME_TYPE.FRIENDLIST:
-        console.log('Starting FriendList Game...');
         // Initialize game with friends logic here
         break;
-  
       case GAME_TYPE.ELO:
-        console.log('Starting Elo Game...');
         // Initialize Elo ranked game logic here
         break;
-  
       default:
-        console.log(`Starting ${gamemode} Game...`);
         break;
     }
-  };
-  
+  }
+  const makeBotMove = (game:Game) => {
+    const move = bot.makeMove(game)
+    console.log('this move is in useGameLogic:',move)
+    if(!move) {
+      throw new Error('Could not get Move from Bot');
+    }
+    console.log('go into movechecker')
+    onMoveChecker(move.getFrom(),move.getTo())
+  }
   const setUpGame = () => {
-    const newGame = new Game();
-        setGame(newGame);
-        setPositions(newGame.getCurrentPositions());
-        doStartingPhase(newGame);
+    if(game) {
+      setPositions(game.getCurrentPositions());
+      doStartingPhase(game,gamemode);
+    }
+  }
+
+  const disabledScreen = (currentGame:Game): boolean => {
+    return (currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK)
   }
 
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
+    console.log('in onmovechecker: GAME is',game)
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       if(success) {
@@ -71,15 +98,17 @@ export const useGameLogic = () => {
     }
     return false;
   };
-  const doStartingPhase = (currentGame: Game) => {
+  const doStartingPhase = (currentGame: Game,gamemode: GAME_TYPE) => {
+    console.log('doing starting phase')
     if (currentGame.getDice()[0] > currentGame.getDice()[1]) {
       currentGame.setPlayer(PLAYER_COLORS.WHITE);
       setDice(currentGame.getDice());
       setTimeout(() => setStartingPhase(false), 2250);
     } else {
+      console.log('bot starts')
       currentGame.setPlayer(PLAYER_COLORS.BLACK);
       setDice(currentGame.getDice());
-      setTimeout(() => setStartingPhase(false), 2250);
+      setTimeout(() => {setStartingPhase(false); console.log('starting phase is over');runGame(currentGame, gamemode)}, 2250);
     }
   }
   const updateGameState = () => {
@@ -89,12 +118,14 @@ export const useGameLogic = () => {
       updatePipCount(distances.distBlack, distances.distWhite);
       updateHomeCheckers(game);
       checkForLegalMove(game, true);
+      if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
+        runGame(game,gamemode)
+      }
     }
   }
   const checkForLegalMove = async (currentGame: Game, fastSwitch: boolean) => {
     if (!currentGame.hasLegalMove()) {
       if (fastSwitch) {
-        console.log('No legal move, fastswitching...')
         switchplayer(currentGame)
       } else {
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -102,12 +133,15 @@ export const useGameLogic = () => {
       }
     }
   };
-  const switchplayer = (currentgame: Game) => {
-    console.log('Switching player...safing turn')
+  const switchplayer = async (currentgame: Game) => {
     const turn = currentgame.switchPlayer();
     setLastTurn(turn)
     setDice(currentgame.getDice());
-    checkForLegalMove(currentgame, false)
+    if(disableScreen) {
+      setDisableScreen(false)
+    }
+    await checkForLegalMove(currentgame, false)
+    runGame(currentgame,gamemode)
   }
   const showAcceptMoveButton = (currentGame: Game) => {
     if(game) {return !(currentGame.getMovesLeft().length === 0);}
@@ -162,7 +196,9 @@ export const useGameLogic = () => {
     showUndoMoveButton,
     undoMove,
     legalMovesFrom,
+    disabledScreen,
     isStartingPhase,
     firstRoll,
+    disableScreen,
   };
 };

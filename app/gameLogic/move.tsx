@@ -1,17 +1,17 @@
 export class Move {
-    private from: number;
-    private to: number;
+    public from: number;
+    public to: number;
   
     constructor(from: number, to: number) {
       this.from = from;
       this.to = to;
     }
 
-    getFrom(): number {
+    public getFrom(): number {
       return this.from;
     }
   
-    getTo(): number {
+    public getTo(): number {
       return this.to;
     }
 }
