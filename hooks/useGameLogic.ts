@@ -14,6 +14,7 @@ export const useGameLogic = () => {
   const [firstRoll, setFirstRoll] = useState(true);
   const [moves, setMoves] = useState<Move[]>([])
   const [turnes,setTurnes] = useState<Turn[]>([])
+  const [lastturn, setLastTurn] = useState<Turn>()
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
   );
@@ -24,9 +25,8 @@ export const useGameLogic = () => {
 
   useEffect(() => {
     //here to make sure moves and turnes are getting updated in time
-    console.log('current moves',moves)
-    console.log('current turn',turnes)
-  }, [moves,turnes])
+    console.log('sending lastturn to server:',lastturn)
+  }, [lastturn])
 
   const startGame = () => {
     const newGame = new Game();
@@ -39,7 +39,6 @@ export const useGameLogic = () => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       if(success) {
-        setMoves([...moves, new Move(sourceIndex,targetIndex)])
         updateGameState()
         return success
       } else {
@@ -71,6 +70,7 @@ export const useGameLogic = () => {
   const checkForLegalMove = async (currentGame: Game, fastSwitch: boolean) => {
     if (!currentGame.hasLegalMove()) {
       if (fastSwitch) {
+        console.log('No legal move, fastswitching...')
         switchplayer(currentGame)
       } else {
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -79,8 +79,9 @@ export const useGameLogic = () => {
     }
   };
   const switchplayer = (currentgame: Game) => {
-    safeTurn()
-    currentgame.switchPlayer();
+    console.log('Switching player...safing turn')
+    const turn = currentgame.switchPlayer();
+    setLastTurn(turn)
     setDice(currentgame.getDice());
     checkForLegalMove(currentgame, false)
   }
@@ -129,10 +130,6 @@ export const useGameLogic = () => {
     if(game) {return game?.getLegalMovesFrom(from) ?? [];}
     else return []
   };
-  const safeTurn = () => {
-    setTurnes([... turnes, new Turn(moves)])
-    setMoves([])
-  }
 
   return {
     game,

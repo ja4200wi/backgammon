@@ -6,4 +6,12 @@ export class Move {
       this.from = from;
       this.to = to;
     }
+
+    getFrom(): number {
+      return this.from;
+    }
+  
+    getTo(): number {
+      return this.to;
+    }
 }
