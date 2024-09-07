@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject, // Covers the entire parent View
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Slight transparency if you want
+    backgroundColor: 'rgba(0, 0, 0, 0)', // Slight transparency if you want
     zIndex: 100, // Make sure it's on top of other elements
   },
 });

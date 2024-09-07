@@ -592,12 +592,12 @@ export class Game {
   public rollNewDice() {
     this.rollDice();
   }
-  public whoIsWinner(): string {
+  public whoIsWinner(): PLAYER_COLORS {
     if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES)
       return PLAYER_COLORS.BLACK;
     if (this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES)
       return PLAYER_COLORS.WHITE;
-    return 'no one';
+    return PLAYER_COLORS.NAP;
   }
 
   public switchPlayer(): Turn {
