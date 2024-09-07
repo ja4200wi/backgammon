@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import { NavigationProp, ParamListBase, RouteProp } from '@react-navigation/native';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
@@ -8,13 +8,16 @@ import {
   APP_COLORS,
   PLAYER_COLORS,
   DICE_COLORS,
+  GAME_TYPE,
 } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
 
+type GameScrRouteProp = RouteProp<{ [key: string]: { gameMode: GAME_TYPE } }, string>;
 interface GameScrProps {
   navigation: NavigationProp<ParamListBase>;
+  route: GameScrRouteProp;
 }
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
@@ -25,7 +28,7 @@ const initialSpikes: React.ReactElement[][] = new Array(24)
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
-const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
+const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const {
     game,
     dice,
@@ -42,7 +45,10 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
     isStartingPhase,
     firstRoll,
   } = useGameLogic();
-
+  const gameMode = route.params?.gameMode;
+  useEffect(() => {
+    startGame(gameMode);
+  }, []);
   const showWinnerScreen = (success: boolean) => {
     const winner = game!.whoIsWinner();
     Alert.alert(
@@ -52,7 +58,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         {
           text: 'Restart',
           onPress: () => {
-            startGame();
+            startGame(gameMode);
           },
           style: 'cancel',
         },
@@ -81,7 +87,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
-      <HeaderSecondary navigation={navigation} headline='Press & Play' />
+      <HeaderSecondary navigation={navigation} headline={gameMode} />
       <View style={styles.boardContainer}>
         <Board
           positions={positions}

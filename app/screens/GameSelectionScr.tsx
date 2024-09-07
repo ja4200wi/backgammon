@@ -236,7 +236,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('PlayBot')}
+                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.COMPUTER})}
               />
             </>
           )}
@@ -282,7 +282,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('Game')}
+                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.PASSPLAY})}
               />
             </>
           )}

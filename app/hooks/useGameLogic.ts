@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Game } from '../gameLogic/backgammon';
-import { GAME_SETTINGS, PLAYER_COLORS } from '../utils/constants';
+import { GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
 import { Move } from '../gameLogic/move';
 import { custom_resources } from 'aws-cdk-lib';
@@ -20,20 +20,44 @@ export const useGameLogic = () => {
   );
 
   useEffect(() => {
-    startGame();
-  }, []);
-
-  useEffect(() => {
     //here to make sure moves and turnes are getting updated in time
     console.log('sending lastturn to server:',lastturn)
   }, [lastturn])
 
-  const startGame = () => {
-    const newGame = new Game();
-    setGame(newGame);
-    setPositions(newGame.getCurrentPositions());
-    doStartingPhase(newGame)
+  const startGame = (gamemode: GAME_TYPE) => {
+    switch (gamemode) {
+      case GAME_TYPE.PASSPLAY:
+        const newGame = new Game();
+        setGame(newGame);
+        setPositions(newGame.getCurrentPositions());
+        doStartingPhase(newGame);
+        break;
+  
+      case GAME_TYPE.COMPUTER:
+        console.log('Starting Computer Game...');
+        // Initialize game against computer logic here
+      case GAME_TYPE.ONLINE:
+        console.log('Starting Online Game...');
+        // Initialize online game logic here
+        break;
+  
+      case GAME_TYPE.FRIENDLIST:
+        console.log('Starting FriendList Game...');
+        // Initialize game with friends logic here
+        break;
+  
+      case GAME_TYPE.ELO:
+        console.log('Starting Elo Game...');
+        // Initialize Elo ranked game logic here
+        break;
+  
+      default:
+        console.log(`Starting ${gamemode} Game...`);
+        break;
+    }
   };
+  
+  
 
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     if (game) {
