@@ -12,8 +12,6 @@ export const useGameLogic = () => {
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
   const [pipCount, setPipCount] = useState(GAME_SETTINGS.startScores);
   const [firstRoll, setFirstRoll] = useState(true);
-  const [moves, setMoves] = useState<Move[]>([])
-  const [turnes,setTurnes] = useState<Turn[]>([])
   const [lastturn, setLastTurn] = useState<Turn>()
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
@@ -130,7 +128,6 @@ export const useGameLogic = () => {
     }
     if(game) {
       switchplayer(game)
-      console.log('current turnes',turnes)
     }
   };
   const updateHomeCheckers = (game: Game) => {
@@ -141,13 +138,8 @@ export const useGameLogic = () => {
       ]);
     }
   };
-  const removeLastMove = () => {
-    setMoves(prevMoves => prevMoves.slice(0, -1));
-  };
   const undoMove = () => {
     if(game) {
-      removeLastMove()
-      console.log('poped Move:',moves)
       game.undoMove();
       updateGameState()
   };
