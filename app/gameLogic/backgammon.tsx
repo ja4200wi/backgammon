@@ -1,6 +1,7 @@
 import { PLAYER_COLORS } from '../utils/constants';
 import { Turn } from './turn';
 import { Move } from './move';
+import { Checker } from './Checker';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
 const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
@@ -11,17 +12,17 @@ const HOME_AREA_SIZE = 6;
 
 
 export class Game {
-  private board: (Stone[] | null)[];
+  private board: (Checker[] | null)[];
   private currentPlayer: PLAYER_COLORS;
   private dice: [number, number];
   private movesLeft: number[];
-  private lastMoves: [(Stone[] | null)[], number[]][];
+  private lastMoves: [(Checker[] | null)[], number[]][];
   private moves: Move[];
 
   constructor();
-  constructor(board: (Stone[] | null)[], currentPlayer: PLAYER_COLORS);
+  constructor(board: (Checker[] | null)[], currentPlayer: PLAYER_COLORS);
 
-  constructor(board?: (Stone[] | null)[], currentPlayer?: PLAYER_COLORS) {
+  constructor(board?: (Checker[] | null)[], currentPlayer?: PLAYER_COLORS) {
     if (board) {
       this.board = board;
     } else {
@@ -79,8 +80,8 @@ export class Game {
     this.board[7] = this.createStones(1, PLAYER_COLORS.BLACK);
   }
 
-  private createStones(count: number, color: PLAYER_COLORS): Stone[] {
-    return Array.from({ length: count }, () => new Stone(color));
+  private createStones(count: number, color: PLAYER_COLORS): Checker[] {
+    return Array.from({ length: count }, () => new Checker(color));
   }
 
   private maximizesSteps(from: number, to: number): boolean {
@@ -120,17 +121,16 @@ export class Game {
     return maxUsed;
   }
 
-  private deepCopyBoard(board: (Stone[] | null)[]): (Stone[] | null)[] {
+  private deepCopyBoard(board: (Checker[] | null)[]): (Checker[] | null)[] {
     return board.map((column) => {
       if (column === null) {
         return null;
       } else {
-        return column.map((stone) => ({
-          ...stone,
-        }));
+        return column.map((stone) => new Checker(stone.getColor()));
       }
     });
   }
+  
 
   private getTarget(from: number, steps: number, color: PLAYER_COLORS): number {
     const direction = color === PLAYER_COLORS.WHITE ? 1 : -1;
@@ -140,7 +140,7 @@ export class Game {
     return color === PLAYER_COLORS.WHITE ? from + steps : from - steps;
   }
 
-  getBoard(): (Stone[] | null)[] {
+  getBoard(): (Checker[] | null)[] {
     return this.board;
   }
 
@@ -218,7 +218,7 @@ export class Game {
   private handleCapture(to: number): void {
     if (
       this.board[to]?.length === 1 &&
-      this.board[to]?.[0].color !== this.currentPlayer
+      this.board[to]?.[0].getColor() !== this.currentPlayer
     ) {
       const enemyStone = this.board[to]?.pop();
       if (enemyStone) {
@@ -317,7 +317,7 @@ export class Game {
       if (
         this.board[i] !== null &&
         this.board[i]!.length > 0 &&
-        this.board[i]![0].color === player
+        this.board[i]![0].getColor() === player
       ) {
         const feasibleTargets = this.getLegalMovesFrom(i);
         for (const to of feasibleTargets) {
@@ -332,13 +332,13 @@ export class Game {
   private hasPrisonChecker(): boolean {
     return this.board[
       this.currentPlayer === PLAYER_COLORS.WHITE ? 0 : 25
-    ]?.some((stone) => stone.color === this.currentPlayer)!;
+    ]?.some((stone) => stone.getColor() === this.currentPlayer)!;
   }
 
   private isValidMove(
     from: number,
     to: number,
-    board: (Stone[] | null)[]
+    board: (Checker[] | null)[]
   ): boolean {
     const currentPlayer = this.currentPlayer;
     let steps =
@@ -374,7 +374,7 @@ export class Game {
     }
 
     // Check if the stone belongs to the current player
-    if (board[from]![0].color !== this.currentPlayer) {
+    if (board[from]![0].getColor() !== this.currentPlayer) {
       return false;
     }
 
@@ -427,7 +427,7 @@ export class Game {
       to !== BEARING_OFF_INDEX &&
       this.board[to] !== null &&
       this.board[to]!.length > 1 &&
-      this.board[to]![0].color !== this.currentPlayer
+      this.board[to]![0].getColor() !== this.currentPlayer
     ) {
       return false;
     }
@@ -442,7 +442,7 @@ export class Game {
       const stonesAtPosition = this.board[i];
       if (stonesAtPosition) {
         stoneCount += stonesAtPosition.filter(
-          (stone) => stone.color === color
+          (stone) => stone.getColor() === color
         ).length;
       }
     }
@@ -483,7 +483,7 @@ export class Game {
       return 0;
     }
     return (
-      this.board[index]?.filter((stone) => stone.color === color).length || 0
+      this.board[index]?.filter((stone) => stone.getColor() === color).length || 0
     );
   }
 
@@ -516,7 +516,7 @@ export class Game {
       const stones = this.board[i];
       if (stones !== null) {
         for (let stone of stones) {
-          if (stone.color === color) {
+          if (stone.getColor() === color) {
             if (color === PLAYER_COLORS.WHITE) {
               totalDistance += PRISON_INDEX['BLACK'] - i;
             } else if (color === PLAYER_COLORS.BLACK) {
@@ -540,7 +540,7 @@ export class Game {
     for (let i = 0; i < this.board.length; i++) {
       const stones = this.board[i];
       if (stones && stones.length > 0) {
-        const color = stones[0].color;
+        const color = stones[0].getColor();
         const count = stones.length;
         positions.push({ index: i, color, count });
       }
@@ -616,11 +616,11 @@ export class Game {
         if (column === null) {
           return null;
         } else {
-          return column.map((stone) => new Stone(stone.color));
+          return column.map((stone) => new Checker(stone.getColor()));
         }
       });
       const diceStateCopy = [...diceState];
-      return [boardStateCopy, diceStateCopy] as [(Stone[] | null)[], number[]];
+      return [boardStateCopy, diceStateCopy] as [(Checker[] | null)[], number[]];
     });
 
     // Create a new Game instance with the copied data
@@ -633,10 +633,3 @@ export class Game {
   }
 }
 
-class Stone {
-  color: PLAYER_COLORS;
-
-  constructor(color: PLAYER_COLORS) {
-    this.color = color;
-  }
-}

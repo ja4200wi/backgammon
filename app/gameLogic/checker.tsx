@@ -1,11 +1,12 @@
+import { PLAYER_COLORS } from "../utils/constants";
 export class Checker {
-  private color: string;
+  private color: PLAYER_COLORS;
 
-  constructor(color: string) {
+  constructor(color: PLAYER_COLORS) {
     this.color = color;
   }
 
-  getColor(): string {
+  getColor(): PLAYER_COLORS {
     return this.color;
   }
 }
