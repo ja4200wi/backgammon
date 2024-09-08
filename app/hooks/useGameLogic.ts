@@ -3,9 +3,8 @@ import { Game } from '../gameLogic/backgammon';
 import { BOT_DIFFICULTY, GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
 import { Bot } from '../gameLogic/bot';
-import { Alert } from 'react-native';
 
-export const useGameLogic = (navigation:any) => {
+export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
