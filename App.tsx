@@ -9,7 +9,7 @@ import ProfileScr from './app/screens/Profile';
 import NavBar from './app/components/navigation/NavBar';
 import Settings from './app/screens/SettingsScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { APP_COLORS, GAME_TYPE } from './app/utils/constants';
+import { APP_COLORS } from './app/utils/constants';
 
 import { Amplify } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
@@ -17,7 +17,7 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import PlayFriend from './app/screens/PlayFriendScr';
 import OnlineGameScr from './app/screens/OnlineGameScr';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 
 Amplify.configure(outputs);
 
