@@ -45,8 +45,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     isStartingPhase,
     firstRoll,
     gameOver,
-    setGameOver,
-  } = useGameLogic(navigation);
+  } = useGameLogic();
 
   const { gameMode } = route.params;
   useEffect(() => {
