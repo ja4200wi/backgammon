@@ -16,11 +16,12 @@ interface GameNavBarProps {
   onUndoMove: () => void;
   showAcceptMoveButton: boolean;
   showUndoMoveButton: boolean;
+  disableButtons: boolean;
 }
 
-const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showAcceptMoveButton, showUndoMoveButton }) => {
-  const acceptButtonColor = showAcceptMoveButton ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
-  const undoButtonColor = showUndoMoveButton ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
+const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showAcceptMoveButton, showUndoMoveButton, disableButtons }) => {
+  const acceptButtonColor = showAcceptMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
+  const undoButtonColor = showUndoMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   return (
     <View style={styles.footerContainer}>
       <TouchableOpacity
@@ -75,7 +76,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showA
         onPress={() =>
           onUndoMove()
         }
-        disabled={showUndoMoveButton}
+        disabled={showUndoMoveButton || disableButtons}
       >
         <Icon
           name='replay'
@@ -89,7 +90,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showA
         onPress={() =>
           onAcceptMove()
         }
-        disabled = {showAcceptMoveButton} 
+        disabled = {showAcceptMoveButton || disableButtons} 
       >
         <Icon
           name='done'

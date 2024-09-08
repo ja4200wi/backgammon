@@ -44,15 +44,19 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     disabledScreen,
     isStartingPhase,
     firstRoll,
-    disableScreen,
-  } = useGameLogic();
+    gameOver,
+    setGameOver,
+  } = useGameLogic(navigation);
 
   const { gameMode } = route.params;
   useEffect(() => {
     startGame(gameMode);
   }, []);
-  const showWinnerScreen = (success: boolean) => {
-    const winner = game!.whoIsWinner();
+  useEffect(() => {
+    if(gameOver.gameover)
+      showWinnerScreen(gameOver.winner)
+  }, [gameOver])
+  const showWinnerScreen = async (winner: PLAYER_COLORS) => {
     Alert.alert(
       `${winner} wins the Game`,
       'What would you like to do?',
@@ -60,7 +64,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         {
           text: 'Restart',
           onPress: () => {
-            startGame(gameMode);
+            startGame(gameMode)
           },
           style: 'cancel',
         },
@@ -74,16 +78,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       ],
       { cancelable: false }
     );
-  };
-
+  }
   const handleMoveChecker = async (
     sourceIndex: number,
     targetIndex: number
   ) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
-    if (success && game?.isGameOver()) {
-      showWinnerScreen(success);
-    }
     return success;
   };
 
@@ -112,6 +112,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         />
       </View>
       <GameNavBar
+        disableButtons={game ? disabledScreen(game) : false}
         onAcceptMove={updateMoveIsOver}
         onUndoMove={undoMove}
         showAcceptMoveButton={showAcceptMoveButton(game!)}

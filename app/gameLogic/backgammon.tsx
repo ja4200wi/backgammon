@@ -27,7 +27,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupDefaultBoard();
+      this.setupBearingOffBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -52,18 +52,8 @@ export class Game {
     this.board[6] = this.createStones(5, PLAYER_COLORS.BLACK);
   }
   private setupBearingOffBoard() {
-    this.board[1] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[2] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[4] = this.createStones(3, PLAYER_COLORS.BLACK);
-    this.board[5] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[6] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[25] = this.createStones(2, PLAYER_COLORS.BLACK);
-    this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
-    this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
-    this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
-    this.board[22] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[23] = this.createStones(4, PLAYER_COLORS.WHITE);
+    this.board[1] = this.createStones(15, PLAYER_COLORS.BLACK);
+    this.board[24] = this.createStones(15, PLAYER_COLORS.WHITE);
   }
 
   private setupTestBoard() {
