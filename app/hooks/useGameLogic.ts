@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import { BOT_DIFFICULTY, GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
-import { Move } from '../gameLogic/move';
-import { custom_resources } from 'aws-cdk-lib';
 import { Bot } from '../gameLogic/bot';
-import { run } from 'jest';
+import { Alert } from 'react-native';
 
-export const useGameLogic = () => {
+export const useGameLogic = (navigation:any) => {
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
@@ -20,6 +18,7 @@ export const useGameLogic = () => {
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
   );
+  const [gameOver,setGameOver] = useState({gameover:false,winner:PLAYER_COLORS.NAP})
 const bot = new Bot(BOT_DIFFICULTY.EASY)
 
   useEffect(() => {
@@ -27,7 +26,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
       setUpGame()
     }
   }, [gamemode,game])
-
+  
   const startGame = async (gamemode: GAME_TYPE) => {
     setGameMode(gamemode)
     const newGame = new Game();
@@ -38,7 +37,9 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
       case GAME_TYPE.PASSPLAY:
         break;
       case GAME_TYPE.COMPUTER:
-        runBot()
+        if(game) {
+          runBot()
+        }
       case GAME_TYPE.ONLINE:
         // Initialize online game logic here
         break;
@@ -55,6 +56,8 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
   const setUpGame = () => {
     if(game) {
       setPositions(game.getCurrentPositions());
+      setPipCount(GAME_SETTINGS.startScores)
+      setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount)
       doStartingPhase(game,gamemode);
     }
   }
@@ -62,8 +65,8 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       if(success) {
-        updateGameState()
         isGameOver()
+        updateGameState()
         return success
       } else {
         return success
@@ -86,16 +89,20 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     if(game) {
       if(game.isGameOver()) {
         const winner = game.whoIsWinner();
-        setGame(null)
-        await showWinnerScreen(winner)
+        setGameOver({gameover:true,winner:winner})
+        resetGame()
       }
     }
   }
-  const showWinnerScreen = async (winner:PLAYER_COLORS) => {
-    //do logic for winner screen
+  const resetGame = () => {
+    setGame(null)
+    setStartingPhase(true)
+    setFirstRoll(true)
+    setDisableScreen(true)
+    setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount)
   }
   const disabledScreen = (currentGame:Game): boolean => {
-    return (currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK)
+    return (currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK && gamemode === GAME_TYPE.COMPUTER)
   }
   const updateGameState = () => {
     if(game) {
@@ -181,11 +188,12 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
       }
     }
   }
+  
   const makeBotMove = () => {
     if (game) {
     const move = bot.makeMove(game)
     if(!move) {
-      throw new Error('Could not get Move from Bot');
+      return
     }
     onMoveChecker(move.getFrom(),move.getTo())
     }
@@ -208,5 +216,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     isStartingPhase,
     firstRoll,
     disableScreen,
+    gameOver,
+    setGameOver,
   };
 };
