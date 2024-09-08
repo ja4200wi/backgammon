@@ -26,7 +26,6 @@ export class Bot {
     }
     private makeMoveEasyBot(game:Game): (Move | null) {
         const move = game.getRandomMove()
-        console.log('in bot/makeMoveEasyBot...Move is:',move)
         return move
     }
     private makeMoveMediumBot(game:Game): (Move | null) {

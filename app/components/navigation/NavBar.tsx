@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   footerContainer: {
     backgroundColor: APP_COLORS.backgroundColor,
     padding: 4,
-    paddingBottom: 8,
+    paddingBottom: 16,
   },
   bottomNav: {
     flexDirection: 'row',
