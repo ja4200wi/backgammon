@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
-import { NavigationProp, ParamListBase, RouteProp } from '@react-navigation/native';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
@@ -8,7 +7,6 @@ import {
   APP_COLORS,
   PLAYER_COLORS,
   DICE_COLORS,
-  GAME_TYPE,
 } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';

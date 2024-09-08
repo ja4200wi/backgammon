@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Text,
   ActionSheetIOS,
-  Alert,
 } from 'react-native';
 import { Icon } from '@rneui/themed';
 import { APP_COLORS } from '../../utils/constants';

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-import { Card, Icon, Button } from '@rneui/themed';
+import { Card, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';

@@ -1,6 +1,5 @@
 import { BOT_DIFFICULTY } from "../utils/constants";
 import { Game } from "./backgammon";
-import { Checker } from "./checker";
 import { Move } from "./move";
 export class Bot {
     private difficulty: BOT_DIFFICULTY

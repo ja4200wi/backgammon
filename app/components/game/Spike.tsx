@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Triangle from 'react-native-triangle';
-import { APP_COLORS, PLAYER_COLORS } from '../../utils/constants';
+import { PLAYER_COLORS } from '../../utils/constants';
 
 interface SpikeProps {
   color: string;
