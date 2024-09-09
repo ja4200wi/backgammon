@@ -148,10 +148,10 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       />
       <CustomAlert
         visible={doubleAlertVisible}
-        headline={`${winner} wins the Game`}
+        headline={`${game?.getCurrentPlayer()} wants do double!`}
         bodyText="Do you accept the Double or do you want to give up?"
         acceptButtonText="Accept"
-        declineButtonText="Give Up"
+        declineButtonText={`Give up (-${doubleDice.getMultiplicator()})`}
         onAccept={handeDoubleAccept}
         onDecline={handleDoubleGiveUp}
       />
