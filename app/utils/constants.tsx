@@ -78,7 +78,11 @@ export enum GAME_TYPE {
   COMPUTER = 'Computer',
   PASSPLAY = 'PassandPlay',
 }
-
+export enum BOT_DIFFICULTY {
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard',
+}
 export const ICONS = {
   TrophyIcon: (
     <Icon

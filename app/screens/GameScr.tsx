@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Alert, SafeAreaView } from 'react-native';
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
@@ -14,7 +13,8 @@ import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
 
 interface GameScrProps {
-  navigation: NavigationProp<ParamListBase>;
+  navigation: any
+  route: any
 }
 
 const initialSpikes: React.ReactElement[][] = new Array(24)
@@ -25,7 +25,7 @@ const initialSpikes: React.ReactElement[][] = new Array(24)
 const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
-const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
+const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const {
     game,
     dice,
@@ -39,12 +39,21 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
     showUndoMoveButton,
     undoMove,
     legalMovesFrom,
+    disabledScreen,
     isStartingPhase,
     firstRoll,
+    gameOver,
   } = useGameLogic();
 
-  const showWinnerScreen = (success: boolean) => {
-    const winner = game!.whoIsWinner();
+  const { gameMode } = route.params;
+  useEffect(() => {
+    startGame(gameMode);
+  }, []);
+  useEffect(() => {
+    if(gameOver.gameover)
+      showWinnerScreen(gameOver.winner)
+  }, [gameOver])
+  const showWinnerScreen = async (winner: PLAYER_COLORS) => {
     Alert.alert(
       `${winner} wins the Game`,
       'What would you like to do?',
@@ -52,7 +61,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
         {
           text: 'Restart',
           onPress: () => {
-            startGame();
+            startGame(gameMode)
           },
           style: 'cancel',
         },
@@ -66,22 +75,18 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
       ],
       { cancelable: false }
     );
-  };
-
+  }
   const handleMoveChecker = async (
     sourceIndex: number,
     targetIndex: number
   ) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
-    if (success && game?.isGameOver()) {
-      showWinnerScreen(success);
-    }
     return success;
   };
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
-      <HeaderSecondary navigation={navigation} headline='Press & Play' />
+      <HeaderSecondary navigation={navigation} headline={gameMode} />
       <View style={styles.boardContainer}>
         <Board
           positions={positions}
@@ -98,11 +103,13 @@ const GameScr: React.FC<GameScrProps> = ({ navigation }) => {
             startingSeq: isStartingPhase,
             firstRoll: firstRoll,
           }}
+          disableScreen={game ? disabledScreen(game) : false}
           onMoveChecker={handleMoveChecker}
           legalMovesFrom={legalMovesFrom}
         />
       </View>
       <GameNavBar
+        disableButtons={game ? disabledScreen(game) : false}
         onAcceptMove={updateMoveIsOver}
         onUndoMove={undoMove}
         showAcceptMoveButton={showAcceptMoveButton(game!)}

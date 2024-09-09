@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-import { Card, Icon, Button } from '@rneui/themed';
+import { Card, Button } from '@rneui/themed';
 import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
@@ -236,7 +236,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => console.log('Start Game')}
+                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.COMPUTER})}
               />
             </>
           )}
@@ -282,7 +282,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('Game')}
+                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.PASSPLAY})}
               />
             </>
           )}

@@ -22,8 +22,8 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player }) => {
               {
                 color:
                   player === PLAYER_COLORS.WHITE
-                    ? PLAYER_COLORS.BLACK
-                    : PLAYER_COLORS.WHITE,
+                    ? '#000'
+                    : '#FFF',
               },
             ]}
           >

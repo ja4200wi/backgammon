@@ -17,9 +17,7 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import PlayFriend from './app/screens/PlayFriendScr';
 import OnlineGameScr from './app/screens/OnlineGameScr';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { color } from '@rneui/base';
-import { GLOBAL_STYLES } from './app/utils/globalStyles';
+import { Button, StyleSheet, View } from 'react-native';
 
 Amplify.configure(outputs);
 

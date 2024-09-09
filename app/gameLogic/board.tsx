@@ -1,3 +1,4 @@
+import { PLAYER_COLORS } from '../utils/constants';
 import {Checker} from './Checker';
 
 export class Board {
@@ -9,17 +10,17 @@ export class Board {
   }
 
   private setupDefaultBoard() {
-    this.board[1] = this.createChecker(2, 'white');
-    this.board[12] = this.createChecker(5, 'white');
-    this.board[17] = this.createChecker(3, 'white');
-    this.board[19] = this.createChecker(5, 'white');
-    this.board[24] = this.createChecker(2, 'black');
-    this.board[13] = this.createChecker(5, 'black');
-    this.board[8] = this.createChecker(3, 'black');
-    this.board[6] = this.createChecker(5, 'black');
+    this.board[1] = this.createChecker(2, PLAYER_COLORS.WHITE);
+    this.board[12] = this.createChecker(5, PLAYER_COLORS.WHITE);
+    this.board[17] = this.createChecker(3, PLAYER_COLORS.WHITE);
+    this.board[19] = this.createChecker(5, PLAYER_COLORS.WHITE);
+    this.board[24] = this.createChecker(2, PLAYER_COLORS.BLACK);
+    this.board[13] = this.createChecker(5, PLAYER_COLORS.BLACK);
+    this.board[8] = this.createChecker(3, PLAYER_COLORS.BLACK);
+    this.board[6] = this.createChecker(5, PLAYER_COLORS.BLACK);
   }
 
-  private createChecker(count: number, color: string): Checker[] {
+  private createChecker(count: number, color: PLAYER_COLORS): Checker[] {
     const checkers: Checker[] = [];
     for (let i = 0; i < count; i++) {
       checkers.push(new Checker(color));
