@@ -3,6 +3,7 @@ import { Game } from '../gameLogic/backgammon';
 import { BOT_DIFFICULTY, GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
 import { Bot } from '../gameLogic/bot';
+import { DoubleDice } from '../gameLogic/doubleDice';
 
 export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
@@ -10,6 +11,7 @@ export const useGameLogic = () => {
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
   const [pipCount, setPipCount] = useState(GAME_SETTINGS.startScores);
+  const [doubleDice,setDoubleDice] = useState<DoubleDice>(new DoubleDice)
   const [firstRoll, setFirstRoll] = useState(true);
   const [lastturn, setLastTurn] = useState<Turn>();
   const [disableScreen, setDisableScreen] = useState<boolean>(false);
@@ -31,6 +33,25 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     const newGame = new Game();
     setGame(newGame);
   };
+  const setUpGame = () => {
+    if(game) {
+      setPositions(game.getCurrentPositions());
+      setPipCount(GAME_SETTINGS.startScores)
+      setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount)
+      doStartingPhase(game,gamemode);
+    }
+  }
+  const doStartingPhase = (currentGame: Game,gamemode: GAME_TYPE) => {
+    if (currentGame.getDice()[0] > currentGame.getDice()[1]) {
+      currentGame.setPlayer(PLAYER_COLORS.WHITE);
+      setDice(currentGame.getDice());
+      setTimeout(() => setStartingPhase(false), 2250);
+    } else {
+      currentGame.setPlayer(PLAYER_COLORS.BLACK);
+      setDice(currentGame.getDice());
+      setTimeout(() => {setStartingPhase(false);runGame(currentGame, gamemode)}, 2250);
+    }
+  }
   const runGame = (currentGame: Game,gamemode: GAME_TYPE) => {
     switch (gamemode) {
       case GAME_TYPE.PASSPLAY:
@@ -52,14 +73,6 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
         break;
     }
   }
-  const setUpGame = () => {
-    if(game) {
-      setPositions(game.getCurrentPositions());
-      setPipCount(GAME_SETTINGS.startScores)
-      setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount)
-      doStartingPhase(game,gamemode);
-    }
-  }
   const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
@@ -73,15 +86,16 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     }
     return false;
   };
-  const doStartingPhase = (currentGame: Game,gamemode: GAME_TYPE) => {
-    if (currentGame.getDice()[0] > currentGame.getDice()[1]) {
-      currentGame.setPlayer(PLAYER_COLORS.WHITE);
-      setDice(currentGame.getDice());
-      setTimeout(() => setStartingPhase(false), 2250);
-    } else {
-      currentGame.setPlayer(PLAYER_COLORS.BLACK);
-      setDice(currentGame.getDice());
-      setTimeout(() => {setStartingPhase(false);runGame(currentGame, gamemode)}, 2250);
+  const updateGameState = () => {
+    if(game) {
+      setPositions(game.getCurrentPositions());
+      const distances = game.getDistances();
+      updatePipCount(distances.distBlack, distances.distWhite);
+      updateHomeCheckers(game);
+      checkForLegalMove(game, true);
+      if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
+        runGame(game,gamemode)
+      }
     }
   }
   const isGameOver = async () => {
@@ -103,18 +117,6 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
   const disabledScreen = (currentGame:Game): boolean => {
     return (currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK && gamemode === GAME_TYPE.COMPUTER)
   }
-  const updateGameState = () => {
-    if(game) {
-      setPositions(game.getCurrentPositions());
-      const distances = game.getDistances();
-      updatePipCount(distances.distBlack, distances.distWhite);
-      updateHomeCheckers(game);
-      checkForLegalMove(game, true);
-      if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
-        runGame(game,gamemode)
-      }
-    }
-  }
   const checkForLegalMove = async (currentGame: Game, fastSwitch: boolean) => {
     if (!currentGame.hasLegalMove()) {
       if (fastSwitch) {
@@ -134,6 +136,13 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     }
     await checkForLegalMove(currentgame, false)
     runGame(currentgame,gamemode)
+  }
+  const double = () => {
+    if (game) {
+      const newDoubleDice = game.double()
+      setDoubleDice(newDoubleDice)
+      console.log('doubled; new double dice:',newDoubleDice)
+    }
   }
   const showAcceptMoveButton = (currentGame: Game) => {
     if(game) {return !(currentGame.getMovesLeft().length === 0);}
@@ -174,7 +183,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     if(game) {return game?.getLegalMovesFrom(from) ?? [];}
     else return []
   };
-  { /* BOT FUNCTIONS */}
+  // #region BOT FUNCTIONS
   const runBot = () => {
     if(game){
       if(game.getMovesLeft().length === 0) {
@@ -197,6 +206,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     onMoveChecker(move.getFrom(),move.getTo())
     }
   }
+  // #endregion
 
   return {
     game,
@@ -217,5 +227,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     disableScreen,
     gameOver,
     setGameOver,
+    doubleDice,
+    double,
   };
 };

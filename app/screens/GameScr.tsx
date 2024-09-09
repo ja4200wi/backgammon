@@ -40,9 +40,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     undoMove,
     legalMovesFrom,
     disabledScreen,
+    doubleDice,
     isStartingPhase,
     firstRoll,
     gameOver,
+    double,
   } = useGameLogic();
 
   const { gameMode } = route.params;
@@ -114,6 +116,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onUndoMove={undoMove}
         showAcceptMoveButton={showAcceptMoveButton(game!)}
         showUndoMoveButton={showUndoMoveButton(game!)}
+        onDouble={double}
       />
     </SafeAreaView>
   );

@@ -1,6 +1,6 @@
 import { PLAYER_COLORS } from "../utils/constants"
 
-export class doubleDice {
+export class DoubleDice {
     private multiplicator: number
     private lastDouble:PLAYER_COLORS
 
@@ -18,6 +18,8 @@ export class doubleDice {
         if(player !== this.lastDouble) {
             this.multiplicator = this.multiplicator*2
             this.lastDouble = player
+        } else {
+            console.log('cannot double, player just doubled')
         }
     }
 }

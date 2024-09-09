@@ -13,12 +13,13 @@ import { Divider } from '@rneui/themed';
 interface GameNavBarProps {
   onAcceptMove: () => void;
   onUndoMove: () => void;
+  onDouble: () => void;
   showAcceptMoveButton: boolean;
   showUndoMoveButton: boolean;
   disableButtons: boolean;
 }
 
-const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showAcceptMoveButton, showUndoMoveButton, disableButtons }) => {
+const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDouble, showAcceptMoveButton, showUndoMoveButton, disableButtons }) => {
   const acceptButtonColor = showAcceptMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   const undoButtonColor = showUndoMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   return (
@@ -59,7 +60,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove, showA
         />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity onPress={() => console.log('double')}>
+      <TouchableOpacity onPress={onDouble}>
         <Text
           style={{
             fontSize: 30,
