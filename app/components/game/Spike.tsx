@@ -49,7 +49,7 @@ const Spike: React.FC<SpikeProps> = ({
     } else {
       // Case 2: Shuffled display for more than 5 checkers
       const shuffledCheckers = [];
-      for (let i = 0; i < checkerCount; i++) {
+      for (let i = 0; i < checkerCount && i <=10; i++) {
         const shuffleDegree =
           checkerCount <= 6
             ? 0.9
@@ -58,7 +58,7 @@ const Spike: React.FC<SpikeProps> = ({
             : checkerCount === 8
             ? 0.65
             : checkerCount === 9
-            ? 0.58
+            ? 0.58 
             : 0.52;
         const offset = i * (checkerHeight * shuffleDegree); // Slight overlap for shuffling
         shuffledCheckers.push(
@@ -70,7 +70,7 @@ const Spike: React.FC<SpikeProps> = ({
             ]}
           >
             {React.cloneElement(checkers[i])}
-            {i === checkerCount - 1 && (
+            {(i === checkerCount - 1 || i === 10) && (
               <Text
                 style={[
                   styles.checkerText,
