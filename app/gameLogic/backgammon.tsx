@@ -29,7 +29,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupDefaultBoard();
+      this.setupBearingOffBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
