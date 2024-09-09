@@ -60,7 +60,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDoub
         />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity onPress={onDouble}>
+      <TouchableOpacity onPress={onDouble} disabled={disableButtons}>
         <Text
           style={{
             fontSize: 30,
