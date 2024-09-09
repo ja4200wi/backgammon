@@ -11,6 +11,7 @@ import {
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
+import { DoubleDice } from '../gameLogic/doubleDice';
 
 interface GameScrProps {
   navigation: any
@@ -108,6 +109,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           disableScreen={game ? disabledScreen(game) : false}
           onMoveChecker={handleMoveChecker}
           legalMovesFrom={legalMovesFrom}
+          doubleDice={doubleDice}
         />
       </View>
       <GameNavBar
