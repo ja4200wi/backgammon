@@ -2,6 +2,7 @@ import { PLAYER_COLORS } from '../utils/constants';
 import { Turn } from './turn';
 import { Move } from './move';
 import { Checker } from './checker';
+import { doubleDice } from './doubleDice';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
 const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
@@ -18,6 +19,7 @@ export class Game {
   private movesLeft: number[];
   private lastMoves: [(Checker[] | null)[], number[]][];
   private moves: Move[];
+  private doubleDice: doubleDice;
 
   constructor();
   constructor(board: (Checker[] | null)[], currentPlayer: PLAYER_COLORS);
@@ -39,6 +41,7 @@ export class Game {
     this.movesLeft = tempDice;
     this.lastMoves = [];
     this.moves = []
+    this.doubleDice = new doubleDice
   }
 
   private setupDefaultBoard() {
@@ -601,7 +604,13 @@ export class Game {
     this.moves = []
     return new Turn(safeMoves)
   }
-
+  public getDoubleDice(player:PLAYER_COLORS): doubleDice {
+    return this.doubleDice
+  }
+  public double(player:PLAYER_COLORS): doubleDice {
+    this.doubleDice.double(player)
+    return this.doubleDice
+  }
   public deepCopy(): Game {
     const boardCopy = this.deepCopyBoard(this.board);
 
