@@ -152,6 +152,14 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     await checkForLegalMove(currentgame, false)
     runGame(gamemode)}
   }
+  const giveUp = (looser:PLAYER_COLORS) => {
+    if(game){
+      game.giveUp(looser)
+      const winner = looser === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
+      setGameOver({gameover:true,winner:winner})
+      setUpEndBoard()
+    }
+  }
   const double = () => {
     if (game) {
       const newDoubleDice = game.double()
@@ -237,6 +245,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
     undoMove,
     legalMovesFrom,
     disabledScreen,
+    giveUp,
     isStartingPhase,
     firstRoll,
     disableScreen,

@@ -7,6 +7,7 @@ import {
   APP_COLORS,
   PLAYER_COLORS,
   DICE_COLORS,
+  GAME_TYPE,
 } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
@@ -27,7 +28,8 @@ const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
 const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
-  const [alertVisible, setAlertVisible] = useState(false);
+  const [winnerAlertVisible, setWinnerAlertVisible] = useState(false);
+  const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | null>(null); // State to hold the winner
   const {
     game,
@@ -41,6 +43,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     updateMoveIsOver,
     showUndoMoveButton,
     undoMove,
+    giveUp,
     legalMovesFrom,
     disabledScreen,
     setGameOver,
@@ -61,20 +64,37 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
-      setAlertVisible(true); // Show the modal when the game is over
+      setWinnerAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
-
-  const handleAccept = () => {
+  const handleDoubleGiveUp = () => {
+    if(game) {
+      const looser = game.getCurrentPlayer() === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
+      giveUp(looser)
+      setDoubleAlertVisible(false)
+    }
+  }
+  const handeDoubleAccept = ()=> {
+    double()
+    setDoubleAlertVisible(false)
+  }
+  const handleDouble = () => {
+    if(gameMode === GAME_TYPE.COMPUTER) {
+      double()
+    } else {
+      setDoubleAlertVisible(true)
+    }
+  }
+  const handleWinnerAccept = () => {
     setGameOver({gameover:false,winner:PLAYER_COLORS.NAP});
     resetGame();
     startGame(gameMode);
-    setAlertVisible(false); 
+    setWinnerAlertVisible(false); 
   };
 
-  const handleDecline = () => {
+  const handleWinnerDecline = () => {
     navigation.navigate('Home'); // Navigate to the home screen
-    setAlertVisible(false); // Hide the modal
+    setWinnerAlertVisible(false); // Hide the modal
   };
 
   const handleMoveChecker = async (sourceIndex: number, targetIndex: number) => {
@@ -113,18 +133,27 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onUndoMove={undoMove}
         showAcceptMoveButton={showAcceptMoveButton(game!)}
         showUndoMoveButton={showUndoMoveButton(game!)}
-        onDouble={double}
+        onDouble={handleDouble}
       />
 
       {/* Custom Modal for Winner Announcement */}
       <CustomAlert
-        visible={alertVisible}
+        visible={winnerAlertVisible}
         headline={`${winner} wins the Game`}
         bodyText="What would you like to do?"
         acceptButtonText="Restart"
         declineButtonText="Go to Home"
-        onAccept={handleAccept}
-        onDecline={handleDecline}
+        onAccept={handleWinnerAccept}
+        onDecline={handleWinnerDecline}
+      />
+      <CustomAlert
+        visible={doubleAlertVisible}
+        headline={`${winner} wins the Game`}
+        bodyText="Do you accept the Double or do you want to give up?"
+        acceptButtonText="Accept"
+        declineButtonText="Give Up"
+        onAccept={handeDoubleAccept}
+        onDecline={handleDoubleGiveUp}
       />
     </SafeAreaView>
   );

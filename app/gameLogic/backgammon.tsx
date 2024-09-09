@@ -20,6 +20,7 @@ export class Game {
   private lastMoves: [(Checker[] | null)[], number[]][];
   private moves: Move[];
   private doubleDice: DoubleDice;
+  private gameState: {gameIsOver: boolean, winner: PLAYER_COLORS}
 
   constructor();
   constructor(board: (Checker[] | null)[], currentPlayer: PLAYER_COLORS);
@@ -42,6 +43,7 @@ export class Game {
     this.lastMoves = [];
     this.moves = []
     this.doubleDice = new DoubleDice
+    this.gameState = {gameIsOver:false,winner:PLAYER_COLORS.NAP}
   }
 
   private setupDefaultBoard() {
@@ -162,7 +164,18 @@ export class Game {
     this.board[to]?.push(stone);
     this.updateMovesLeft(steps, from, to);
     this.updateMoves(from,to)
+    this.updateGameOver()
     return true;
+  }
+  private updateGameOver() {
+    if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES) {
+        this.gameState = {gameIsOver:true,winner:PLAYER_COLORS.BLACK}
+    } else if(this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES){
+      this.gameState = {gameIsOver:true,winner:PLAYER_COLORS.WHITE}
+    }
+  }
+  private setGameOver(winner:PLAYER_COLORS) {
+    this.gameState = {gameIsOver:true,winner:winner}
   }
   private updateMoves(from:number,to:number) {
     this.moves.push(new Move(from,to))
@@ -571,13 +584,11 @@ export class Game {
   }
 
   public isGameOver(): boolean {
-    if (
-      this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES ||
-      this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES
-    ) {
-      return true;
-    }
-    return false;
+    return this.gameState.gameIsOver
+  }
+  public giveUp(looser:PLAYER_COLORS) {
+    const winner = looser === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
+    this.setGameOver(winner)
   }
   public getLastMoves() {
     return this.lastMoves;
