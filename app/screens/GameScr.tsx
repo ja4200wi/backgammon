@@ -56,6 +56,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   } = useGameLogic();
 
   const { gameMode } = route.params;
+  const { pointsToWin } = route.params;
 
   useEffect(() => {
     startGame(gameMode);
@@ -128,7 +129,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         />
       </View>
       <GameNavBar
-        disableButtons={game ? disabledScreen(game) : false}
+        disableButtons={(game ? disabledScreen(game): false)}
         onAcceptMove={updateMoveIsOver}
         onUndoMove={undoMove}
         showAcceptMoveButton={showAcceptMoveButton(game!)}
