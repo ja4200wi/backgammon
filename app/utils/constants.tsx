@@ -163,4 +163,5 @@ export const GAME_SETTINGS = {
   checkerCount: 15,
   startDice: [1, 2],
   startHomeCheckerCount: [0, 0],
+  startingScore: [0,0],
 };

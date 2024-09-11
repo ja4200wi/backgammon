@@ -1,8 +1,9 @@
-import { PLAYER_COLORS } from '../utils/constants';
+import { BOARD_COLORS, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from './turn';
 import { Move } from './move';
 import { Checker } from './checker';
 import { DoubleDice } from './doubleDice';
+import { Board } from './board';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
 const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
@@ -30,7 +31,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupBearingOffBoard();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -92,7 +93,7 @@ export class Game {
     if (maxDiceUsable === 1) {
       // if only one move possible, ensure highest is done, which is still feasible
       const maxStepsFeasible = Math.max(
-        ...this.getAllPossibleMoves(this.currentPlayer).map((move) =>
+        ...this._getAllPossibleMoves(this.currentPlayer).map((move) =>
           Math.abs(move.getFrom() - move.getTo())
         )
       );
@@ -104,7 +105,7 @@ export class Game {
 
   private maxDiceUsable(diceUsed: number): number {
     if (this.movesLeft.length === 0) return diceUsed;
-    const possibleMoves = this.getAllPossibleMoves(this.currentPlayer);
+    const possibleMoves = this._getAllPossibleMoves(this.currentPlayer);
     if (possibleMoves.length === 0) return diceUsed;
 
     let maxUsed = diceUsed;
@@ -205,7 +206,7 @@ export class Game {
     return true;
   }
   public getRandomMove(): Move | null {
-    const possibleMoves = this.getAllPossibleMoves(this.currentPlayer);
+    const possibleMoves = this._getAllPossibleMoves(this.currentPlayer);
     if (possibleMoves.length === 0) {
       return null;
     }
@@ -324,8 +325,7 @@ export class Game {
       legalMoves.push(BEARING_OFF_INDEX);
     return legalMoves;
   }
-
-  private getAllPossibleMoves(player: PLAYER_COLORS): Move[] {
+  private _getAllPossibleMoves(player: PLAYER_COLORS): Move[] {
     const moves: Move[] = [];
     for (let i = 0; i < this.board.length; i++) {
       if (
@@ -561,7 +561,9 @@ export class Game {
     }
     return positions;
   }
-
+  public getAllPossibleMoves() : Move[] {
+    return this._getAllPossibleMoves(this.currentPlayer)
+  }
   public getDistances(): { distBlack: number; distWhite: number } {
     return {
       distBlack: this.calculateTotalDistance(PLAYER_COLORS.BLACK),

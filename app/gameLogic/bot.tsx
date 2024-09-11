@@ -1,5 +1,6 @@
-import { BOT_DIFFICULTY } from "../utils/constants";
+import { BOT_DIFFICULTY, PLAYER_COLORS } from "../utils/constants";
 import { Game } from "./backgammon";
+import { Board } from "./board";
 import { Move } from "./move";
 export class Bot {
     private difficulty: BOT_DIFFICULTY
@@ -28,9 +29,35 @@ export class Bot {
         return move
     }
     private makeMoveMediumBot(game:Game): (Move | null) {
+        const firstMoves = game.getAllPossibleMoves()
+        const board = this.transformPositionToBoard(game.getCurrentPositions())
+        for(let move of firstMoves) {
+            //continue here!
+            board.makeMove(move,game.getCurrentPlayer())
+        }
         return null
     }
     private makeMoveHardBot(game:Game): (Move | null) {
         return null
     }
+    // helper methods
+    private transformPositionToBoard(positions: {
+        index: number;
+        color: PLAYER_COLORS;
+        count: number;
+    }[]): Board {
+        let board = new Board();
+    
+        for (let i = 0; i < 26; i++) {
+            board.makeSpikeEmpty(i);
+    
+            // Check if there is a position for this index
+            const position = positions.find(pos => pos.index === i);
+            if (position) {
+                board.pushXCheckersOnSpike(position.count, position.index, position.color);
+            }
+        }
+        return board;
+    }    
+    
 }
