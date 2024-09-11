@@ -70,6 +70,11 @@ export enum BOARD_COLORS {
   BACKGROUND = '#dda15e',
   PRISON = '#bc6c25',
 }
+export enum BOARD_TYPE {
+  DEFAULT = 'default',
+  EMPTY ='empty',
+  CUSTOM ='custom',
+}
 
 export enum GAME_TYPE {
   ELO = 'Elo',

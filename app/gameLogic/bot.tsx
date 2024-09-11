@@ -1,4 +1,4 @@
-import { BOT_DIFFICULTY, PLAYER_COLORS } from "../utils/constants";
+import { BOARD_TYPE, BOT_DIFFICULTY, PLAYER_COLORS } from "../utils/constants";
 import { Game } from "./backgammon";
 import { Board } from "./board";
 import { Move } from "./move";
@@ -46,11 +46,9 @@ export class Bot {
         color: PLAYER_COLORS;
         count: number;
     }[]): Board {
-        let board = new Board();
+        let board = new Board(BOARD_TYPE.EMPTY);
     
         for (let i = 0; i < 26; i++) {
-            board.makeSpikeEmpty(i);
-    
             // Check if there is a position for this index
             const position = positions.find(pos => pos.index === i);
             if (position) {
