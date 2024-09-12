@@ -7,7 +7,6 @@ const client = generateClient<Schema>();
 export async function sendTurn(gameId: string, turn: Turn): Promise<void> {}
 
 export async function createSession(playerOneId: string): Promise<string> {
-  console.log('Creating session with playerOneId:', playerOneId);
   const response = await client.models.Session.create({
     playerOneID: playerOneId,
     playerTwoID: 'EMPTY',

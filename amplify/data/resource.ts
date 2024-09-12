@@ -1,6 +1,7 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { joinGame } from '../functions/joinGame/resource';
 import { makeTurn } from '../functions/makeTurn/resource';
+import { postConfirmation } from '../auth/post-confirmation/resource';
 
 const schema = a
   .schema({
@@ -67,6 +68,7 @@ const schema = a
   .authorization((allow) => [
     allow.resource(joinGame),
     allow.resource(makeTurn),
+    allow.resource(postConfirmation),
   ]);
 
 export type Schema = ClientSchema<typeof schema>;

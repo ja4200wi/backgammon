@@ -22,8 +22,10 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
 
   const joinGame = async (gameId: string) => {
     const { userId } = await getCurrentUser();
-    const { errors, data } = await client.queries.joinGame({ gameId, userId });
-    navigation.navigate('Online', { gameId });
+    const { errors, data } = await client.mutations.joinGame({
+      gameId,
+      userId,
+    });
   };
 
   useEffect(() => {

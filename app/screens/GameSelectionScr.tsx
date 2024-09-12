@@ -16,6 +16,7 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { createSession } from '../service/gameService';
+import { getUserName } from '../service/profileService';
 
 const client = generateClient<Schema>();
 
@@ -75,12 +76,13 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
     const [userName, setUserName] = useState(''); // To store the profile name
 
     const handleCreateSession = async () => {
+      const userName = await getUserName();
       const gameId = await createSession(userName);
       navigation.navigate('OnlineMatching', { gameId });
     };
 
     const listSessions = () => {
-      navigation.navigate('OnlineMatching');
+      navigation.navigate('OnlineMatching', {});
     };
     return (
       <TouchableOpacity

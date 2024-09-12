@@ -6,13 +6,13 @@ import {
   SafeAreaView,
   ImageBackground,
   Text,
-  Button,
 } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { Button } from '@rneui/themed';
 
 const client = generateClient<Schema>();
 
@@ -66,7 +66,11 @@ export default function OnlineMatching({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <Button onPress={() => handleStartGame()} title='Start' />
+        <Button
+          onPress={() => handleStartGame()}
+          title='Start'
+          style={{ zIndex: 3 }}
+        />
         {isWaitingForOpponent ? (
           <View
             style={{
