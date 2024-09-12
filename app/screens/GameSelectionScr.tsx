@@ -15,6 +15,7 @@ import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { createSession } from '../service/gameService';
 
 const client = generateClient<Schema>();
 
@@ -73,17 +74,9 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
   function OnlineGameCard({ navigation }: { navigation: any }) {
     const [userName, setUserName] = useState(''); // To store the profile name
 
-    const fetchUserData = async () => {
-      const { username } = await getCurrentUser();
-      setUserName(username);
-    };
-    const createSession = async () => {
-      fetchUserData();
-      const { errors, data: game } = await client.models.Session.create({
-        playerOneID: userName,
-        playerTwoID: 'filler',
-      });
-      navigation.navigate('OnlineMatching', { gameId: game!.id });
+    const handleCreateSession = async () => {
+      const gameId = await createSession(userName);
+      navigation.navigate('OnlineMatching', { gameId });
     };
 
     const listSessions = () => {
@@ -126,7 +119,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => createSession()}
+                onPress={() => handleCreateSession()}
               />
               <Button
                 title='Join Game'

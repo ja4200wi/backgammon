@@ -104,10 +104,6 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
   }
 }
 ` as GeneratedQuery<APITypes.GetTurnsQueryVariables, APITypes.GetTurnsQuery>;
-export const joinGame = /* GraphQL */ `query JoinGame($gameId: String!, $userId: String!) {
-  joinGame(gameId: $gameId, userId: $userId)
-}
-` as GeneratedQuery<APITypes.JoinGameQueryVariables, APITypes.JoinGameQuery>;
 export const listPlayers = /* GraphQL */ `query ListPlayers(
   $filter: ModelPlayerFilterInput
   $limit: Int

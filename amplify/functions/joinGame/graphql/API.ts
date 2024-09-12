@@ -47,7 +47,7 @@ export type Turns = {
   moves?:  Array<Move | null > | null,
   player?: Player | null,
   playerColor?: TurnsPlayerColor | null,
-  playerId: string,
+  playerId?: string | null,
   turnNumber: number,
   type?: TurnsType | null,
   updatedAt: string,
@@ -74,6 +74,7 @@ export enum TurnsPlayerColor {
 export enum TurnsType {
   DOUBLE = "DOUBLE",
   GIVE_UP = "GIVE_UP",
+  INIT = "INIT",
   MOVE = "MOVE",
 }
 
@@ -260,7 +261,7 @@ export type CreateTurnsInput = {
   gameId: string,
   moves?: Array< MoveInput | null > | null,
   playerColor?: TurnsPlayerColor | null,
-  playerId: string,
+  playerId?: string | null,
   turnNumber: number,
   type?: TurnsType | null,
 };
@@ -291,6 +292,7 @@ export type DeleteTurnsInput = {
 export enum MakeTurnType {
   DOUBLE = "DOUBLE",
   GIVE_UP = "GIVE_UP",
+  INIT = "INIT",
   MOVE = "MOVE",
 }
 
@@ -490,20 +492,11 @@ export type GetTurnsQuery = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
   } | null,
-};
-
-export type JoinGameQueryVariables = {
-  gameId: string,
-  userId: string,
-};
-
-export type JoinGameQuery = {
-  joinGame?: string | null,
 };
 
 export type ListPlayersQueryVariables = {
@@ -565,7 +558,7 @@ export type ListTurnsQuery = {
       createdAt: string,
       gameId: string,
       playerColor?: TurnsPlayerColor | null,
-      playerId: string,
+      playerId?: string | null,
       turnNumber: number,
       type?: TurnsType | null,
       updatedAt: string,
@@ -675,7 +668,7 @@ export type CreateTurnsMutation = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
@@ -783,11 +776,20 @@ export type DeleteTurnsMutation = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
   } | null,
+};
+
+export type JoinGameMutationVariables = {
+  gameId: string,
+  userId: string,
+};
+
+export type JoinGameMutation = {
+  joinGame?: string | null,
 };
 
 export type MakeTurnMutationVariables = {
@@ -902,7 +904,7 @@ export type UpdateTurnsMutation = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
@@ -1008,7 +1010,7 @@ export type OnCreateTurnsSubscription = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
@@ -1114,7 +1116,7 @@ export type OnDeleteTurnsSubscription = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
@@ -1220,7 +1222,7 @@ export type OnUpdateTurnsSubscription = {
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
-    playerId: string,
+    playerId?: string | null,
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,

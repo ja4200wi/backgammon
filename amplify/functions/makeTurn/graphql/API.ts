@@ -292,6 +292,7 @@ export type DeleteTurnsInput = {
 export enum MakeTurnType {
   DOUBLE = "DOUBLE",
   GIVE_UP = "GIVE_UP",
+  INIT = "INIT",
   MOVE = "MOVE",
 }
 
@@ -496,15 +497,6 @@ export type GetTurnsQuery = {
     type?: TurnsType | null,
     updatedAt: string,
   } | null,
-};
-
-export type JoinGameQueryVariables = {
-  gameId: string,
-  userId: string,
-};
-
-export type JoinGameQuery = {
-  joinGame?: string | null,
 };
 
 export type ListPlayersQueryVariables = {
@@ -789,6 +781,15 @@ export type DeleteTurnsMutation = {
     type?: TurnsType | null,
     updatedAt: string,
   } | null,
+};
+
+export type JoinGameMutationVariables = {
+  gameId: string,
+  userId: string,
+};
+
+export type JoinGameMutation = {
+  joinGame?: string | null,
 };
 
 export type MakeTurnMutationVariables = {

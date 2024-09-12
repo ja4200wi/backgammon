@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ImageBackground,
   Text,
+  Button,
 } from 'react-native';
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';
@@ -24,7 +25,7 @@ export default function OnlineMatching({
   route: any;
   navigation: any;
 }) {
-  const { gameId, boardId, localPlayerId, gameMode, whoAmI } = route.params;
+  const { gameId, localPlayerId, gameMode, whoAmI } = route.params;
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(
     gameId !== undefined
   );
@@ -37,19 +38,22 @@ export default function OnlineMatching({
         next: ({ items, isSynced }) => {
           if (items[0]?.playerTwoID !== 'EMPTY') {
             setIsWaitingForOpponent(false);
-            navigation.navigate('Game', {
-              gameId,
-              boardId,
-              localPlayerId: localPlayerId,
-              gameMode: gameMode,
-              whoAmI: whoAmI,
-            });
           }
         },
       });
       return () => sub.unsubscribe();
     }
   }, []);
+
+  const handleStartGame = () => {
+    navigation.navigate('Game', {
+      gameId,
+      localPlayerId: localPlayerId,
+      gameMode: gameMode,
+      whoAmI: whoAmI,
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
@@ -62,6 +66,7 @@ export default function OnlineMatching({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
+        <Button onPress={() => handleStartGame()} title='Start' />
         {isWaitingForOpponent ? (
           <View
             style={{

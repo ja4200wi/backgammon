@@ -230,6 +230,13 @@ export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
   APITypes.DeleteTurnsMutationVariables,
   APITypes.DeleteTurnsMutation
 >;
+export const joinGame = /* GraphQL */ `mutation JoinGame($gameId: String!, $userId: String!) {
+  joinGame(gameId: $gameId, userId: $userId)
+}
+` as GeneratedMutation<
+  APITypes.JoinGameMutationVariables,
+  APITypes.JoinGameMutation
+>;
 export const makeTurn = /* GraphQL */ `mutation MakeTurn(
   $gameId: String!
   $moves: AWSJSON!
