@@ -15,8 +15,7 @@ import { Amplify } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 
 import outputs from './amplify_outputs.json';
-import PlayFriend from './app/screens/PlayFriendScr';
-import OnlineGameScr from './app/screens/OnlineGameScr';
+import OnlineMatching from './app/screens/OnlineMatchingScr';
 import { Button, StyleSheet, View } from 'react-native';
 
 Amplify.configure(outputs);
@@ -63,8 +62,7 @@ export default function App() {
               <Stack.Screen name='Main' component={HomeTabs} />
               <Stack.Screen name='GameSelection' component={GameSelectionScr} />
               <Stack.Screen name='Game' component={GameScreen} />
-              <Stack.Screen name='PlayFriend' component={PlayFriend} />
-              <Stack.Screen name='Online' component={OnlineGameScr} />
+              <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

@@ -83,11 +83,11 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
         playerOneID: userName,
         playerTwoID: 'filler',
       });
-      navigation.navigate('Online', { gameId: game!.id });
+      navigation.navigate('OnlineMatching', { gameId: game!.id });
     };
 
     const listSessions = () => {
-      navigation.navigate('PlayFriend');
+      navigation.navigate('OnlineMatching');
     };
     return (
       <TouchableOpacity
