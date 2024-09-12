@@ -1,23 +1,19 @@
 import { Move } from "./move";
 
 export class Turn {
-  firstMove?: Move;
-  secondMove?: Move;
-  thirdMove?: Move;
-  fourthMove?: Move;
+  private moves: Move[];
 
   constructor(moves: Move[] = []) {
-    if (moves.length >= 1) {
-      this.firstMove = moves[0];
-    }
-    if (moves.length >= 2) {
-      this.secondMove = moves[1];
-    }
-    if (moves.length >= 3) {
-      this.thirdMove = moves[2];
-    }
-    if (moves.length >= 4) {
-      this.fourthMove = moves[3];
-    }
+    this.moves = moves;
+  }
+
+  // Returns the first available move and removes it from the list
+  nextMove(): Move | undefined {
+    return this.moves.shift(); // Removes the first element from the array
+  }
+
+  // Checks if there are any remaining moves
+  hasMoves(): boolean {
+    return this.moves.length > 0;
   }
 }

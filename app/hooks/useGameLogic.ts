@@ -4,6 +4,8 @@ import { BOT_DIFFICULTY, GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../util
 import { Turn } from '../gameLogic/turn';
 import { Bot } from '../gameLogic/bot';
 import { DoubleDice } from '../gameLogic/doubleDice';
+import { Move } from '../gameLogic/move';
+import { del } from 'aws-amplify/api';
 
 export const useGameLogic = () => {
   const [game, setGame] = useState<Game | null>(null);
@@ -60,6 +62,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
         if(game) {
           runBot()
         }
+        break;
       case GAME_TYPE.ONLINE:
         // Initialize online game logic here
         break;
@@ -73,7 +76,7 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
         break;
     }
   }
-  const onMoveChecker = async (sourceIndex: number, targetIndex: number) => {
+  const onMoveChecker = async (sourceIndex: number, targetIndex: number):Promise<boolean> => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
       if(success) {
@@ -104,9 +107,6 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
       updatePipCount(distances.distBlack, distances.distWhite);
       updateHomeCheckers(game);
       checkForLegalMove(game, true);
-      if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
-        runGame(gamemode)
-      }
     }
   }
   const isGameOver = ():boolean => {
@@ -214,19 +214,30 @@ const bot = new Bot(BOT_DIFFICULTY.EASY)
       } else {
         if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
           setDisableScreen(true)
-          setTimeout(() => makeBotMove(),1000)
+          makeBotMove()
         }
       }
     }
   }
-  
-  const makeBotMove = () => {
+  const makeBotMove = async () => {
     if (game) {
-    const move = bot.makeMove(game)
-    if(!move) {
-      return
+    const botTurn = bot.tempTurnEasyBot(game)
+    await makeTurn(botTurn)
     }
-    onMoveChecker(move.getFrom(),move.getTo())
+  }  
+
+  const makeTurn = async (turn:Turn) => {
+    if(turn.hasMoves()) {
+      setTimeout(() => doPlayerTwoMove(turn),1000)
+    } else {
+      setTimeout(() => updateMoveIsOver(),1000)
+    }
+  }
+  const doPlayerTwoMove = async (turn:Turn) => {
+    const move = turn.nextMove()
+    if(move) {
+      await onMoveChecker(move.getFrom(), move.getTo())
+      makeTurn(turn)
     }
   }
   // #endregion

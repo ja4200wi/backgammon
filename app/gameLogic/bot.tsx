@@ -2,11 +2,17 @@ import { BOARD_TYPE, BOT_DIFFICULTY, PLAYER_COLORS } from "../utils/constants";
 import { Game } from "./backgammon";
 import { Board } from "./board";
 import { Move } from "./move";
+import { Turn } from "./turn";
 export class Bot {
     private difficulty: BOT_DIFFICULTY
+    private lastTurn: Turn
 
     constructor(difficulty: BOT_DIFFICULTY) {
         this.difficulty = difficulty
+        this.lastTurn = new Turn()
+    }
+    public getLastTurn() {
+        return this.lastTurn
     }
 
     public makeMove(game:Game): (Move|null) {
@@ -27,6 +33,18 @@ export class Bot {
     private makeMoveEasyBot(game:Game): (Move | null) {
         const move = game.getRandomMove()
         return move
+    }
+    public tempTurnEasyBot(game:Game): Turn {
+        const deepGameCopy = game.deepCopy()
+        let moves:Move[] = []
+        while (deepGameCopy.getMovesLeft().length !== 0) {
+            const move = deepGameCopy.getRandomMove()
+            if(move) {
+                deepGameCopy.moveStone(move.getFrom(),move.getTo())
+                moves.push(move)
+            }
+        }
+        return new Turn(moves)
     }
     private makeMoveMediumBot(game:Game): (Move | null) {
         const firstMoves = game.getAllPossibleMoves()
