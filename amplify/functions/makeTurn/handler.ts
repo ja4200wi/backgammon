@@ -43,35 +43,29 @@ type Move = {
 
 export const handler: Schema['makeTurn']['functionHandler'] = async (event) => {
   const { gameId, userId, moves, type } = event.arguments;
-  if (type === null || type === undefined) {
-    return 'FAIL';
-  }
+  checkArguments(gameId, userId, moves, type);
   const newType = type as TurnsType;
 
-  let parsedMoves: Move[];
-  if (typeof moves === 'string') {
-    try {
-      parsedMoves = JSON.parse(moves);
-    } catch (error) {
-      return `Invalid 'moves' format: ${error}`;
-    }
-  } else {
-    return `Invalid 'moves' type`;
-  }
-  const nextDice = type === 'INIT' ? rollFirstDice() : rollDice();
+  let parsedMoves: Move[] = moves as Move[];
 
-  const { errors, data: turns } = await client.graphql({
-    query: listTurns,
-    variables: {
-      gameId,
-    },
-  });
-  const turnNumber = type === 'INIT' ? 0 : turns.listTurns.items.length;
+  const nextDice = type === 'INIT' ? rollFirstDice() : rollDice();
+  const turns = await client
+    .graphql({
+      query: listTurns,
+      variables: {
+        gameId,
+      },
+    })
+    .catch((err) => {
+      console.log('Error from listTurns call in makeTurn handler: ', err);
+      return null;
+    });
+  const turnNumber = type === 'INIT' ? 0 : turns!.data.listTurns.items.length;
 
   const color = (await getColorOfPlayer(gameId, userId)) as TurnsPlayerColor;
 
-  const { errors: createTurnErrors, data: createTurnData } =
-    await client.graphql({
+  const createTurnResponse = await client
+    .graphql({
       query: createTurns,
       variables: {
         input: {
@@ -84,10 +78,32 @@ export const handler: Schema['makeTurn']['functionHandler'] = async (event) => {
           diceForNextTurn: nextDice,
         },
       },
+    })
+    .catch((err) => {
+      console.log('Error from createTurns call in makeTurn handler: ', err);
+      return null;
     });
-
-  return 'Hello from Lambda!';
+  return createTurnResponse!.data.createTurns.diceForNextTurn;
 };
+
+function checkArguments(gameId: string, userId: string, moves: any, type: any) {
+  if (gameId === undefined || gameId === null) {
+    console.log('gameId is required');
+    return null;
+  }
+  if (userId === undefined || userId === null) {
+    console.log('userId is required');
+    return null;
+  }
+  if (moves === undefined || moves === null) {
+    console.log('moves is required');
+    return null;
+  }
+  if (type === undefined || type === null) {
+    console.log('type is required');
+    return null;
+  }
+}
 
 function rollFirstDice(): { dieOne: number; dieTwo: number } {
   let dieOne: number;
@@ -106,18 +122,26 @@ async function getColorOfPlayer(
   gameId: string,
   userId: string
 ): Promise<'WHITE' | 'BLACK' | 'NAP'> {
-  const { errors, data: session } = await client.graphql({
-    query: getSession,
-    variables: {
-      id: gameId,
-    },
-  });
-  if (session.getSession === null || session.getSession === undefined) {
+  const session = await client
+    .graphql({
+      query: getSession,
+      variables: {
+        id: gameId,
+      },
+    })
+    .catch((err) => {
+      console.log('Error from getSession call in makeTurn handler: ', err);
+      return null;
+    });
+  if (
+    session?.data.getSession === null ||
+    session?.data.getSession === undefined
+  ) {
     return 'NAP';
   }
-  if (session.getSession.playerOneID === userId) {
+  if (session?.data.getSession.playerOneID === userId) {
     return 'WHITE';
-  } else if (session.getSession.playerTwoID === userId) {
+  } else if (session.data.getSession.playerTwoID === userId) {
     return 'BLACK';
   }
   return 'NAP';

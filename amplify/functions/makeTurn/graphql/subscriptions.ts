@@ -8,15 +8,11 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
-export const onCreatePlayer = /* GraphQL */ `subscription OnCreatePlayer(
-  $filter: ModelSubscriptionPlayerFilterInput
-  $owner: String
-) {
-  onCreatePlayer(filter: $filter, owner: $owner) {
+export const onCreatePlayer = /* GraphQL */ `subscription OnCreatePlayer($filter: ModelSubscriptionPlayerFilterInput) {
+  onCreatePlayer(filter: $filter) {
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -45,7 +41,6 @@ export const onCreateSession = /* GraphQL */ `subscription OnCreateSession($filt
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -54,7 +49,6 @@ export const onCreateSession = /* GraphQL */ `subscription OnCreateSession($filt
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -97,7 +91,6 @@ export const onCreateTurns = /* GraphQL */ `subscription OnCreateTurns($filter: 
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -113,15 +106,11 @@ export const onCreateTurns = /* GraphQL */ `subscription OnCreateTurns($filter: 
   APITypes.OnCreateTurnsSubscriptionVariables,
   APITypes.OnCreateTurnsSubscription
 >;
-export const onDeletePlayer = /* GraphQL */ `subscription OnDeletePlayer(
-  $filter: ModelSubscriptionPlayerFilterInput
-  $owner: String
-) {
-  onDeletePlayer(filter: $filter, owner: $owner) {
+export const onDeletePlayer = /* GraphQL */ `subscription OnDeletePlayer($filter: ModelSubscriptionPlayerFilterInput) {
+  onDeletePlayer(filter: $filter) {
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -150,7 +139,6 @@ export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession($filt
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -159,7 +147,6 @@ export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession($filt
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -202,7 +189,6 @@ export const onDeleteTurns = /* GraphQL */ `subscription OnDeleteTurns($filter: 
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -218,15 +204,11 @@ export const onDeleteTurns = /* GraphQL */ `subscription OnDeleteTurns($filter: 
   APITypes.OnDeleteTurnsSubscriptionVariables,
   APITypes.OnDeleteTurnsSubscription
 >;
-export const onUpdatePlayer = /* GraphQL */ `subscription OnUpdatePlayer(
-  $filter: ModelSubscriptionPlayerFilterInput
-  $owner: String
-) {
-  onUpdatePlayer(filter: $filter, owner: $owner) {
+export const onUpdatePlayer = /* GraphQL */ `subscription OnUpdatePlayer($filter: ModelSubscriptionPlayerFilterInput) {
+  onUpdatePlayer(filter: $filter) {
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -255,7 +237,6 @@ export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession($filt
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -264,7 +245,6 @@ export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession($filt
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -307,7 +287,6 @@ export const onUpdateTurns = /* GraphQL */ `subscription OnUpdateTurns($filter: 
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }

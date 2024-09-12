@@ -42,17 +42,16 @@ export const handler: Schema['joinGame']['functionHandler'] = async (event) => {
     id: gameId!,
     playerTwoID: userId,
   };
-  const { errors: sessionErrors, data: sessionsData } = await client.graphql({
-    query: listSessions,
-  });
-  console.log('Sessions Data', sessionsData.listSessions.items);
-  const { errors, data } = await client.graphql({
-    query: updateSession,
-    variables: {
-      input: session,
-    },
-  });
-  console.log('Data from graphql call: ', data.updateSession);
-  //const response = await client.models.Session.update(session);
-  return `Joining game with ID: ${gameId}`;
+  await client
+    .graphql({
+      query: updateSession,
+      variables: {
+        input: session,
+      },
+    })
+    .catch((err) => {
+      console.log('Error from updateSession call in joinGame handler: ', err);
+      return err;
+    });
+  return `Player ${userId} joined game with ID: ${gameId}`;
 };

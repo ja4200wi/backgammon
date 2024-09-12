@@ -13,6 +13,7 @@ import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
+import { initGame } from '../service/gameService';
 
 const client = generateClient<Schema>();
 
@@ -38,6 +39,8 @@ export default function OnlineMatching({
         next: ({ items, isSynced }) => {
           if (items[0]?.playerTwoID !== 'EMPTY') {
             setIsWaitingForOpponent(false);
+            initGame(gameId, items[0]!.playerOneID!);
+            console.log('Game started', localPlayerId);
             navigation.navigate('Game', {
               gameId,
               localPlayerId: localPlayerId,

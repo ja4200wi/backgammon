@@ -10,8 +10,8 @@ const schema = a
       dieTwo: a.integer(),
     }),
     Move: a.customType({
-      from: a.integer(),
-      to: a.integer(),
+      from: a.integer().required(),
+      to: a.integer().required(),
     }),
     Turns: a
       .model({
@@ -43,7 +43,7 @@ const schema = a
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
         turnsMade: a.hasMany('Turns', 'playerId'),
       })
-      .authorization((allow) => [allow.owner()]),
+      .authorization((allow) => [allow.authenticated()]),
     joinGame: a
       .mutation()
       .arguments({
@@ -61,7 +61,7 @@ const schema = a
         moves: a.json().required(),
         type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT']),
       })
-      .returns(a.string())
+      .returns(a.ref('Dice'))
       .handler(a.handler.function(makeTurn))
       .authorization((allow) => [allow.authenticated()]),
   })

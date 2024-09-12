@@ -1,7 +1,7 @@
-import { Move } from "./move";
+import { Move } from './move';
 
 export class Turn {
-  private moves: Move[];
+  public moves: Move[];
 
   constructor(moves: Move[] = []) {
     this.moves = moves;

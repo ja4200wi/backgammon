@@ -13,7 +13,6 @@ export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -39,7 +38,6 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -48,7 +46,6 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -91,7 +88,6 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -114,7 +110,6 @@ export const listPlayers = /* GraphQL */ `query ListPlayers(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }

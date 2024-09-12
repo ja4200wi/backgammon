@@ -16,7 +16,6 @@ export const createPlayer = /* GraphQL */ `mutation CreatePlayer(
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -48,7 +47,6 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -57,7 +55,6 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -103,7 +100,6 @@ export const createTurns = /* GraphQL */ `mutation CreateTurns(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -127,7 +123,6 @@ export const deletePlayer = /* GraphQL */ `mutation DeletePlayer(
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -159,7 +154,6 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -168,7 +162,6 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -214,7 +207,6 @@ export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -243,7 +235,11 @@ export const makeTurn = /* GraphQL */ `mutation MakeTurn(
   $type: MakeTurnType
   $userId: String!
 ) {
-  makeTurn(gameId: $gameId, moves: $moves, type: $type, userId: $userId)
+  makeTurn(gameId: $gameId, moves: $moves, type: $type, userId: $userId) {
+    dieOne
+    dieTwo
+    __typename
+  }
 }
 ` as GeneratedMutation<
   APITypes.MakeTurnMutationVariables,
@@ -257,7 +253,6 @@ export const updatePlayer = /* GraphQL */ `mutation UpdatePlayer(
     createdAt
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
@@ -289,7 +284,6 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -298,7 +292,6 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -344,7 +337,6 @@ export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }

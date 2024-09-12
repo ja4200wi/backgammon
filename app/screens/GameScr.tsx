@@ -13,7 +13,21 @@ import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
 import CustomAlert from '../components/misc/customAlert'; // Import your CustomAlert component
+import { generateClient, SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+import { sendTurn } from '../service/gameService';
+import { Button } from '@rneui/themed';
 
+const client = generateClient<Schema>();
+
+const selectionSet = [
+  'moves.*',
+  'gameId',
+  'playerId',
+  'type',
+  'diceForNextTurn.*',
+] as const;
+type Turn = Schema['Turns']['type'];
 interface GameScrProps {
   navigation: any;
   route: any;
@@ -31,6 +45,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const [winnerAlertVisible, setWinnerAlertVisible] = useState(false);
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | null>(null); // State to hold the winner
+  const [turns, setTurns] = useState<Turn[]>();
   const {
     game,
     dice,
@@ -55,8 +70,22 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     double,
   } = useGameLogic();
 
-  const { gameMode } = route.params;
+  const { gameId, localPlayerId, gameMode } = route.params;
   const { pointsToWin } = route.params;
+
+  useEffect(() => {
+    if (gameId !== undefined || gameId !== null) {
+      const sub = client.models.Turns.observeQuery({
+        filter: { gameId: { eq: gameId } },
+      }).subscribe({
+        next: ({ items, isSynced }) => {
+          setTurns(items);
+        },
+      });
+
+      return () => sub.unsubscribe();
+    }
+  }, []);
 
   useEffect(() => {
     startGame(gameMode);
@@ -69,28 +98,31 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     }
   }, [gameOver]);
   const handleDoubleGiveUp = () => {
-    if(game) {
-      const looser = game.getCurrentPlayer() === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
-      giveUp(looser)
-      setDoubleAlertVisible(false)
+    if (game) {
+      const looser =
+        game.getCurrentPlayer() === PLAYER_COLORS.WHITE
+          ? PLAYER_COLORS.BLACK
+          : PLAYER_COLORS.WHITE;
+      giveUp(looser);
+      setDoubleAlertVisible(false);
     }
-  }
-  const handeDoubleAccept = ()=> {
-    double()
-    setDoubleAlertVisible(false)
-  }
+  };
+  const handeDoubleAccept = () => {
+    double();
+    setDoubleAlertVisible(false);
+  };
   const handleDouble = () => {
-    if(gameMode === GAME_TYPE.COMPUTER) {
-      double()
+    if (gameMode === GAME_TYPE.COMPUTER) {
+      double();
     } else {
-      setDoubleAlertVisible(true)
+      setDoubleAlertVisible(true);
     }
-  }
+  };
   const handleWinnerAccept = () => {
-    setGameOver({gameover:false,winner:PLAYER_COLORS.NAP});
+    setGameOver({ gameover: false, winner: PLAYER_COLORS.NAP });
     resetGame();
     startGame(gameMode);
-    setWinnerAlertVisible(false); 
+    setWinnerAlertVisible(false);
   };
 
   const handleWinnerDecline = () => {
@@ -98,7 +130,22 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setWinnerAlertVisible(false); // Hide the modal
   };
 
-  const handleMoveChecker = async (sourceIndex: number, targetIndex: number) => {
+  const sendTurnToServer = () => {
+    sendTurn({
+      gameId: gameId,
+      moves: [
+        { from: 1, to: 3 },
+        { from: 3, to: 4 },
+      ],
+      playerId: localPlayerId,
+      type: 'MOVE',
+    });
+  };
+
+  const handleMoveChecker = async (
+    sourceIndex: number,
+    targetIndex: number
+  ) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     return success;
   };
@@ -106,6 +153,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
       <HeaderSecondary navigation={navigation} headline={gameMode} />
+      <Button
+        title='Send Turn'
+        onPress={sendTurnToServer}
+        style={{ zIndex: 3 }}
+      />
       <View style={styles.boardContainer}>
         <Board
           positions={positions}
@@ -129,7 +181,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         />
       </View>
       <GameNavBar
-        disableButtons={(game ? disabledScreen(game): false)}
+        disableButtons={game ? disabledScreen(game) : false}
         onAcceptMove={updateMoveIsOver}
         onUndoMove={undoMove}
         showAcceptMoveButton={showAcceptMoveButton(game!)}
@@ -141,17 +193,17 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       <CustomAlert
         visible={winnerAlertVisible}
         headline={`${winner} wins the Game`}
-        bodyText="What would you like to do?"
-        acceptButtonText="Restart"
-        declineButtonText="Go to Home"
+        bodyText='What would you like to do?'
+        acceptButtonText='Restart'
+        declineButtonText='Go to Home'
         onAccept={handleWinnerAccept}
         onDecline={handleWinnerDecline}
       />
       <CustomAlert
         visible={doubleAlertVisible}
         headline={`${game?.getCurrentPlayer()} wants do double!`}
-        bodyText="Do you accept the Double or do you want to give up?"
-        acceptButtonText="Accept"
+        bodyText='Do you accept the Double or do you want to give up?'
+        acceptButtonText='Accept'
         declineButtonText={`Give up (-${doubleDice.getMultiplicator()})`}
         onAccept={handeDoubleAccept}
         onDecline={handleDoubleGiveUp}

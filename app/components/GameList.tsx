@@ -27,6 +27,7 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
       gameId,
       userId,
     });
+    console.log('joinGame:', userId);
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,

@@ -7,7 +7,6 @@ export type Player = {
   createdAt: string,
   id: string,
   name?: string | null,
-  owner?: string | null,
   sessionsAsPlayerOne?: ModelSessionConnection | null,
   sessionsAsPlayerTwo?: ModelSessionConnection | null,
   turnsMade?: ModelTurnsConnection | null,
@@ -61,8 +60,8 @@ export type Dice = {
 
 export type Move = {
   __typename: "Move",
-  from?: number | null,
-  to?: number | null,
+  from: number,
+  to: number,
 };
 
 export enum TurnsPlayerColor {
@@ -86,7 +85,6 @@ export type ModelPlayerFilterInput = {
   name?: ModelStringInput | null,
   not?: ModelPlayerFilterInput | null,
   or?: Array< ModelPlayerFilterInput | null > | null,
-  owner?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
@@ -220,7 +218,6 @@ export type ModelPlayerConditionInput = {
   name?: ModelStringInput | null,
   not?: ModelPlayerConditionInput | null,
   or?: Array< ModelPlayerConditionInput | null > | null,
-  owner?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
@@ -272,8 +269,8 @@ export type DiceInput = {
 };
 
 export type MoveInput = {
-  from?: number | null,
-  to?: number | null,
+  from: number,
+  to: number,
 };
 
 export type DeletePlayerInput = {
@@ -324,7 +321,6 @@ export type ModelSubscriptionPlayerFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
   or?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
-  owner?: ModelStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
 };
 
@@ -403,7 +399,6 @@ export type GetPlayerQuery = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -434,7 +429,6 @@ export type GetSessionQuery = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -443,7 +437,6 @@ export type GetSessionQuery = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -480,15 +473,14 @@ export type GetTurnsQuery = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -513,7 +505,6 @@ export type ListPlayersQuery = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null >,
     nextToken?: string | null,
@@ -578,7 +569,6 @@ export type CreatePlayerMutation = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -610,7 +600,6 @@ export type CreateSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -619,7 +608,6 @@ export type CreateSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -656,15 +644,14 @@ export type CreateTurnsMutation = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -686,7 +673,6 @@ export type DeletePlayerMutation = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -718,7 +704,6 @@ export type DeleteSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -727,7 +712,6 @@ export type DeleteSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -764,15 +748,14 @@ export type DeleteTurnsMutation = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -800,7 +783,11 @@ export type MakeTurnMutationVariables = {
 };
 
 export type MakeTurnMutation = {
-  makeTurn?: string | null,
+  makeTurn?:  {
+    __typename: "Dice",
+    dieOne?: number | null,
+    dieTwo?: number | null,
+  } | null,
 };
 
 export type UpdatePlayerMutationVariables = {
@@ -814,7 +801,6 @@ export type UpdatePlayerMutation = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -846,7 +832,6 @@ export type UpdateSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -855,7 +840,6 @@ export type UpdateSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -892,15 +876,14 @@ export type UpdateTurnsMutation = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -913,7 +896,6 @@ export type UpdateTurnsMutation = {
 
 export type OnCreatePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnCreatePlayerSubscription = {
@@ -922,7 +904,6 @@ export type OnCreatePlayerSubscription = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -953,7 +934,6 @@ export type OnCreateSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -962,7 +942,6 @@ export type OnCreateSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -998,15 +977,14 @@ export type OnCreateTurnsSubscription = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -1019,7 +997,6 @@ export type OnCreateTurnsSubscription = {
 
 export type OnDeletePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnDeletePlayerSubscription = {
@@ -1028,7 +1005,6 @@ export type OnDeletePlayerSubscription = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -1059,7 +1035,6 @@ export type OnDeleteSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -1068,7 +1043,6 @@ export type OnDeleteSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -1104,15 +1078,14 @@ export type OnDeleteTurnsSubscription = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -1125,7 +1098,6 @@ export type OnDeleteTurnsSubscription = {
 
 export type OnUpdatePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnUpdatePlayerSubscription = {
@@ -1134,7 +1106,6 @@ export type OnUpdatePlayerSubscription = {
     createdAt: string,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
@@ -1165,7 +1136,6 @@ export type OnUpdateSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -1174,7 +1144,6 @@ export type OnUpdateSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
@@ -1210,15 +1179,14 @@ export type OnUpdateTurnsSubscription = {
     gameId: string,
     moves?:  Array< {
       __typename: "Move",
-      from?: number | null,
-      to?: number | null,
+      from: number,
+      to: number,
     } | null > | null,
     player?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,

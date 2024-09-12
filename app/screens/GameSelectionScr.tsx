@@ -80,6 +80,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       const gameId = await createSession(userName);
       navigation.navigate('OnlineMatching', {
         gameId,
+        localPlayerId: userName,
       });
     };
 
