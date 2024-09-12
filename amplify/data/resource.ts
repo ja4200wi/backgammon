@@ -1,14 +1,9 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-import { sayHello } from '../functions/sayHello/resource';
 import { joinGame } from '../functions/joinGame/resource';
+import { makeTurn } from '../functions/makeTurn/resource';
 
 const schema = a
   .schema({
-    Position: a.customType({
-      index: a.integer(),
-      color: a.enum(['WHITE', 'BLACK']),
-      count: a.integer(),
-    }),
     Dice: a.customType({
       dieOne: a.integer(),
       dieTwo: a.integer(),
@@ -17,23 +12,27 @@ const schema = a
       from: a.integer(),
       to: a.integer(),
     }),
-    Turn: a.customType({
-      moves: a.ref('Move').array(),
-      type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE']),
-      player: a.enum(['WHITE', 'BLACK']),
-    }),
+    Turns: a
+      .model({
+        turnNumber: a.integer().required(),
+        gameId: a.id().required(),
+        game: a.belongsTo('Session', 'gameId'),
+        type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT']),
+        playerColor: a.enum(['WHITE', 'BLACK']),
+        playerId: a.id(),
+        player: a.belongsTo('Player', 'playerId'),
+        moves: a.ref('Move').array(),
+        diceForNextTurn: a.ref('Dice'),
+      })
+      .identifier(['gameId', 'turnNumber'])
+      .authorization((allow) => [allow.authenticated()]),
     Session: a
       .model({
         playerOneID: a.id(),
         playerOne: a.belongsTo('Player', 'playerOneID'),
         playerTwoID: a.id(),
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
-        gameState: a.customType({
-          board: a.ref('Position').array(),
-          dice: a.ref('Dice'),
-          currentPlayer: a.enum(['WHITE', 'BLACK']),
-        }),
-        turns: a.ref('Turn').array(),
+        turns: a.hasMany('Turns', 'gameId'),
       })
       .authorization((allow) => [allow.authenticated()]),
     Player: a
@@ -41,16 +40,9 @@ const schema = a
         name: a.string(),
         sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
+        turnsMade: a.hasMany('Turns', 'playerId'),
       })
       .authorization((allow) => [allow.owner()]),
-    sayHello: a
-      .query()
-      .arguments({
-        name: a.string(),
-      })
-      .returns(a.string())
-      .handler(a.handler.function(sayHello))
-      .authorization((allow) => [allow.guest()]),
     joinGame: a
       .query()
       .arguments({
@@ -60,8 +52,22 @@ const schema = a
       .returns(a.string())
       .handler(a.handler.function(joinGame))
       .authorization((allow) => [allow.authenticated()]),
+    makeTurn: a
+      .mutation()
+      .arguments({
+        gameId: a.string().required(),
+        userId: a.string().required(),
+        moves: a.json().required(),
+        type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT']),
+      })
+      .returns(a.string())
+      .handler(a.handler.function(makeTurn))
+      .authorization((allow) => [allow.authenticated()]),
   })
-  .authorization((allow) => [allow.resource(joinGame)]);
+  .authorization((allow) => [
+    allow.resource(joinGame),
+    allow.resource(makeTurn),
+  ]);
 
 export type Schema = ClientSchema<typeof schema>;
 

@@ -82,21 +82,6 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       const { errors, data: game } = await client.models.Session.create({
         playerOneID: userName,
         playerTwoID: 'filler',
-        gameState: {
-          board: [
-            { index: 1, color: 'WHITE', count: 2 },
-            { index: 6, color: 'BLACK', count: 5 },
-            { index: 8, color: 'BLACK', count: 3 },
-            { index: 12, color: 'WHITE', count: 5 },
-            { index: 13, color: 'BLACK', count: 5 },
-            { index: 17, color: 'WHITE', count: 3 },
-            { index: 19, color: 'WHITE', count: 5 },
-            { index: 24, color: 'BLACK', count: 2 },
-          ],
-          dice: { dieOne: 1, dieTwo: 2 },
-          currentPlayer: 'WHITE',
-        },
-        turns: [],
       });
       navigation.navigate('Online', { gameId: game!.id });
     };
@@ -236,7 +221,9 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.COMPUTER})}
+                onPress={() =>
+                  navigation.navigate('Game', { gameMode: GAME_TYPE.COMPUTER })
+                }
               />
             </>
           )}
@@ -282,7 +269,9 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.PASSPLAY})}
+                onPress={() =>
+                  navigation.navigate('Game', { gameMode: GAME_TYPE.PASSPLAY })
+                }
               />
             </>
           )}
