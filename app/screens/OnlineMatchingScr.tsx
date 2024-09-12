@@ -7,7 +7,7 @@ import {
   ImageBackground,
   Text,
 } from 'react-native';
-import { DIMENSIONS } from '../utils/constants';
+import { DIMENSIONS, GAME_TYPE } from '../utils/constants';
 import GameListScreen from '../components/GameList';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { generateClient } from 'aws-amplify/api';
@@ -25,7 +25,7 @@ export default function OnlineMatching({
   route: any;
   navigation: any;
 }) {
-  const { gameId, localPlayerId, gameMode, whoAmI } = route.params;
+  const { gameId, localPlayerId, whoAmI } = route.params;
   const [isWaitingForOpponent, setIsWaitingForOpponent] = useState(
     gameId !== undefined
   );
@@ -38,21 +38,18 @@ export default function OnlineMatching({
         next: ({ items, isSynced }) => {
           if (items[0]?.playerTwoID !== 'EMPTY') {
             setIsWaitingForOpponent(false);
+            navigation.navigate('Game', {
+              gameId,
+              localPlayerId: localPlayerId,
+              gameMode: GAME_TYPE.ONLINE,
+              whoAmI: whoAmI,
+            });
           }
         },
       });
       return () => sub.unsubscribe();
     }
   }, []);
-
-  const handleStartGame = () => {
-    navigation.navigate('Game', {
-      gameId,
-      localPlayerId: localPlayerId,
-      gameMode: gameMode,
-      whoAmI: whoAmI,
-    });
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,11 +63,6 @@ export default function OnlineMatching({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <Button
-          onPress={() => handleStartGame()}
-          title='Start'
-          style={{ zIndex: 3 }}
-        />
         {isWaitingForOpponent ? (
           <View
             style={{
