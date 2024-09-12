@@ -44,7 +44,7 @@ const schema = a
       })
       .authorization((allow) => [allow.owner()]),
     joinGame: a
-      .query()
+      .mutation()
       .arguments({
         gameId: a.string().required(),
         userId: a.string().required(),
