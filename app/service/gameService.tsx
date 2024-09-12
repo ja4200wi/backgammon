@@ -1,9 +1,9 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 
-type Turn = {
+type SendableTurn = {
   gameId: string;
-  playerId?: string;
+  playerId: string;
   moves: { from: number; to: number }[];
   type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
 };
@@ -25,8 +25,9 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
     });
 }
 
-export async function sendTurn(turn: Turn): Promise<Dice | null | undefined> {
-  console.log('sendTurn:', turn);
+export async function sendTurn(
+  turn: SendableTurn
+): Promise<Dice | null | undefined> {
   if (turn.playerId == undefined) {
     console.error('playerId is undefined');
     return null;

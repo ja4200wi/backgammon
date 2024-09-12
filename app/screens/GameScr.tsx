@@ -17,17 +17,21 @@ import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { sendTurn } from '../service/gameService';
 import { Button } from '@rneui/themed';
+import { DiceProps } from '../components/game/Dice';
 
 const client = generateClient<Schema>();
 
-const selectionSet = [
-  'moves.*',
-  'gameId',
-  'playerId',
-  'type',
-  'diceForNextTurn.*',
-] as const;
 type Turn = Schema['Turns']['type'];
+
+type SendableTurn = {
+  gameId: string;
+  playerId: string;
+  moves: { from: number; to: number }[];
+  type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
+};
+
+type Dice = Schema['Dice']['type'];
+
 interface GameScrProps {
   navigation: any;
   route: any;
@@ -130,16 +134,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setWinnerAlertVisible(false); // Hide the modal
   };
 
-  const sendTurnToServer = () => {
-    sendTurn({
-      gameId: gameId,
-      moves: [
-        { from: 1, to: 3 },
-        { from: 3, to: 4 },
-      ],
-      playerId: localPlayerId,
-      type: 'MOVE',
-    });
+  const sendTurnToServer = async (turnToSend: SendableTurn) => {
+    const nextDice: Dice | null | undefined = await sendTurn(turnToSend);
   };
 
   const handleMoveChecker = async (
@@ -153,11 +149,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
       <HeaderSecondary navigation={navigation} headline={gameMode} />
-      <Button
-        title='Send Turn'
-        onPress={sendTurnToServer}
-        style={{ zIndex: 3 }}
-      />
       <View style={styles.boardContainer}>
         <Board
           positions={positions}
