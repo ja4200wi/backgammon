@@ -19,19 +19,6 @@ import { sendTurn } from '../service/gameService';
 import { Button } from '@rneui/themed';
 import { DiceProps } from '../components/game/Dice';
 
-const client = generateClient<Schema>();
-
-type Turn = Schema['Turns']['type'];
-
-type SendableTurn = {
-  gameId: string;
-  playerId: string;
-  moves: { from: number; to: number }[];
-  type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
-};
-
-type Dice = Schema['Dice']['type'];
-
 interface GameScrProps {
   navigation: any;
   route: any;
@@ -49,7 +36,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const [winnerAlertVisible, setWinnerAlertVisible] = useState(false);
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | null>(null); // State to hold the winner
-  const [turns, setTurns] = useState<Turn[]>();
+  const { gameId, localPlayerId, gameMode } = route.params;
   const {
     game,
     dice,
@@ -72,12 +59,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     firstRoll,
     gameOver,
     double,
-  } = useGameLogic();
+  } = useGameLogic(gameId);
 
-  const { gameId, localPlayerId, gameMode } = route.params;
   const { pointsToWin } = route.params;
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (gameId !== undefined || gameId !== null) {
       const sub = client.models.Turns.observeQuery({
         filter: { gameId: { eq: gameId } },
@@ -89,7 +75,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
 
       return () => sub.unsubscribe();
     }
-  }, []);
+  }, []); */
 
   useEffect(() => {
     startGame(gameMode);
@@ -132,10 +118,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handleWinnerDecline = () => {
     navigation.navigate('Home'); // Navigate to the home screen
     setWinnerAlertVisible(false); // Hide the modal
-  };
-
-  const sendTurnToServer = async (turnToSend: SendableTurn) => {
-    const nextDice: Dice | null | undefined = await sendTurn(turnToSend);
   };
 
   const handleMoveChecker = async (
