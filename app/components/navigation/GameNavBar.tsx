@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -35,14 +35,30 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
   disableButtons,
   showRestartGame,
 }) => {
+  const [isAcceptButtonDisabled, setIsAcceptButtonDisabled] = useState(false);
+
   const acceptButtonColor =
-    showAcceptMoveButton || disableButtons
+    showAcceptMoveButton || disableButtons || isAcceptButtonDisabled
       ? APP_COLORS.iconGrey
       : APP_COLORS.appBlue;
+
   const undoButtonColor =
     showUndoMoveButton || disableButtons
       ? APP_COLORS.iconGrey
       : APP_COLORS.appBlue;
+
+  const handleAcceptMove = () => {
+    // Disable the button to prevent multiple clicks
+    setIsAcceptButtonDisabled(true);
+
+    // Call the onAcceptMove function
+    onAcceptMove();
+
+    // Re-enable the button after a delay (e.g., 2 seconds)
+    setTimeout(() => {
+      setIsAcceptButtonDisabled(false);
+    }, 2000); // Adjust the delay as needed
+  };
 
   const showActionSheet = () => {
     const options = [
@@ -100,7 +116,10 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
         <Icon name='replay' type='material' color={undoButtonColor} size={36} />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity onPress={onAcceptMove} disabled={showAcceptMoveButton || disableButtons}>
+      <TouchableOpacity
+        onPress={handleAcceptMove}
+        disabled={showAcceptMoveButton || disableButtons || isAcceptButtonDisabled}
+      >
         <Icon name='done' type='material' color={acceptButtonColor} size={36} />
       </TouchableOpacity>
     </View>
