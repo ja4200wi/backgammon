@@ -33,7 +33,14 @@ interface GameScrProps {
   route: any;
 }
 
-export const useGameLogic = (gameId: string, localPlayerId: string) => {
+export const useGameLogic = (
+  gameId: string,
+  localPlayerId: string,
+  setDoubleAlertVisible: React.Dispatch<React.SetStateAction<boolean>>,
+  isWaitingForDouble: boolean,
+  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  // #region State Management
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
@@ -47,18 +54,21 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
   );
-  const [gameOver, setGameOver] = useState({
+  const [gameOver, setGameOver] = useState<{
+    gameover: boolean;
+    winner: PLAYER_COLORS | string;
+  }>({
     gameover: false,
     winner: PLAYER_COLORS.NAP,
   });
   const [gameIsRunning, setGameIsRunning] = useState(false);
-  // #region Online Variables
   const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
-  // #endregion
+  const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
   const bot = new Bot(BOT_DIFFICULTY.MEDIUM);
+  // #endregion
 
-  // #region UseEffects
+  // #region Effects
   useEffect(() => {
     console.log('server triggered', gameId);
     if (gameId !== undefined && gameId !== null) {
@@ -109,7 +119,7 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   }, [onlineTurns]);
   // #endregion
 
-  // #region game Logic
+  // #region Game Actions
   const startGame = async (
     gamemode: GAME_TYPE,
     newOnlineTurns?: OnlineTurn[]
@@ -134,7 +144,6 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
     const newGame = new Game();
     setGame(newGame);
   };
-
   const setUpGame = async () => {
     if (game) {
       if (gamemode === GAME_TYPE.RANDOM && onlineTurns) {
@@ -189,7 +198,7 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
         if (!isGameOver()) {
           updateGameState();
         } else {
-          setUpEndBoard();
+          setUpEndBoard(game);
         }
         return success;
       } else {
@@ -290,16 +299,66 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
         deepCopy.hasLegalMove()
       );
       await checkForLegalMove(false, game);
-      //take latest onlineturn and take dice
-      //set dice in game and normally
-      //switch player
+    }
+  };
+  const resetGame = () => {
+    setGame(null);
+    setGameIsRunning(false);
+    setStartingPhase(true);
+    setFirstRoll(true);
+    setDisableScreen(true);
+    setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount);
+    setDoubleDice(new DoubleDice());
+  };
+  const giveUp = (looser: PLAYER_COLORS) => {
+    if (game) {
+      game.giveUp(looser);
+      const winner =
+        looser === PLAYER_COLORS.WHITE
+          ? PLAYER_COLORS.BLACK
+          : PLAYER_COLORS.WHITE;
+      if (isOfflineGame()) {
+        setGameOver({ gameover: true, winner: winner });
+      } else if (isOnlineGame()) {
+        setGameOver({
+          gameover: true,
+          winner: looser === whoAmI ? opponentPlayerId : localPlayerId,
+        });
+      }
+      setUpEndBoard(game);
+    }
+  };
+  const double = () => {
+    if (game) {
+      const newDoubleDice = game.double();
+      setDoubleDice(newDoubleDice);
+    }
+  };
+  const makeTurn = async (turn: Turn) => {
+    if (turn.hasMoves()) {
+      setTimeout(() => doPlayerTwoMove(turn), 750);
+    } else {
+      setTimeout(() => updateMoveIsOver(), 750);
+    }
+  };
+  const doPlayerTwoMove = async (turn: Turn) => {
+    const move = turn.nextMove();
+    if (move) {
+      await onMoveChecker(move.getFrom(), move.getTo());
+      makeTurn(turn);
     }
   };
   // #endregion
 
-  // #region onlineTurns
-  const sendTurnToServer = async (turn: Turn): Promise<OnlineDice> => {
-    const turnToSend: SendableTurn = transformLocalTurnToOnlineTurn(turn);
+  // #region Online Game Logic
+  const sendTurnToServer = async (
+    turn: Turn,
+    turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'
+  ): Promise<OnlineDice> => {
+    const turnToSend: SendableTurn = transformLocalTurnToOnlineTurn(
+      turn,
+      turnType
+    );
     const nextDice: OnlineDice | null | undefined = await sendTurn(turnToSend);
     if (nextDice === null || nextDice === undefined) {
       return { dieOne: 0, dieTwo: 0 };
@@ -307,9 +366,43 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
       return nextDice;
     }
   };
-  const isOfflineGame = () => {
-    return gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY;
+  const runOnline = async () => {
+    const latestTurn = getLatestOnlineTurn(onlineTurns!);
+    if (localPlayerId === latestTurn?.playerId) {
+      return;
+    }
+    if (latestTurn?.type === 'MOVE' && localPlayerId !== latestTurn?.playerId) {
+      const localTurn = transformOnlineTurnToLocalTurn(latestTurn!);
+      console.log(
+        whoAmI,
+        ': in making latest move to update game; got the turn',
+        localTurn,
+        'from the server'
+      );
+      makeTurn(localTurn);
+      console.log(whoAmI, 'CHECKFORLEGAL: runonline');
+    } else if (
+      latestTurn?.type === 'DOUBLE' &&
+      localPlayerId !== latestTurn?.playerId
+    ) {
+      if (!isWaitingForDouble) {
+        setDoubleAlertVisible(true);
+      } else {
+        setIsWaitingForDouble(false);
+        double();
+      }
+    } else if (
+      latestTurn?.type === 'GIVE_UP' &&
+      localPlayerId !== latestTurn?.playerId
+    ) {
+      setIsWaitingForDouble(false);
+      setGameOver({ gameover: true, winner: localPlayerId });
+    }
   };
+  // #endregion
+
+  // #region Utility Functions
+
   const transformLocalTurnToOnlineTurn = (
     turn: Turn,
     turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'
@@ -376,44 +469,43 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
       return PLAYER_COLORS.NAP;
     }
     if (session.playerOneID === localPlayerId) {
+      setOpponentPlayerId(
+        session.playerTwoID === null ? '' : session.playerTwoID
+      );
       return PLAYER_COLORS.WHITE;
     } else {
+      setOpponentPlayerId(
+        session.playerOneID === null ? '' : session.playerOneID
+      );
       return PLAYER_COLORS.BLACK;
     }
   };
   const getLatestOnlineTurn = (latestTurn: OnlineTurn[]) => {
     return latestTurn.at(-1);
   };
-  const runOnline = async () => {
-    const latestTurn = getLatestOnlineTurn(onlineTurns!);
-    if (localPlayerId === latestTurn?.playerId) {
-      return;
-    }
-    if (latestTurn?.type === 'MOVE' && localPlayerId !== latestTurn?.playerId) {
-      const localTurn = transformOnlineTurnToLocalTurn(latestTurn!);
-      console.log(
-        whoAmI,
-        ': in making latest move to update game; got the turn',
-        localTurn,
-        'from the server'
-      );
-      makeTurn(localTurn);
-      console.log(whoAmI, 'CHECKFORLEGAL: runonline');
+  const setUpEndBoard = async (currentGame: Game) => {
+    console.log(whoAmI, 'setting up endboard now');
+    if (currentGame) {
+      setPositions(currentGame.getCurrentPositions());
+      updateHomeCheckers(currentGame);
+      const distances = currentGame.getDistances();
+      updatePipCount(distances.distBlack, distances.distWhite);
+      if (currentGame && whoAmI === currentGame.getCurrentPlayer()) {
+        const turn = currentGame.getTurnAfterMove();
+        console.log(whoAmI, 'sending turn to server!', turn);
+        await sendTurnToServer(turn); // ad gameover type here
+      }
     }
   };
-  // #endregion
-
-  // #region helper Methods
-  const setUpEndBoard = async () => {
-    if (game && isOfflineGame()) {
-      setPositions(game.getCurrentPositions());
-      updateHomeCheckers(game);
-      const distances = game.getDistances();
-      updatePipCount(distances.distBlack, distances.distWhite);
-    } else if (game && whoAmI === game.getCurrentPlayer()) {
-      const turn = game!.getTurnAfterMove();
-      const newOnlineDice = await sendTurnToServer(turn);
-    }
+  const isOfflineGame = () => {
+    return gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY;
+  };
+  const isOnlineGame = () => {
+    return (
+      gamemode === GAME_TYPE.RANDOM ||
+      gamemode === GAME_TYPE.ELO ||
+      gamemode === GAME_TYPE.FRIENDLIST
+    );
   };
   const updateGameState = () => {
     if (game) {
@@ -431,22 +523,20 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   const isGameOver = (): boolean => {
     if (game) {
       if (game.isGameOver()) {
-        const winner = game.whoIsWinner();
-        setGameOver({ gameover: true, winner: winner });
-        return true;
+        if (isOfflineGame()) {
+          const winner = game.whoIsWinner();
+          setGameOver({ gameover: true, winner: winner });
+          return true;
+        } else if (gamemode === GAME_TYPE.RANDOM && onlineTurns) {
+          const onlineWinner =
+            game.whoIsWinner() === whoAmI ? localPlayerId : opponentPlayerId;
+          setGameOver({ gameover: true, winner: onlineWinner });
+          return true;
+        }
       }
       return false;
     }
     return false;
-  };
-  const resetGame = () => {
-    setGame(null);
-    setGameIsRunning(false);
-    setStartingPhase(true);
-    setFirstRoll(true);
-    setDisableScreen(true);
-    setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount);
-    setDoubleDice(new DoubleDice());
   };
   const disabledScreen = (currentGame: Game): boolean => {
     if (gamemode === GAME_TYPE.COMPUTER) {
@@ -481,23 +571,6 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
         console.log(whoAmI, ':no legal move with real game, switching plyer');
         switchplayer();
       }
-    }
-  };
-  const giveUp = (looser: PLAYER_COLORS) => {
-    if (game) {
-      game.giveUp(looser);
-      const winner =
-        looser === PLAYER_COLORS.WHITE
-          ? PLAYER_COLORS.BLACK
-          : PLAYER_COLORS.WHITE;
-      setGameOver({ gameover: true, winner: winner });
-      setUpEndBoard();
-    }
-  };
-  const double = () => {
-    if (game) {
-      const newDoubleDice = game.double();
-      setDoubleDice(newDoubleDice);
     }
   };
   const showAcceptMoveButton = (currentGame: Game) => {
@@ -544,9 +617,6 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
       return game?.getLegalMovesFrom(from) ?? [];
     } else return [];
   };
-  // #endregion
-
-  // #region Bot Functions
   const runBot = () => {
     if (game) {
       if (game.getMovesLeft().length === 0) {
@@ -563,21 +633,6 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
     if (game) {
       const botTurn = bot.tempTurnEasyBot(game);
       await makeTurn(botTurn);
-    }
-  };
-
-  const makeTurn = async (turn: Turn) => {
-    if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 1000);
-    } else {
-      setTimeout(() => updateMoveIsOver(), 1000);
-    }
-  };
-  const doPlayerTwoMove = async (turn: Turn) => {
-    const move = turn.nextMove();
-    if (move) {
-      await onMoveChecker(move.getFrom(), move.getTo());
-      makeTurn(turn);
     }
   };
   // #endregion
@@ -606,5 +661,7 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
     double,
     resetGame,
     onlineTurns,
+    sendTurnToServer,
+    isOfflineGame,
   };
 };
