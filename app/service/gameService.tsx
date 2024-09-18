@@ -8,6 +8,7 @@ type SendableTurn = {
   type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
 };
 type Dice = Schema['Dice']['type'];
+
 const client = generateClient<Schema>();
 
 export async function initGame(gameId: string, userId: string): Promise<void> {
@@ -23,6 +24,29 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
       console.error('Error from makeTurn call in initGame: ', err);
       return 'Failed to init game';
     });
+}
+
+export async function saveGameStats(
+  gameId: string,
+  winnerId: string,
+  duration: number,
+  numTurns: number,
+  bet: number,
+  scores: { white: number; black: number },
+  doubleDiceValue: number,
+  reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
+): Promise<void> {
+  const response = client.models.SessionStat.create({
+    gameId,
+    gameType: 'RANDOM',
+    winnerId,
+    scores: { white: 0, black: 0 },
+    doubleDiceValue: 1,
+    duration: 0,
+    reason: 'GAME_OVER',
+    numTurns: 0,
+    bet: 0,
+  });
 }
 
 export async function sendTurn(
