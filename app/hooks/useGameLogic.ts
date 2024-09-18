@@ -12,7 +12,7 @@ import { DoubleDice } from '../gameLogic/doubleDice';
 import { Move } from '../gameLogic/move';
 import { del, generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
-import { sendTurn } from '../service/gameService';
+import { sendTurn, saveGameStats } from '../service/gameService';
 import { on } from 'events';
 
 const client = generateClient<Schema>();
@@ -57,6 +57,7 @@ export const useGameLogic = (
   const [gameOver, setGameOver] = useState<{
     gameover: boolean;
     winner: PLAYER_COLORS | string;
+    reason?: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER';
   }>({
     gameover: false,
     winner: PLAYER_COLORS.NAP,
@@ -318,11 +319,14 @@ export const useGameLogic = (
           ? PLAYER_COLORS.BLACK
           : PLAYER_COLORS.WHITE;
       if (isOfflineGame()) {
-        setGameOver({ gameover: true, winner: winner });
+        console.log(whoAmI,'setting game over with',winner,'GIVE_UP')
+        setGameOver({ gameover: true, winner: winner, reason: 'GIVE_UP' });
       } else if (isOnlineGame()) {
+        console.log(whoAmI,'setting game over with',looser === whoAmI ? opponentPlayerId : localPlayerId,'GIVE_UP')
         setGameOver({
           gameover: true,
           winner: looser === whoAmI ? opponentPlayerId : localPlayerId,
+          reason: 'GIVE_UP'
         });
       }
       setUpEndBoard(game);
@@ -336,9 +340,9 @@ export const useGameLogic = (
   };
   const makeTurn = async (turn: Turn) => {
     if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 750);
+      setTimeout(() => doPlayerTwoMove(turn), 100);
     } else {
-      setTimeout(() => updateMoveIsOver(), 750);
+      setTimeout(() => updateMoveIsOver(), 100);
     }
   };
   const doPlayerTwoMove = async (turn: Turn) => {
@@ -366,6 +370,24 @@ export const useGameLogic = (
       return nextDice;
     }
   };
+  const sendFinalGameStateToServer = async (winner:string,reason:"GIVE_UP" | "DOUBLE" | "TIMEOUT" | "GAME_OVER") => {
+    if(game) {
+    const distWhite = game.getDistances().distWhite
+    const distBlack = game.getDistances().distBlack
+    const doubleDiceValue = doubleDice.getMultiplicator()
+    console.log(whoAmI,'safing game stats:',distWhite,distBlack,doubleDiceValue,reason,winner)
+    saveGameStats(
+      gameId,
+      winner,
+      0,
+      0,
+      1,
+      {white: distWhite , black: distBlack},
+      doubleDiceValue,
+      reason,
+    )
+    }
+  }
   const runOnline = async () => {
     const latestTurn = getLatestOnlineTurn(onlineTurns!);
     if (localPlayerId === latestTurn?.playerId) {
@@ -396,7 +418,8 @@ export const useGameLogic = (
       localPlayerId !== latestTurn?.playerId
     ) {
       setIsWaitingForDouble(false);
-      setGameOver({ gameover: true, winner: localPlayerId });
+      console.log(whoAmI,'setting game over with',localPlayerId,'GIVE_UP')
+      setGameOver({ gameover: true, winner: localPlayerId, reason:'GIVE_UP' });
     }
   };
   // #endregion
@@ -525,12 +548,14 @@ export const useGameLogic = (
       if (game.isGameOver()) {
         if (isOfflineGame()) {
           const winner = game.whoIsWinner();
-          setGameOver({ gameover: true, winner: winner });
+          console.log(whoAmI,'setting game over with',winner,'GAME_OVER')
+          setGameOver({ gameover: true, winner: winner, reason:'GAME_OVER' });
           return true;
         } else if (gamemode === GAME_TYPE.RANDOM && onlineTurns) {
           const onlineWinner =
             game.whoIsWinner() === whoAmI ? localPlayerId : opponentPlayerId;
-          setGameOver({ gameover: true, winner: onlineWinner });
+            console.log(whoAmI,'setting game over with',onlineWinner,'GAME_OVER')
+          setGameOver({ gameover: true, winner: onlineWinner, reason:'GAME_OVER' });
           return true;
         }
       }
@@ -663,5 +688,8 @@ export const useGameLogic = (
     onlineTurns,
     sendTurnToServer,
     isOfflineGame,
+    sendFinalGameStateToServer,
+    opponentPlayerId,
+    isOnlineGame,
   };
 };

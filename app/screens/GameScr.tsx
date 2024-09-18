@@ -48,10 +48,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     positions,
     pipCount,
     homeCheckers,
+    opponentPlayerId,
     onMoveChecker,
     startGame,
     showAcceptMoveButton,
     updateMoveIsOver,
+    isOnlineGame,
     showUndoMoveButton,
     isOfflineGame,
     undoMove,
@@ -61,6 +63,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setGameOver,
     resetGame,
     sendTurnToServer,
+    sendFinalGameStateToServer,
     doubleDice,
     isStartingPhase,
     firstRoll,
@@ -100,6 +103,10 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
+      if(isOnlineGame() && gameOver.reason && gameOver.winner === localPlayerId) {
+        console.log(localPlayerId,'I am the winner and I will send the game state to server:',gameOver.winner,gameOver.reason)
+        sendFinalGameStateToServer(gameOver.winner,gameOver.reason)
+      }
       gameMode === GAME_TYPE.RANDOM ? setWinnerOnlineAlertVisible(true) : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
@@ -204,6 +211,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onRestart={handleRestart}
         allowDouble={game ? doubleDice.getLastDobule() === game.getCurrentPlayer() : false}
         showRestartGame={isOfflineGame()}
+        showGiveUp={onlineTurns ? onlineTurns!.length >= 5 : false}
       />
 
       {/* Custom Modal for Winner Announcement */}
