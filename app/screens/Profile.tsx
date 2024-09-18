@@ -94,7 +94,7 @@ function HistoryLineItem({
     switch (GameType) {
       case GAME_TYPE.ELO:
         return ICONS.TrophyIcon;
-      case GAME_TYPE.ONLINE:
+      case GAME_TYPE.RANDOM:
         return ICONS.WifiIcon;
       case GAME_TYPE.FRIENDLIST:
         return ICONS.PeopleIcon;
@@ -197,7 +197,7 @@ function HistoryContent() {
         Win={false}
       />
       <HistoryLineItem
-        GameType={GAME_TYPE.ONLINE}
+        GameType={GAME_TYPE.RANDOM}
         Opponent='Peterpan'
         Win={true}
       />

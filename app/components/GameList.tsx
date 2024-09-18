@@ -31,7 +31,7 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
-      gameMode: GAME_TYPE.ONLINE,
+      gameMode: GAME_TYPE.RANDOM,
     });
   };
 

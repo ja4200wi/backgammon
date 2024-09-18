@@ -44,7 +44,7 @@ export default function OnlineMatching({
             navigation.navigate('Game', {
               gameId,
               localPlayerId: localPlayerId,
-              gameMode: GAME_TYPE.ONLINE,
+              gameMode: GAME_TYPE.RANDOM,
               whoAmI: whoAmI,
             });
           }

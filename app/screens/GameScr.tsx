@@ -90,7 +90,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       console.log('starting offline game')
       setStartedGame(true)
       startGame(gameMode);
-    } else if(!startedGame && gameMode === GAME_TYPE.ONLINE && onlineTurns && onlineTurns.length > 0) {
+    } else if(!startedGame && gameMode === GAME_TYPE.RANDOM && onlineTurns && onlineTurns.length > 0) {
       console.log('starting online game')
       setStartedGame(true)
       startGame(gameMode,onlineTurns)
@@ -100,12 +100,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
-      gameMode === GAME_TYPE.ONLINE ? setWinnerOnlineAlertVisible(true) : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
+      gameMode === GAME_TYPE.RANDOM ? setWinnerOnlineAlertVisible(true) : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
   const handeDoubleAccept = () => {
     double();
-    if(gameMode === GAME_TYPE.ONLINE) {
+    if(gameMode === GAME_TYPE.RANDOM) {
       sendTurnToServer(new Turn(),'DOUBLE')
     }
     setDoubleAlertVisible(false);
@@ -113,7 +113,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handleDouble = () => {
     if (gameMode === GAME_TYPE.COMPUTER) {
       double();
-    } else if(gameMode === GAME_TYPE.ONLINE) {
+    } else if(gameMode === GAME_TYPE.RANDOM) {
       sendTurnToServer(new Turn(),'DOUBLE')
       setIsWaitingForDouble(true)
       //set wait for double true
@@ -134,7 +134,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       let looser
       if(type === 'STANDARD') {
         looser = game.getCurrentPlayer()
-        if(gameMode === GAME_TYPE.ONLINE) {
+        if(gameMode === GAME_TYPE.RANDOM) {
           sendTurnToServer(new Turn(),'GIVE_UP')
         }
       } else {
