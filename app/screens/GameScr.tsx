@@ -18,6 +18,7 @@ import { Schema } from '../../amplify/data/resource';
 import { sendTurn } from '../service/gameService';
 import { Button } from '@rneui/themed';
 import { DiceProps } from '../components/game/Dice';
+import { on } from 'events';
 
 interface GameScrProps {
   navigation: any;
@@ -59,7 +60,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     firstRoll,
     gameOver,
     double,
-  } = useGameLogic(gameId);
+    onlineTurns,
+  } = useGameLogic(gameId,localPlayerId);
 
   const { pointsToWin } = route.params;
 
@@ -76,23 +78,36 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       return () => sub.unsubscribe();
     }
   }, []); */
-
+  const [startedGame,setStartedGame] = useState<boolean>(false)
   useEffect(() => {
-    startGame(gameMode);
-  }, []);
-
+    if(!startedGame && (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)) {
+      console.log('starting offline game')
+      setStartedGame(true)
+      startGame(gameMode);
+    } else if(!startedGame && gameMode === GAME_TYPE.ONLINE && onlineTurns && onlineTurns.length > 0) {
+      console.log('starting online game')
+      setStartedGame(true)
+      startGame(gameMode,onlineTurns)
+    }
+    
+  }, [onlineTurns,startedGame]);
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
       setWinnerAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
-  const handleDoubleGiveUp = () => {
+  const handleGiveUp = (type?:'DOUBLE' | 'STANDARD') => {
     if (game) {
-      const looser =
+      let looser
+      if(type === 'STANDARD') {
+        looser = game.getCurrentPlayer()
+      } else {
+        looser =
         game.getCurrentPlayer() === PLAYER_COLORS.WHITE
           ? PLAYER_COLORS.BLACK
           : PLAYER_COLORS.WHITE;
+      }
       giveUp(looser);
       setDoubleAlertVisible(false);
     }
@@ -108,7 +123,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       setDoubleAlertVisible(true);
     }
   };
-  const handleWinnerAccept = () => {
+  const handleRestart = () => {
     setGameOver({ gameover: false, winner: PLAYER_COLORS.NAP });
     resetGame();
     startGame(gameMode);
@@ -147,7 +162,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
             startingSeq: isStartingPhase,
             firstRoll: firstRoll,
           }}
-          disableScreen={game ? disabledScreen(game) : false}
+          disableScreen={disabledScreen(game!)}
           onMoveChecker={handleMoveChecker}
           legalMovesFrom={legalMovesFrom}
           doubleDice={doubleDice}
@@ -160,6 +175,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         showAcceptMoveButton={showAcceptMoveButton(game!)}
         showUndoMoveButton={showUndoMoveButton(game!)}
         onDouble={handleDouble}
+        giveUp = {handleGiveUp}
+        onRestart={handleRestart}
       />
 
       {/* Custom Modal for Winner Announcement */}
@@ -169,7 +186,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         bodyText='What would you like to do?'
         acceptButtonText='Restart'
         declineButtonText='Go to Home'
-        onAccept={handleWinnerAccept}
+        onAccept={handleRestart}
         onDecline={handleWinnerDecline}
       />
       <CustomAlert
@@ -179,7 +196,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         acceptButtonText='Accept'
         declineButtonText={`Give up (-${doubleDice.getMultiplicator()})`}
         onAccept={handeDoubleAccept}
-        onDecline={handleDoubleGiveUp}
+        onDecline={handleGiveUp}
       />
     </SafeAreaView>
   );

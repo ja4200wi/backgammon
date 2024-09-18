@@ -14,12 +14,14 @@ interface GameNavBarProps {
   onAcceptMove: () => void;
   onUndoMove: () => void;
   onDouble: () => void;
+  giveUp: (type:'DOUBLE' | 'STANDARD') => void;
+  onRestart: () => void;
   showAcceptMoveButton: boolean;
   showUndoMoveButton: boolean;
   disableButtons: boolean;
 }
 
-const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDouble, showAcceptMoveButton, showUndoMoveButton, disableButtons }) => {
+const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDouble, giveUp, onRestart, showAcceptMoveButton, showUndoMoveButton, disableButtons }) => {
   const acceptButtonColor = showAcceptMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   const undoButtonColor = showUndoMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
   return (
@@ -40,13 +42,13 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDoub
             },
             (buttonIndex) => {
               if (buttonIndex === 1) {
-                console.log('Give up (-1)');
+                giveUp('STANDARD')
               } else if (buttonIndex === 2) {
-                console.log('Give up as a Gammon (-2)');
+                giveUp('STANDARD')
               } else if (buttonIndex === 3) {
-                console.log('Give up as a Backgammon (-3)');
+                giveUp('STANDARD')
               } else if (buttonIndex === 4) {
-                console.log('Restart');
+                onRestart()
               }
             }
           )

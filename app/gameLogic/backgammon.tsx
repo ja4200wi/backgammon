@@ -24,23 +24,28 @@ export class Game {
   private gameState: {gameIsOver: boolean, winner: PLAYER_COLORS}
 
   constructor();
-  constructor(board: (Checker[] | null)[], currentPlayer: PLAYER_COLORS);
-
-  constructor(board?: (Checker[] | null)[], currentPlayer?: PLAYER_COLORS) {
+  constructor(currentPlayer: PLAYER_COLORS, dice:[number,number],board: (Checker[] | null)[], );
+  constructor(currentPlayer: PLAYER_COLORS, dice:[number,number]);
+  constructor(currentPlayer?: PLAYER_COLORS, dice?:[number,number],board?: (Checker[] | null)[]) {
     if (board) {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupBearingOffBoard();
+      this.setupTestBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
     } else {
       this.currentPlayer = PLAYER_COLORS.BLACK;
     }
-    let tempDice = this.rollFirstDice();
-    this.dice = tempDice;
-    this.movesLeft = tempDice;
+    if(dice) {
+      this.dice = [...dice]
+      this.movesLeft = [...dice]
+    } else {
+      let tempDice = this.rollFirstDice();
+      this.dice = tempDice;
+      this.movesLeft = tempDice;
+    }
     this.lastMoves = [];
     this.moves = []
     this.doubleDice = new DoubleDice
@@ -63,10 +68,18 @@ export class Game {
   }
 
   private setupTestBoard() {
-    this.board[3] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[4] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[5] = this.createStones(1, PLAYER_COLORS.BLACK);
-    this.board[8] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[3] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[25] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[4] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[5] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[13] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[14] = this.createStones(7, PLAYER_COLORS.BLACK);
+    this.board[10] = this.createStones(1, PLAYER_COLORS.WHITE);
+    this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[22] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[23] = this.createStones(2, PLAYER_COLORS.WHITE);
   }
 
   private setupTestBoard2() {
@@ -229,6 +242,7 @@ export class Game {
     this.board = board.map((position) => (position ? [...position] : null));
 
     this.movesLeft = [...movesLeft];
+    this.moves.pop()
   }
   private handleCapture(to: number): void {
     if (
@@ -503,12 +517,15 @@ export class Game {
 
   private rollDice(): [number, number] {
     this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
+    this.calcMovesLeft()
+    return this.dice;
+  }
+  private calcMovesLeft() {
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
     } else {
       this.movesLeft = [...this.dice];
     }
-    return this.dice;
   }
 
   private rollFirstDice(): [number, number] {
@@ -580,7 +597,9 @@ export class Game {
   public getMovesLeft(): number[] {
     return this.movesLeft;
   }
-
+  public getMovesDone() {
+    return this.moves
+  }
   public getCurrentPlayer(): PLAYER_COLORS {
     return this.currentPlayer;
   }
@@ -605,7 +624,9 @@ export class Game {
       return PLAYER_COLORS.WHITE;
     return PLAYER_COLORS.NAP;
   }
-
+  public setDice(dice:[number,number]) {
+    this.dice = dice
+  }
   public switchPlayer(): Turn {
     this.dice = this.rollDice();
     this.currentPlayer =
@@ -613,6 +634,24 @@ export class Game {
         ? PLAYER_COLORS.BLACK
         : PLAYER_COLORS.WHITE;
     this.lastMoves = [];
+    const safeMoves = this.moves
+    this.moves = []
+    return new Turn(safeMoves)
+  }
+  public getTurnAfterMove(): Turn {
+    if(this.movesLeft.length === 0) {
+      return new Turn(this.moves)
+    }
+    else return new Turn()
+  }
+  public onlineSwitchPlayer(dice:[number,number]): Turn {
+    this.dice = dice
+    this.calcMovesLeft()
+    this.lastMoves = []
+    this.currentPlayer =
+      this.currentPlayer === PLAYER_COLORS.WHITE
+        ? PLAYER_COLORS.BLACK
+        : PLAYER_COLORS.WHITE;
     const safeMoves = this.moves
     this.moves = []
     return new Turn(safeMoves)
@@ -644,8 +683,7 @@ export class Game {
     });
 
     // Create a new Game instance with the copied data
-    const gameCopy = new Game(boardCopy, currentPlayerCopy);
-    gameCopy.dice = diceCopy;
+    const gameCopy = new Game(currentPlayerCopy,diceCopy,boardCopy);
     gameCopy.movesLeft = movesLeftCopy;
     gameCopy.lastMoves = lastMovesCopy;
 

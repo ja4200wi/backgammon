@@ -85,7 +85,11 @@ const Board: React.FC<BoardProps> = ({
     if (selectedSource === null && spikes[index].checkers.length > 0) {
       setSelectedSource(index);
     } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index);
+      if(possibleMoves.includes(index)) {
+        moveChecker(selectedSource, index);
+      } else {
+        setSelectedSource(index)
+      }
     }
   };
 
@@ -179,6 +183,7 @@ const Board: React.FC<BoardProps> = ({
           count={homeCount[1]}
           player={PLAYER_COLORS.BLACK}
           doubleDice={doubleDice}
+          isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.BLACK}
         />
       </View>
       <View
@@ -251,6 +256,7 @@ const Board: React.FC<BoardProps> = ({
           count={homeCount[0]}
           player={PLAYER_COLORS.WHITE}
           doubleDice={doubleDice}
+          isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.WHITE}
         />
       </View>
     </View>

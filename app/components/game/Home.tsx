@@ -10,9 +10,10 @@ interface HomeProps {
   count: number;
   player: PLAYER_COLORS;
   doubleDice: DoubleDice;
+  isHighlighted: boolean;
 }
 
-const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice }) => {
+const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighlighted }) => {
   const checkers = [];
   for (let i = 0; i < count; i++) {
     checkers.push(
@@ -38,7 +39,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice }) => {
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper]}>
       {
         player === doubleDice.getLastDobule() ? (
           <View style={styles.doubleDiceCompContainer}>
@@ -46,7 +47,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice }) => {
           </View>
         ) : null
       }
-      <TouchableOpacity style={styles.container} onPress={() => onPress(100)}>
+      <TouchableOpacity style={[styles.container,{backgroundColor: isHighlighted ? APP_COLORS.appBlue : APP_COLORS.iconGrey}]} onPress={() => onPress(100)}>
         <View style={styles.checkersContainer}>{checkers}</View>
       </TouchableOpacity>
     </View>

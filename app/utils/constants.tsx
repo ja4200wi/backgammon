@@ -155,14 +155,14 @@ export const DIMENSIONS = {
 
 export const GAME_SETTINGS = {
   startingPositions: [
-    { index: 0, color: PLAYER_COLORS.WHITE, count: 2 },
-    { index: 11, color: PLAYER_COLORS.WHITE, count: 5 },
-    { index: 16, color: PLAYER_COLORS.WHITE, count: 3 },
-    { index: 18, color: PLAYER_COLORS.WHITE, count: 5 },
+    { index: 1, color: PLAYER_COLORS.WHITE, count: 2 },
+    { index: 15, color: PLAYER_COLORS.WHITE, count: 5 },
+    { index: 17, color: PLAYER_COLORS.WHITE, count: 3 },
+    { index: 19, color: PLAYER_COLORS.WHITE, count: 5 },
     { index: 23, color: PLAYER_COLORS.BLACK, count: 2 },
-    { index: 12, color: PLAYER_COLORS.BLACK, count: 5 },
-    { index: 7, color: PLAYER_COLORS.BLACK, count: 3 },
-    { index: 5, color: PLAYER_COLORS.BLACK, count: 5 },
+    { index: 13, color: PLAYER_COLORS.BLACK, count: 5 },
+    { index: 8, color: PLAYER_COLORS.BLACK, count: 3 },
+    { index: 6, color: PLAYER_COLORS.BLACK, count: 5 },
   ],
   startScores: [167, 167],
   checkerCount: 15,
