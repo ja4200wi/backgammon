@@ -11,6 +11,7 @@ import { generateClient, SelectionSet } from 'aws-amplify/data';
 import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { GAME_TYPE } from '../utils/constants';
 
 const client = generateClient<Schema>();
 
@@ -22,8 +23,16 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
 
   const joinGame = async (gameId: string) => {
     const { userId } = await getCurrentUser();
-    const { errors, data } = await client.queries.joinGame({ gameId, userId });
-    navigation.navigate('Online', { gameId });
+    const { errors, data } = await client.mutations.joinGame({
+      gameId,
+      userId,
+    });
+    console.log('joinGame:', userId);
+    navigation.navigate('Game', {
+      gameId,
+      localPlayerId: userId,
+      gameMode: GAME_TYPE.ONLINE,
+    });
   };
 
   useEffect(() => {

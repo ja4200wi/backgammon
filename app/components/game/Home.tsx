@@ -2,18 +2,22 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Checker from './Checker'; // Import your Checker component
 import { APP_COLORS, PLAYER_COLORS } from '../../utils/constants';
+import DoubleDiceComp from './doubleDiceComp';
+import { DoubleDice } from '../../gameLogic/doubleDice';
 
 interface HomeProps {
   onPress: (index: number) => void;
   count: number;
   player: PLAYER_COLORS;
+  doubleDice: DoubleDice;
+  isHighlighted: boolean;
 }
 
-const Home: React.FC<HomeProps> = ({ onPress, count, player }) => {
+const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighlighted }) => {
   const checkers = [];
   for (let i = 0; i < count; i++) {
     checkers.push(
-      <View key={i} style={[styles.checkerContainer, { right: i * 8 }]}>
+      <View key={i} style={[styles.checkerContainer, { right: i * 6 }]}>
         <Checker height={30} width={30} color={player} />
         {i === count - 1 && (
           <Text
@@ -35,13 +39,26 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player }) => {
   }
 
   return (
-    <TouchableOpacity style={styles.container} onPress={() => onPress(100)}>
-      <View style={styles.checkersContainer}>{checkers}</View>
-    </TouchableOpacity>
+    <View style={[styles.wrapper]}>
+      {
+        player === doubleDice.getLastDobule() ? (
+          <View style={styles.doubleDiceCompContainer}>
+            <DoubleDiceComp color={player} count={doubleDice.getMultiplicator()} />
+          </View>
+        ) : null
+      }
+      <TouchableOpacity style={[styles.container,{backgroundColor: isHighlighted ? APP_COLORS.appBlue : APP_COLORS.iconGrey}]} onPress={() => onPress(100)}>
+        <View style={styles.checkersContainer}>{checkers}</View>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  wrapper: {
+    position: 'relative', // Relative positioning for the parent wrapper to contain both Home and DoubleDiceComp
+    width: 135, // Ensure the same width as the Home button
+  },
   container: {
     backgroundColor: APP_COLORS.iconGrey,
     borderColor: APP_COLORS.darkGrey,
@@ -49,18 +66,24 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 5,
     height: 34,
-    width: 150,
+    width: 135,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
   },
+  doubleDiceCompContainer: {
+    position: 'absolute', 
+    bottom: 5, 
+    left: -5, 
+    zIndex: 2,
+  },
   checkersContainer: {
-    position: 'relative', // Container for absolute-positioned checkers
+    position: 'relative', 
     height: '100%',
     width: '100%',
     justifyContent: 'center',
     alignItems: 'flex-end', // Align checkers to the right
-    marginRight: 8,
+    marginRight: 6,
   },
   checkerContainer: {
     position: 'absolute', // Position absolutely to stack

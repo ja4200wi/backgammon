@@ -1,12 +1,24 @@
+import { PlacementConstraint } from 'aws-cdk-lib/aws-ecs';
 import { PLAYER_COLORS } from '../utils/constants';
-import {Checker} from './Checker';
+import { Checker } from './checker';
+import { Move } from './move';
+import { BOARD_TYPE } from '../utils/constants';
 
 export class Board {
   private board: (Checker[] | null)[];
 
-  constructor() {
+  constructor(type: BOARD_TYPE) {
     this.board = new Array(26).fill([]).map(() => []);
-    this.setupDefaultBoard();
+    switch(type) {
+      case BOARD_TYPE.DEFAULT:
+      this.setupDefaultBoard()
+
+      case BOARD_TYPE.CUSTOM:
+      this.setUpCustomBoard()
+
+      default:
+        return
+    }
   }
 
   private setupDefaultBoard() {
@@ -18,6 +30,10 @@ export class Board {
     this.board[13] = this.createChecker(5, PLAYER_COLORS.BLACK);
     this.board[8] = this.createChecker(3, PLAYER_COLORS.BLACK);
     this.board[6] = this.createChecker(5, PLAYER_COLORS.BLACK);
+  }
+  private setUpCustomBoard() {
+    this.board[1] = this.createChecker(15, PLAYER_COLORS.BLACK);
+    this.board[24] = this.createChecker(15, PLAYER_COLORS.WHITE);
   }
 
   private createChecker(count: number, color: PLAYER_COLORS): Checker[] {
@@ -73,13 +89,17 @@ export class Board {
   }
 
   // Returns true if the checkers of the spike have different color
-  public isOccupiedByEnemy(color: string, index: number): boolean {
+  public isOccupiedByEnemy(color: PLAYER_COLORS, index: number): boolean {
     if (this.board[index] === null) return false;
     return (
       this.board[index][0].getColor() !== color && this.board[index].length > 1
     );
   }
-
+  public pushXCheckersOnSpike(x: number,index:number,player:PLAYER_COLORS) {
+    for(let i = 0;i<x;i++){
+      this.pushCheckerOnSpike(index,new Checker(player))
+    }
+  }
   public getLength(): number {
     return this.board.length;
   }
@@ -87,4 +107,12 @@ export class Board {
   public getCheckersOnSpike(index: number): Checker[] {
     return this.board[index] || [];
   }
+  public makeSpikeEmpty(index: number) {
+    this.board[index] = []; 
+}
+public makeMove(move:Move,player:PLAYER_COLORS) {
+  this.popCheckerOnSpike(move.getFrom())
+  this.pushCheckerOnSpike(move.getTo(), new Checker(player))
+}
+
 }

@@ -1,7 +1,9 @@
-import { PLAYER_COLORS } from '../utils/constants';
+import { BOARD_COLORS, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from './turn';
 import { Move } from './move';
 import { Checker } from './checker';
+import { DoubleDice } from './doubleDice';
+import { Board } from './board';
 
 const BOARD_SIZE = 26; // Total number of positions on the board
 const PRISON_INDEX = { WHITE: 0, BLACK: 25 };
@@ -18,11 +20,13 @@ export class Game {
   private movesLeft: number[];
   private lastMoves: [(Checker[] | null)[], number[]][];
   private moves: Move[];
+  private doubleDice: DoubleDice;
+  private gameState: {gameIsOver: boolean, winner: PLAYER_COLORS}
 
   constructor();
-  constructor(board: (Checker[] | null)[], currentPlayer: PLAYER_COLORS);
-
-  constructor(board?: (Checker[] | null)[], currentPlayer?: PLAYER_COLORS) {
+  constructor(currentPlayer: PLAYER_COLORS, dice:[number,number],board: (Checker[] | null)[], );
+  constructor(currentPlayer: PLAYER_COLORS, dice:[number,number]);
+  constructor(currentPlayer?: PLAYER_COLORS, dice?:[number,number],board?: (Checker[] | null)[]) {
     if (board) {
       this.board = board;
     } else {
@@ -34,11 +38,18 @@ export class Game {
     } else {
       this.currentPlayer = PLAYER_COLORS.BLACK;
     }
-    let tempDice = this.rollFirstDice();
-    this.dice = tempDice;
-    this.movesLeft = tempDice;
+    if(dice) {
+      this.dice = [...dice]
+      this.movesLeft = [...dice]
+    } else {
+      let tempDice = this.rollFirstDice();
+      this.dice = tempDice;
+      this.movesLeft = tempDice;
+    }
     this.lastMoves = [];
     this.moves = []
+    this.doubleDice = new DoubleDice
+    this.gameState = {gameIsOver:false,winner:PLAYER_COLORS.NAP}
   }
 
   private setupDefaultBoard() {
@@ -57,10 +68,18 @@ export class Game {
   }
 
   private setupTestBoard() {
-    this.board[3] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[4] = this.createStones(2, PLAYER_COLORS.WHITE);
-    this.board[5] = this.createStones(1, PLAYER_COLORS.BLACK);
-    this.board[8] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[3] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[25] = this.createStones(1, PLAYER_COLORS.BLACK);
+    this.board[4] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[5] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[13] = this.createStones(2, PLAYER_COLORS.BLACK);
+    this.board[14] = this.createStones(7, PLAYER_COLORS.BLACK);
+    this.board[10] = this.createStones(1, PLAYER_COLORS.WHITE);
+    this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[22] = this.createStones(3, PLAYER_COLORS.WHITE);
+    this.board[23] = this.createStones(2, PLAYER_COLORS.WHITE);
   }
 
   private setupTestBoard2() {
@@ -87,7 +106,7 @@ export class Game {
     if (maxDiceUsable === 1) {
       // if only one move possible, ensure highest is done, which is still feasible
       const maxStepsFeasible = Math.max(
-        ...this.getAllPossibleMoves(this.currentPlayer).map((move) =>
+        ...this._getAllPossibleMoves(this.currentPlayer).map((move) =>
           Math.abs(move.getFrom() - move.getTo())
         )
       );
@@ -99,7 +118,7 @@ export class Game {
 
   private maxDiceUsable(diceUsed: number): number {
     if (this.movesLeft.length === 0) return diceUsed;
-    const possibleMoves = this.getAllPossibleMoves(this.currentPlayer);
+    const possibleMoves = this._getAllPossibleMoves(this.currentPlayer);
     if (possibleMoves.length === 0) return diceUsed;
 
     let maxUsed = diceUsed;
@@ -159,7 +178,18 @@ export class Game {
     this.board[to]?.push(stone);
     this.updateMovesLeft(steps, from, to);
     this.updateMoves(from,to)
+    this.updateGameOver()
     return true;
+  }
+  private updateGameOver() {
+    if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES) {
+        this.gameState = {gameIsOver:true,winner:PLAYER_COLORS.BLACK}
+    } else if(this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES){
+      this.gameState = {gameIsOver:true,winner:PLAYER_COLORS.WHITE}
+    }
+  }
+  private setGameOver(winner:PLAYER_COLORS) {
+    this.gameState = {gameIsOver:true,winner:winner}
   }
   private updateMoves(from:number,to:number) {
     this.moves.push(new Move(from,to))
@@ -189,7 +219,7 @@ export class Game {
     return true;
   }
   public getRandomMove(): Move | null {
-    const possibleMoves = this.getAllPossibleMoves(this.currentPlayer);
+    const possibleMoves = this._getAllPossibleMoves(this.currentPlayer);
     if (possibleMoves.length === 0) {
       return null;
     }
@@ -212,6 +242,7 @@ export class Game {
     this.board = board.map((position) => (position ? [...position] : null));
 
     this.movesLeft = [...movesLeft];
+    this.moves.pop()
   }
   private handleCapture(to: number): void {
     if (
@@ -308,8 +339,7 @@ export class Game {
       legalMoves.push(BEARING_OFF_INDEX);
     return legalMoves;
   }
-
-  private getAllPossibleMoves(player: PLAYER_COLORS): Move[] {
+  private _getAllPossibleMoves(player: PLAYER_COLORS): Move[] {
     const moves: Move[] = [];
     for (let i = 0; i < this.board.length; i++) {
       if (
@@ -487,12 +517,15 @@ export class Game {
 
   private rollDice(): [number, number] {
     this.dice = [this.getRandomDieRoll(), this.getRandomDieRoll()];
+    this.calcMovesLeft()
+    return this.dice;
+  }
+  private calcMovesLeft() {
     if (this.dice[0] === this.dice[1]) {
       this.movesLeft = [this.dice[0], this.dice[0], this.dice[0], this.dice[0]];
     } else {
       this.movesLeft = [...this.dice];
     }
-    return this.dice;
   }
 
   private rollFirstDice(): [number, number] {
@@ -545,7 +578,9 @@ export class Game {
     }
     return positions;
   }
-
+  public getAllPossibleMoves() : Move[] {
+    return this._getAllPossibleMoves(this.currentPlayer)
+  }
   public getDistances(): { distBlack: number; distWhite: number } {
     return {
       distBlack: this.calculateTotalDistance(PLAYER_COLORS.BLACK),
@@ -562,19 +597,19 @@ export class Game {
   public getMovesLeft(): number[] {
     return this.movesLeft;
   }
-
+  public getMovesDone() {
+    return this.moves
+  }
   public getCurrentPlayer(): PLAYER_COLORS {
     return this.currentPlayer;
   }
 
   public isGameOver(): boolean {
-    if (
-      this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES ||
-      this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES
-    ) {
-      return true;
-    }
-    return false;
+    return this.gameState.gameIsOver
+  }
+  public giveUp(looser:PLAYER_COLORS) {
+    const winner = looser === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
+    this.setGameOver(winner)
   }
   public getLastMoves() {
     return this.lastMoves;
@@ -589,7 +624,9 @@ export class Game {
       return PLAYER_COLORS.WHITE;
     return PLAYER_COLORS.NAP;
   }
-
+  public setDice(dice:[number,number]) {
+    this.dice = dice
+  }
   public switchPlayer(): Turn {
     this.dice = this.rollDice();
     this.currentPlayer =
@@ -601,7 +638,28 @@ export class Game {
     this.moves = []
     return new Turn(safeMoves)
   }
-
+  public getTurnAfterMove(): Turn {
+    return new Turn(this.moves)
+  }
+  public onlineSwitchPlayer(dice:[number,number]): Turn {
+    this.dice = dice
+    this.calcMovesLeft()
+    this.lastMoves = []
+    this.currentPlayer =
+      this.currentPlayer === PLAYER_COLORS.WHITE
+        ? PLAYER_COLORS.BLACK
+        : PLAYER_COLORS.WHITE;
+    const safeMoves = this.moves
+    this.moves = []
+    return new Turn(safeMoves)
+  }
+  public getDoubleDice(): DoubleDice {
+    return this.doubleDice
+  }
+  public double(): DoubleDice {
+    this.doubleDice.double(this.currentPlayer)
+    return this.doubleDice
+  }
   public deepCopy(): Game {
     const boardCopy = this.deepCopyBoard(this.board);
 
@@ -622,8 +680,7 @@ export class Game {
     });
 
     // Create a new Game instance with the copied data
-    const gameCopy = new Game(boardCopy, currentPlayerCopy);
-    gameCopy.dice = diceCopy;
+    const gameCopy = new Game(currentPlayerCopy,diceCopy,boardCopy);
     gameCopy.movesLeft = movesLeftCopy;
     gameCopy.lastMoves = lastMovesCopy;
 

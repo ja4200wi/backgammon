@@ -17,7 +17,7 @@ const Prison: React.FC<PrisonProps> = ({
   onPress,
 }) => {
   return (
-    <View
+    <TouchableOpacity
       style={{
         backgroundColor: backgroundColor,
         width: width - 10,
@@ -25,13 +25,14 @@ const Prison: React.FC<PrisonProps> = ({
         justifyContent: 'center',
         alignItems: 'center',
       }}
+      onPress={() => onPress(-1)}
     >
       {checkers.map((CheckerComponent, index) => (
         <TouchableOpacity key={index} onPress={() => onPress(-1)}>
           {CheckerComponent}
         </TouchableOpacity>
       ))}
-    </View>
+    </TouchableOpacity>
   );
 };
 

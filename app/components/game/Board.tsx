@@ -8,6 +8,7 @@ import Prison from './Prison';
 import Home from './Home';
 import PipCount from './PipCount';
 import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS, BOARD_COLORS } from '../../utils/constants';
+import { DoubleDice } from '../../gameLogic/doubleDice';
 
 export interface Position {
   index: number;
@@ -28,6 +29,7 @@ interface BoardProps {
   homeCount: number[];
   dice: DiceProps;
   disableScreen: boolean;
+  doubleDice: DoubleDice;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
   legalMovesFrom: (sourceIndex: number) => number[];
 }
@@ -39,6 +41,7 @@ const Board: React.FC<BoardProps> = ({
   pipCount,
   homeCount,
   disableScreen,
+  doubleDice,
   legalMovesFrom,
   onMoveChecker,
 }) => {
@@ -82,7 +85,11 @@ const Board: React.FC<BoardProps> = ({
     if (selectedSource === null && spikes[index].checkers.length > 0) {
       setSelectedSource(index);
     } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index);
+      if(possibleMoves.includes(index)) {
+        moveChecker(selectedSource, index);
+      } else {
+        setSelectedSource(index)
+      }
     }
   };
 
@@ -175,6 +182,8 @@ const Board: React.FC<BoardProps> = ({
           onPress={handleHomePress}
           count={homeCount[1]}
           player={PLAYER_COLORS.BLACK}
+          doubleDice={doubleDice}
+          isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.BLACK}
         />
       </View>
       <View
@@ -246,6 +255,8 @@ const Board: React.FC<BoardProps> = ({
           onPress={handleHomePress}
           count={homeCount[0]}
           player={PLAYER_COLORS.WHITE}
+          doubleDice={doubleDice}
+          isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.WHITE}
         />
       </View>
     </View>

@@ -15,6 +15,8 @@ import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { createSession } from '../service/gameService';
+import { getUserName } from '../service/profileService';
 
 const client = generateClient<Schema>();
 
@@ -73,36 +75,17 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
   function OnlineGameCard({ navigation }: { navigation: any }) {
     const [userName, setUserName] = useState(''); // To store the profile name
 
-    const fetchUserData = async () => {
-      const { username } = await getCurrentUser();
-      setUserName(username);
-    };
-    const createSession = async () => {
-      fetchUserData();
-      const { errors, data: game } = await client.models.Session.create({
-        playerOneID: userName,
-        playerTwoID: 'filler',
-        gameState: {
-          board: [
-            { index: 1, color: 'WHITE', count: 2 },
-            { index: 6, color: 'BLACK', count: 5 },
-            { index: 8, color: 'BLACK', count: 3 },
-            { index: 12, color: 'WHITE', count: 5 },
-            { index: 13, color: 'BLACK', count: 5 },
-            { index: 17, color: 'WHITE', count: 3 },
-            { index: 19, color: 'WHITE', count: 5 },
-            { index: 24, color: 'BLACK', count: 2 },
-          ],
-          dice: { dieOne: 1, dieTwo: 2 },
-          currentPlayer: 'WHITE',
-        },
-        turns: [],
+    const handleCreateSession = async () => {
+      const userName = await getUserName();
+      const gameId = await createSession(userName);
+      navigation.navigate('OnlineMatching', {
+        gameId,
+        localPlayerId: userName,
       });
-      navigation.navigate('Online', { gameId: game!.id });
     };
 
     const listSessions = () => {
-      navigation.navigate('PlayFriend');
+      navigation.navigate('OnlineMatching', {});
     };
     return (
       <TouchableOpacity
@@ -141,7 +124,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => createSession()}
+                onPress={() => handleCreateSession()}
               />
               <Button
                 title='Join Game'
@@ -236,7 +219,9 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.COMPUTER})}
+                onPress={() =>
+                  navigation.navigate('Game', { gameMode: GAME_TYPE.COMPUTER })
+                }
               />
             </>
           )}
@@ -282,7 +267,9 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => navigation.navigate('Game', {gameMode: GAME_TYPE.PASSPLAY})}
+                onPress={() =>
+                  navigation.navigate('Game', { gameMode: GAME_TYPE.PASSPLAY })
+                }
               />
             </>
           )}

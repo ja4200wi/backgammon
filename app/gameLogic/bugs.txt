@@ -1,3 +1,0 @@
-- rolled 2 2, made prison move and then only could do two more moves (so in total 3 not 4)
-- when moved out of prison on a stack with 2 white checkers, the black one just turned white (should not be possible to move there)
-- calculation of pip count not correct if prison
