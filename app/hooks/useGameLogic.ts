@@ -283,9 +283,9 @@ export const useGameLogic = (
   };
   const makeTurn = async (turn: Turn) => {
     if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 100);
+      setTimeout(() => doPlayerTwoMove(turn), 750);
     } else {
-      setTimeout(() => updateMoveIsOver(), 100);
+      setTimeout(() => updateMoveIsOver(), 750);
     }
   };
   const doPlayerTwoMove = async (turn: Turn) => {
