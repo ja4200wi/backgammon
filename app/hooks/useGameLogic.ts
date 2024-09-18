@@ -32,7 +32,7 @@ interface GameScrProps {
   route: any;
 }
 
-export const useGameLogic = (gameId: string) => {
+export const useGameLogic = (gameId: string, localPlayerId: string) => {
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
@@ -60,6 +60,7 @@ export const useGameLogic = (gameId: string) => {
       }).subscribe({
         next: ({ items, isSynced }) => {
           setOnlineTurns(items);
+          console.log('onlineTurns:', items);
         },
       });
 
@@ -67,8 +68,22 @@ export const useGameLogic = (gameId: string) => {
     }
   }, []);
 
-  const sendTurnToServer = async (turnToSend: SendableTurn) => {
-    const nextDice: OnlineDice | null | undefined = await sendTurn(turnToSend);
+  const sendTurnToServer = async (turnToSend: SendableTurn | null) => {
+    const testTurn: {
+      gameId: string;
+      playerId: string;
+      moves: { from: number; to: number }[];
+      type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
+    } = {
+      gameId: gameId,
+      playerId: localPlayerId,
+      moves: [
+        { from: 1, to: 2 },
+        { from: 2, to: 3 },
+      ],
+      type: 'MOVE',
+    };
+    const nextDice: OnlineDice | null | undefined = await sendTurn(testTurn);
   };
 
   useEffect(() => {
@@ -284,7 +299,8 @@ export const useGameLogic = (gameId: string) => {
   };
   const makeBotMove = async () => {
     if (game) {
-      const botTurn = bot.tempTurnEasyBot(game);
+      //const botTurn = bot.tempTurnEasyBot(game);
+      const botTurn = bot.makeTurnJannBot(game);
       await makeTurn(botTurn);
     }
   };
@@ -328,5 +344,6 @@ export const useGameLogic = (gameId: string) => {
     doubleDice,
     double,
     resetGame,
+    sendTurnToServer,
   };
 };

@@ -12,7 +12,6 @@ const TOTAL_STONES = 15;
 const HOME_AREA_START_INDEX = { WHITE: 19, BLACK: 6 };
 const HOME_AREA_SIZE = 6;
 
-
 export class Game {
   private board: (Checker[] | null)[];
   private currentPlayer: PLAYER_COLORS;
@@ -21,7 +20,7 @@ export class Game {
   private lastMoves: [(Checker[] | null)[], number[]][];
   private moves: Move[];
   private doubleDice: DoubleDice;
-  private gameState: {gameIsOver: boolean, winner: PLAYER_COLORS}
+  private gameState: { gameIsOver: boolean; winner: PLAYER_COLORS };
 
   constructor();
   constructor(board: (Checker[] | null)[], currentPlayer: PLAYER_COLORS);
@@ -31,7 +30,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupBearingOffBoard();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -42,9 +41,9 @@ export class Game {
     this.dice = tempDice;
     this.movesLeft = tempDice;
     this.lastMoves = [];
-    this.moves = []
-    this.doubleDice = new DoubleDice
-    this.gameState = {gameIsOver:false,winner:PLAYER_COLORS.NAP}
+    this.moves = [];
+    this.doubleDice = new DoubleDice();
+    this.gameState = { gameIsOver: false, winner: PLAYER_COLORS.NAP };
   }
 
   private setupDefaultBoard() {
@@ -126,7 +125,6 @@ export class Game {
       }
     });
   }
-  
 
   private getTarget(from: number, steps: number, color: PLAYER_COLORS): number {
     const direction = color === PLAYER_COLORS.WHITE ? 1 : -1;
@@ -164,22 +162,22 @@ export class Game {
     this.handleCapture(to);
     this.board[to]?.push(stone);
     this.updateMovesLeft(steps, from, to);
-    this.updateMoves(from,to)
-    this.updateGameOver()
+    this.updateMoves(from, to);
+    this.updateGameOver();
     return true;
   }
   private updateGameOver() {
     if (this.getHomeCheckers(PLAYER_COLORS.BLACK) === TOTAL_STONES) {
-        this.gameState = {gameIsOver:true,winner:PLAYER_COLORS.BLACK}
-    } else if(this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES){
-      this.gameState = {gameIsOver:true,winner:PLAYER_COLORS.WHITE}
+      this.gameState = { gameIsOver: true, winner: PLAYER_COLORS.BLACK };
+    } else if (this.getHomeCheckers(PLAYER_COLORS.WHITE) === TOTAL_STONES) {
+      this.gameState = { gameIsOver: true, winner: PLAYER_COLORS.WHITE };
     }
   }
-  private setGameOver(winner:PLAYER_COLORS) {
-    this.gameState = {gameIsOver:true,winner:winner}
+  private setGameOver(winner: PLAYER_COLORS) {
+    this.gameState = { gameIsOver: true, winner: winner };
   }
-  private updateMoves(from:number,to:number) {
-    this.moves.push(new Move(from,to))
+  private updateMoves(from: number, to: number) {
+    this.moves.push(new Move(from, to));
   }
 
   private handleMoveStoneWithoutMaxCheck(from: number, to: number): boolean {
@@ -213,7 +211,7 @@ export class Game {
     const randomIndex = Math.floor(Math.random() * possibleMoves.length);
     return possibleMoves[randomIndex];
   }
-  
+
   private safeMoves() {
     const currentBoard = this.board.map((position) =>
       position ? [...position] : null
@@ -335,8 +333,8 @@ export class Game {
       ) {
         const feasibleTargets = this.getLegalMovesFrom(i);
         for (const to of feasibleTargets) {
-          const tempMove = new Move(i,to)
-          moves.push( tempMove );
+          const tempMove = new Move(i, to);
+          moves.push(tempMove);
         }
       }
     }
@@ -497,7 +495,8 @@ export class Game {
       return 0;
     }
     return (
-      this.board[index]?.filter((stone) => stone.getColor() === color).length || 0
+      this.board[index]?.filter((stone) => stone.getColor() === color).length ||
+      0
     );
   }
 
@@ -523,7 +522,7 @@ export class Game {
     return Math.floor(Math.random() * 6) + 1;
   }
 
-  private calculateTotalDistance(color: PLAYER_COLORS): number {
+  public calculateTotalDistance(color: PLAYER_COLORS): number {
     let totalDistance = 0;
 
     for (let i = 0; i < this.board.length; i++) {
@@ -561,8 +560,8 @@ export class Game {
     }
     return positions;
   }
-  public getAllPossibleMoves() : Move[] {
-    return this._getAllPossibleMoves(this.currentPlayer)
+  public getAllPossibleMoves(): Move[] {
+    return this._getAllPossibleMoves(this.currentPlayer);
   }
   public getDistances(): { distBlack: number; distWhite: number } {
     return {
@@ -586,11 +585,14 @@ export class Game {
   }
 
   public isGameOver(): boolean {
-    return this.gameState.gameIsOver
+    return this.gameState.gameIsOver;
   }
-  public giveUp(looser:PLAYER_COLORS) {
-    const winner = looser === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
-    this.setGameOver(winner)
+  public giveUp(looser: PLAYER_COLORS) {
+    const winner =
+      looser === PLAYER_COLORS.WHITE
+        ? PLAYER_COLORS.BLACK
+        : PLAYER_COLORS.WHITE;
+    this.setGameOver(winner);
   }
   public getLastMoves() {
     return this.lastMoves;
@@ -613,16 +615,16 @@ export class Game {
         ? PLAYER_COLORS.BLACK
         : PLAYER_COLORS.WHITE;
     this.lastMoves = [];
-    const safeMoves = this.moves
-    this.moves = []
-    return new Turn(safeMoves)
+    const safeMoves = this.moves;
+    this.moves = [];
+    return new Turn(safeMoves);
   }
   public getDoubleDice(): DoubleDice {
-    return this.doubleDice
+    return this.doubleDice;
   }
   public double(): DoubleDice {
-    this.doubleDice.double(this.currentPlayer)
-    return this.doubleDice
+    this.doubleDice.double(this.currentPlayer);
+    return this.doubleDice;
   }
   public deepCopy(): Game {
     const boardCopy = this.deepCopyBoard(this.board);
@@ -640,7 +642,10 @@ export class Game {
         }
       });
       const diceStateCopy = [...diceState];
-      return [boardStateCopy, diceStateCopy] as [(Checker[] | null)[], number[]];
+      return [boardStateCopy, diceStateCopy] as [
+        (Checker[] | null)[],
+        number[]
+      ];
     });
 
     // Create a new Game instance with the copied data
@@ -652,4 +657,3 @@ export class Game {
     return gameCopy;
   }
 }
-

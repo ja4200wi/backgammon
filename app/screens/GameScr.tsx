@@ -53,13 +53,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     legalMovesFrom,
     disabledScreen,
     setGameOver,
+
     resetGame,
     doubleDice,
     isStartingPhase,
     firstRoll,
     gameOver,
     double,
-  } = useGameLogic(gameId);
+  } = useGameLogic(gameId, localPlayerId);
 
   const { pointsToWin } = route.params;
 

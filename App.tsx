@@ -52,22 +52,18 @@ export default function App() {
     );
   };
   return (
-    <Authenticator.Provider>
-      <Authenticator>
-        <SafeAreaView
-          style={{ flex: 1, backgroundColor: APP_COLORS.headerBackGroundColor }}
-        >
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name='Main' component={HomeTabs} />
-              <Stack.Screen name='GameSelection' component={GameSelectionScr} />
-              <Stack.Screen name='Game' component={GameScreen} />
-              <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SafeAreaView>
-      </Authenticator>
-    </Authenticator.Provider>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: APP_COLORS.headerBackGroundColor }}
+    >
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name='Main' component={HomeTabs} />
+          <Stack.Screen name='GameSelection' component={GameSelectionScr} />
+          <Stack.Screen name='Game' component={GameScreen} />
+          <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
 
