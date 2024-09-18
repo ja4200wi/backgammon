@@ -19,6 +19,8 @@ import { sendTurn } from '../service/gameService';
 import { Button } from '@rneui/themed';
 import { DiceProps } from '../components/game/Dice';
 import { on } from 'events';
+import { Turn } from '../gameLogic/turn';
+import LoadingPopup from '../components/misc/LoadingAlert';
 
 interface GameScrProps {
   navigation: any;
@@ -34,9 +36,11 @@ const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
 const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
-  const [winnerAlertVisible, setWinnerAlertVisible] = useState(false);
+  const [winnerOfflineAlertVisible, setWinnerOfflineAlertVisible] = useState(false);
+  const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] = useState(false);
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
-  const [winner, setWinner] = useState<PLAYER_COLORS | null>(null); // State to hold the winner
+  const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
+  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false)
   const { gameId, localPlayerId, gameMode } = route.params;
   const {
     game,
@@ -49,19 +53,21 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     showAcceptMoveButton,
     updateMoveIsOver,
     showUndoMoveButton,
+    isOfflineGame,
     undoMove,
     giveUp,
     legalMovesFrom,
     disabledScreen,
     setGameOver,
     resetGame,
+    sendTurnToServer,
     doubleDice,
     isStartingPhase,
     firstRoll,
     gameOver,
     double,
     onlineTurns,
-  } = useGameLogic(gameId,localPlayerId);
+  } = useGameLogic(gameId,localPlayerId,setDoubleAlertVisible,isWaitingForDouble,setIsWaitingForDouble);
 
   const { pointsToWin } = route.params;
 
@@ -94,32 +100,26 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
-      setWinnerAlertVisible(true); // Show the modal when the game is over
+      gameMode === GAME_TYPE.ONLINE ? setWinnerOnlineAlertVisible(true) : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
-  const handleGiveUp = (type?:'DOUBLE' | 'STANDARD') => {
-    if (game) {
-      let looser
-      if(type === 'STANDARD') {
-        looser = game.getCurrentPlayer()
-      } else {
-        looser =
-        game.getCurrentPlayer() === PLAYER_COLORS.WHITE
-          ? PLAYER_COLORS.BLACK
-          : PLAYER_COLORS.WHITE;
-      }
-      giveUp(looser);
-      setDoubleAlertVisible(false);
-    }
-  };
   const handeDoubleAccept = () => {
     double();
+    if(gameMode === GAME_TYPE.ONLINE) {
+      sendTurnToServer(new Turn(),'DOUBLE')
+    }
     setDoubleAlertVisible(false);
   };
   const handleDouble = () => {
     if (gameMode === GAME_TYPE.COMPUTER) {
       double();
-    } else {
+    } else if(gameMode === GAME_TYPE.ONLINE) {
+      sendTurnToServer(new Turn(),'DOUBLE')
+      setIsWaitingForDouble(true)
+      //set wait for double true
+    }
+    
+    else {
       setDoubleAlertVisible(true);
     }
   };
@@ -127,12 +127,32 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setGameOver({ gameover: false, winner: PLAYER_COLORS.NAP });
     resetGame();
     startGame(gameMode);
-    setWinnerAlertVisible(false);
+    setWinnerOfflineAlertVisible(false);
   };
+  const handleGiveUp = (type?:'DOUBLE' | 'STANDARD') => {
+    if (game) {
+      let looser
+      if(type === 'STANDARD') {
+        looser = game.getCurrentPlayer()
+        if(gameMode === GAME_TYPE.ONLINE) {
+          sendTurnToServer(new Turn(),'GIVE_UP')
+        }
+      } else {
+        sendTurnToServer(new Turn(),'GIVE_UP')
+        looser =
+        game.getCurrentPlayer() === PLAYER_COLORS.WHITE
+          ? PLAYER_COLORS.BLACK
+          : PLAYER_COLORS.WHITE;
+      }
 
+      giveUp(looser);
+      setDoubleAlertVisible(false);
+    }
+  };
   const handleGoHome = () => {
     navigation.navigate('Home'); // Navigate to the home screen
-    setWinnerAlertVisible(false); // Hide the modal
+    setWinnerOfflineAlertVisible(false); // Hide the modal
+    setWinnerOnlineAlertVisible(false);
   };
 
   const handleMoveChecker = async (
@@ -142,6 +162,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
     return success;
   };
+  const handlePlayAgain = () => {
+    setWinnerOnlineAlertVisible(false)
+    //for now naviagate to Join Game
+    navigation.navigate('OnlineMatching', {});
+  }
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
@@ -177,11 +202,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onDouble={handleDouble}
         giveUp = {handleGiveUp}
         onRestart={handleRestart}
+        allowDouble={game ? doubleDice.getLastDobule() === game.getCurrentPlayer() : false}
+        showRestartGame={isOfflineGame()}
       />
 
       {/* Custom Modal for Winner Announcement */}
+      {/* Offline Winner Modal */}
       <CustomAlert
-        visible={winnerAlertVisible}
+        visible={winnerOfflineAlertVisible}
         headline={`${winner} wins the Game`}
         bodyText='What would you like to do?'
         acceptButtonText='Restart'
@@ -189,6 +217,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onAccept={handleRestart}
         onDecline={handleGoHome}
       />
+      {/* Double Modal */}
       <CustomAlert
         visible={doubleAlertVisible}
         headline={`${game?.getCurrentPlayer()} wants do double!`}
@@ -197,6 +226,20 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         declineButtonText={`Give up (-${doubleDice.getMultiplicator()})`}
         onAccept={handeDoubleAccept}
         onDecline={handleGiveUp}
+      />
+      {/* Online Winner Modal */}
+      <CustomAlert
+        visible={winnerOnlineAlertVisible}
+        headline={`${winner} wins the Game`}
+        bodyText='What would you like to do?'
+        acceptButtonText='Play Again'
+        declineButtonText='Go to Home'
+        onAccept={handlePlayAgain}
+        onDecline={handleGoHome}
+      />
+      <LoadingPopup 
+        visible={isWaitingForDouble}
+        message='Waiting for the response of your opponent!'
       />
     </SafeAreaView>
   );

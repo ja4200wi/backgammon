@@ -31,7 +31,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupDefaultBoard();
+      this.setupBearingOffBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -639,10 +639,7 @@ export class Game {
     return new Turn(safeMoves)
   }
   public getTurnAfterMove(): Turn {
-    if(this.movesLeft.length === 0) {
-      return new Turn(this.moves)
-    }
-    else return new Turn()
+    return new Turn(this.moves)
   }
   public onlineSwitchPlayer(dice:[number,number]): Turn {
     this.dice = dice

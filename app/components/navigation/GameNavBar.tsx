@@ -14,55 +14,77 @@ interface GameNavBarProps {
   onAcceptMove: () => void;
   onUndoMove: () => void;
   onDouble: () => void;
-  giveUp: (type:'DOUBLE' | 'STANDARD') => void;
+  giveUp: (type: 'DOUBLE' | 'STANDARD') => void;
   onRestart: () => void;
   showAcceptMoveButton: boolean;
   showUndoMoveButton: boolean;
   disableButtons: boolean;
+  allowDouble: boolean;
+  showRestartGame: boolean;
 }
 
-const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDouble, giveUp, onRestart, showAcceptMoveButton, showUndoMoveButton, disableButtons }) => {
-  const acceptButtonColor = showAcceptMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
-  const undoButtonColor = showUndoMoveButton || disableButtons ? APP_COLORS.iconGrey : APP_COLORS.appBlue;
+const GameNavBar: React.FC<GameNavBarProps> = ({
+  onAcceptMove,
+  onUndoMove,
+  onDouble,
+  giveUp,
+  onRestart,
+  allowDouble,
+  showAcceptMoveButton,
+  showUndoMoveButton,
+  disableButtons,
+  showRestartGame,
+}) => {
+  const acceptButtonColor =
+    showAcceptMoveButton || disableButtons
+      ? APP_COLORS.iconGrey
+      : APP_COLORS.appBlue;
+  const undoButtonColor =
+    showUndoMoveButton || disableButtons
+      ? APP_COLORS.iconGrey
+      : APP_COLORS.appBlue;
+
+  const showActionSheet = () => {
+    const options = [
+      'Cancel',
+      'Give up (-1)',
+      'Give up as a Gammon (-2)',
+      'Give up as a Backgammon (-3)',
+    ];
+
+    // Conditionally add the "Restart Game" option
+    if (showRestartGame) {
+      options.push('Restart Game');
+    }
+
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex: 0,
+        userInterfaceStyle: 'dark',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          giveUp('STANDARD');
+        } else if (buttonIndex === 2) {
+          giveUp('STANDARD');
+        } else if (buttonIndex === 3) {
+          giveUp('STANDARD');
+        } else if (showRestartGame && buttonIndex === options.length - 1) {
+          // Handle 'Restart Game' only if it's part of the options
+          onRestart();
+        }
+      }
+    );
+  };
+
   return (
     <View style={styles.footerContainer}>
-      <TouchableOpacity
-        onPress={() =>
-          ActionSheetIOS.showActionSheetWithOptions(
-            {
-              options: [
-                'Cancel',
-                'Give up (-1)',
-                'Give up as a Gammon (-2)',
-                'Give up as a Backgammon (-3)',
-                'Restart Game'
-              ],
-              cancelButtonIndex: 0,
-              userInterfaceStyle: 'dark',
-            },
-            (buttonIndex) => {
-              if (buttonIndex === 1) {
-                giveUp('STANDARD')
-              } else if (buttonIndex === 2) {
-                giveUp('STANDARD')
-              } else if (buttonIndex === 3) {
-                giveUp('STANDARD')
-              } else if (buttonIndex === 4) {
-                onRestart()
-              }
-            }
-          )
-        }
-      >
-        <Icon
-          name='flag'
-          type='material'
-          color={APP_COLORS.iconGrey}
-          size={36}
-        />
+      <TouchableOpacity onPress={showActionSheet}>
+        <Icon name='flag' type='material' color={APP_COLORS.iconGrey} size={36} />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity onPress={onDouble} disabled={disableButtons}>
+      <TouchableOpacity onPress={onDouble} disabled={disableButtons || allowDouble}>
         <Text
           style={{
             fontSize: 30,
@@ -74,36 +96,16 @@ const GameNavBar: React.FC<GameNavBarProps> = ({ onAcceptMove, onUndoMove,onDoub
         </Text>
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity
-        onPress={() =>
-          onUndoMove()
-        }
-        disabled={showUndoMoveButton || disableButtons}
-      >
-        <Icon
-          name='replay'
-          type='material'
-          color={undoButtonColor}
-          size={36}
-        />
+      <TouchableOpacity onPress={onUndoMove} disabled={showUndoMoveButton || disableButtons}>
+        <Icon name='replay' type='material' color={undoButtonColor} size={36} />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity
-        onPress={() =>
-          onAcceptMove()
-        }
-        disabled = {showAcceptMoveButton || disableButtons} 
-      >
-        <Icon
-          name='done'
-          type='material'
-          color={acceptButtonColor}
-          size={36}
-        />
+      <TouchableOpacity onPress={onAcceptMove} disabled={showAcceptMoveButton || disableButtons}>
+        <Icon name='done' type='material' color={acceptButtonColor} size={36} />
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   footerContainer: {
@@ -117,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GameNavBar
+export default GameNavBar;

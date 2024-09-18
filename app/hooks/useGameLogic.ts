@@ -33,7 +33,13 @@ interface GameScrProps {
   route: any;
 }
 
-export const useGameLogic = (gameId: string, localPlayerId: string) => {
+export const useGameLogic = (
+  gameId: string, 
+  localPlayerId: string, 
+  setDoubleAlertVisible: React.Dispatch<React.SetStateAction<boolean>>,
+  isWaitingForDouble: boolean,
+  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>,
+) => {
   const [game, setGame] = useState<Game | null>(null);
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
@@ -47,7 +53,10 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   const [homeCheckers, setHomeCheckers] = useState(
     GAME_SETTINGS.startHomeCheckerCount
   );
-  const [gameOver, setGameOver] = useState({
+  const [gameOver, setGameOver] = useState<{
+    gameover: boolean;
+    winner: PLAYER_COLORS | string;
+}>({
     gameover: false,
     winner: PLAYER_COLORS.NAP,
   });
@@ -55,6 +64,7 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   // #region Online Variables
   const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI,setWhoAmI] = useState<PLAYER_COLORS>()
+  const [opponentPlayerId, setOpponentPlayerId] = useState<string>('')  
   // #endregion
   const bot = new Bot(BOT_DIFFICULTY.MEDIUM);
 
@@ -173,7 +183,7 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
         if (!isGameOver()) {
           updateGameState();
         } else {
-          setUpEndBoard();
+          setUpEndBoard(game);
         }
         return success;
       } else {
@@ -250,8 +260,8 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   // #endregion
   
   // #region onlineTurns
-  const sendTurnToServer = async (turn: Turn): Promise<OnlineDice> => {
-    const turnToSend:SendableTurn = transformLocalTurnToOnlineTurn(turn)
+  const sendTurnToServer = async (turn: Turn, turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'): Promise<OnlineDice> => {
+    const turnToSend:SendableTurn = transformLocalTurnToOnlineTurn(turn,turnType)
     const nextDice: OnlineDice | null | undefined = await sendTurn(turnToSend);
     if(nextDice === null || nextDice === undefined) {
       return {dieOne: 0, dieTwo:0}
@@ -261,6 +271,9 @@ export const useGameLogic = (gameId: string, localPlayerId: string) => {
   };
   const isOfflineGame = () => {
     return (gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY)
+  }
+  const isOnlineGame = () => {
+    return (gamemode === GAME_TYPE.ONLINE || gamemode === GAME_TYPE.ELO || gamemode === GAME_TYPE.FRIENDLIST)
   }
   const transformLocalTurnToOnlineTurn = (turn:Turn, turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'):SendableTurn => {
     const moves = []
@@ -324,8 +337,10 @@ const getWhoAmI = async () => {
     return PLAYER_COLORS.NAP;
   }
   if (session.playerOneID === localPlayerId) {
+    setOpponentPlayerId(session.playerTwoID === null ? '' : session.playerTwoID)
     return PLAYER_COLORS.WHITE;
   } else {
+    setOpponentPlayerId(session.playerOneID === null ? '' : session.playerOneID)
     return PLAYER_COLORS.BLACK;
   }
 };
@@ -342,21 +357,35 @@ const runOnline = async () => {
     console.log(whoAmI,': in making latest move to update game; got the turn',localTurn,'from the server')
     makeTurn(localTurn)
     console.log(whoAmI,'CHECKFORLEGAL: runonline')
-  } 
+  } else if(latestTurn?.type === 'DOUBLE' && localPlayerId !== latestTurn?.playerId) {
+      if(!isWaitingForDouble) {
+        setDoubleAlertVisible(true)
+      }
+      else {
+        setIsWaitingForDouble(false)
+        double()
+      }
+  } else if (latestTurn?.type === 'GIVE_UP' && localPlayerId !== latestTurn?.playerId) {
+    setIsWaitingForDouble(false)
+    setGameOver({gameover: true, winner: localPlayerId})
+  }
 }
 // #endregion
   
   // #region helper Methods
-  const setUpEndBoard = async () => {
-    if (game && isOfflineGame()) {
-      setPositions(game.getCurrentPositions());
-      updateHomeCheckers(game);
-      const distances = game.getDistances();
+  const setUpEndBoard = async (currentGame:Game) => {
+    console.log(whoAmI,'setting up endboard now')
+    if (currentGame) {
+      setPositions(currentGame.getCurrentPositions());
+      updateHomeCheckers(currentGame);
+      const distances = currentGame.getDistances();
       updatePipCount(distances.distBlack, distances.distWhite);
-    } else if(game && whoAmI === game.getCurrentPlayer()) {
-      const turn = game!.getTurnAfterMove()
-      const newOnlineDice = await sendTurnToServer(turn) 
-    }
+      if(currentGame && whoAmI === currentGame.getCurrentPlayer()) {
+        const turn = currentGame.getTurnAfterMove()
+        console.log(whoAmI,'sending turn to server!',turn)
+        await sendTurnToServer(turn) // ad gameover type here
+      }
+    } 
   };
   const updateGameState = () => {
     if (game) {
@@ -374,9 +403,15 @@ const runOnline = async () => {
   const isGameOver = (): boolean => {
     if (game) {
       if (game.isGameOver()) {
-        const winner = game.whoIsWinner();
+        if(isOfflineGame()) {
+          const winner = game.whoIsWinner();
         setGameOver({ gameover: true, winner: winner });
         return true;
+        } else if (gamemode === GAME_TYPE.ONLINE && onlineTurns) {
+          const onlineWinner = game.whoIsWinner() === whoAmI ? localPlayerId : opponentPlayerId
+          setGameOver({ gameover: true, winner: onlineWinner });
+          return true;
+        }
       }
       return false;
     }
@@ -430,8 +465,12 @@ const runOnline = async () => {
         looser === PLAYER_COLORS.WHITE
           ? PLAYER_COLORS.BLACK
           : PLAYER_COLORS.WHITE;
-      setGameOver({ gameover: true, winner: winner });
-      setUpEndBoard();
+      if(isOfflineGame()) {
+        setGameOver({ gameover: true, winner: winner });
+      } else if (isOnlineGame()) {
+        setGameOver({gameover: true, winner: looser === whoAmI ? opponentPlayerId : localPlayerId})
+      }
+      setUpEndBoard(game);
     }
   };
   const double = () => {
@@ -508,9 +547,9 @@ const runOnline = async () => {
 
   const makeTurn = async (turn: Turn) => {
     if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 1000);
+      setTimeout(() => doPlayerTwoMove(turn), 100);
     } else {
-      setTimeout(() => updateMoveIsOver(), 1000);
+      setTimeout(() => updateMoveIsOver(), 100);
     }
   };
   const doPlayerTwoMove = async (turn: Turn) => {
@@ -546,5 +585,7 @@ const runOnline = async () => {
     double,
     resetGame,
     onlineTurns,
+    sendTurnToServer,
+    isOfflineGame,
   };
 };
