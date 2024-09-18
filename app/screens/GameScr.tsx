@@ -130,7 +130,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setWinnerAlertVisible(false);
   };
 
-  const handleWinnerDecline = () => {
+  const handleGoHome = () => {
     navigation.navigate('Home'); // Navigate to the home screen
     setWinnerAlertVisible(false); // Hide the modal
   };
@@ -187,7 +187,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         acceptButtonText='Restart'
         declineButtonText='Go to Home'
         onAccept={handleRestart}
-        onDecline={handleWinnerDecline}
+        onDecline={handleGoHome}
       />
       <CustomAlert
         visible={doubleAlertVisible}

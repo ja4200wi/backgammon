@@ -31,7 +31,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupTestBoard();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
