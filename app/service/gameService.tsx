@@ -29,6 +29,7 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
 export async function saveGameStats(
   gameId: string,
   winnerId: string,
+  gameType: 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER',
   duration: number,
   numTurns: number,
   bet: number,
@@ -38,14 +39,14 @@ export async function saveGameStats(
 ): Promise<void> {
   const response = client.models.SessionStat.create({
     gameId,
-    gameType: 'RANDOM',
+    gameType,
     winnerId,
-    scores: { white: 0, black: 0 },
-    doubleDiceValue: 1,
-    duration: 0,
-    reason: 'GAME_OVER',
-    numTurns: 0,
-    bet: 0,
+    scores,
+    doubleDiceValue,
+    duration,
+    reason,
+    numTurns,
+    bet,
   });
 }
 
