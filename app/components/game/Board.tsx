@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
@@ -45,7 +45,8 @@ const Board: React.FC<BoardProps> = ({
   legalMovesFrom,
   onMoveChecker,
 }) => {
-  const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
+  const spikeRefs = useRef<Array<View | null>>([]);
+  const initialSpikes = Array.from({ length: 24 }, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
     color: index % 2 === 0 ? colors.spikeDarkColor : colors.spikeLightColor,
     width: DIMENSIONS.spikeWidth,
@@ -55,6 +56,7 @@ const Board: React.FC<BoardProps> = ({
   }));
 
   const [spikes, setSpikes] = useState(initialSpikes);
+  const [spikePositions, setSpikePositions] = useState<{ index:number, x:number, y:number }[]>([])
   const [selectedSource, setSelectedSource] = useState<number | null>(null);
   const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
     []
@@ -81,6 +83,32 @@ const Board: React.FC<BoardProps> = ({
       moveChecker(selectedSource, index);
     }
   };
+  useEffect(() => {
+    setTimeout(() => {
+      console.log('measureing spikes now')
+      measureSpikes()
+    }, 100);
+  },[])
+  const measureSpikes = async () => {
+    const positions: { index: number; x: number; y: number }[] = [];
+    const measurePromises = spikeRefs.current.map((spikeRef, index) => {
+      return new Promise<void>((resolve) => {
+        if (spikeRef) {
+          spikeRef.measure((x, y, width, height, pageX, pageY) => {
+            const centerX = pageX + width / 2;
+            const centerY = pageY + height / 2;
+            positions.push({ index, x: centerX, y: centerY });
+            resolve(); 
+          });
+        } else {
+          resolve(); 
+        }
+      });
+    });
+    await Promise.all(measurePromises);
+    setSpikePositions(positions);
+  };
+  
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
       setSelectedSource(index);
@@ -168,6 +196,7 @@ const Board: React.FC<BoardProps> = ({
           isHighlighted={possibleMoves.includes(startIndex + idx)}
           checkers={spike.checkers}
           onPress={() => handleSpikePress(startIndex + idx)}
+          ref={(ref) => (spikeRefs.current[startIndex + idx] = ref)}
         />
       ))}
     </>

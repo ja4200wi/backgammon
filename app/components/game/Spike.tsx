@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Triangle from 'react-native-triangle';
 import { PLAYER_COLORS } from '../../utils/constants';
@@ -13,7 +13,7 @@ interface SpikeProps {
   onPress?: () => void;
 }
 
-const Spike: React.FC<SpikeProps> = ({
+const Spike = forwardRef<TouchableOpacity, SpikeProps>(({
   color,
   width,
   height,
@@ -21,7 +21,7 @@ const Spike: React.FC<SpikeProps> = ({
   isHighlighted,
   checkers,
   onPress,
-}) => {
+}, ref) => {
   const checkerHeight = 24; // Assuming each checker has a height of 24px
 
   const renderCheckers = () => {
@@ -49,7 +49,7 @@ const Spike: React.FC<SpikeProps> = ({
     } else {
       // Case 2: Shuffled display for more than 5 checkers
       const shuffledCheckers = [];
-      for (let i = 0; i < checkerCount && i <=10; i++) {
+      for (let i = 0; i < checkerCount && i <= 10; i++) {
         const shuffleDegree =
           checkerCount <= 6
             ? 0.9
@@ -58,7 +58,7 @@ const Spike: React.FC<SpikeProps> = ({
             : checkerCount === 8
             ? 0.65
             : checkerCount === 9
-            ? 0.58 
+            ? 0.58
             : 0.52;
         const offset = i * (checkerHeight * shuffleDegree); // Slight overlap for shuffling
         shuffledCheckers.push(
@@ -100,11 +100,15 @@ const Spike: React.FC<SpikeProps> = ({
 
   return (
     <TouchableOpacity
+      ref={ref} // Attach the ref here
       onPress={onPress}
-      style={{ backgroundColor: isHighlighted ? 'rgba(89, 127, 209, .75)' : 'transparent', borderRadius: 15}}
+      style={{
+        backgroundColor: isHighlighted ? 'rgba(89, 127, 209, .75)' : 'transparent',
+        borderRadius: 15,
+      }}
     >
       {invert && (
-        <Triangle width={width} height={height} color={color} direction='up' />
+        <Triangle width={width} height={height} color={color} direction="up" />
       )}
       <View
         style={[
@@ -120,16 +124,11 @@ const Spike: React.FC<SpikeProps> = ({
         {renderCheckers()}
       </View>
       {!invert && (
-        <Triangle
-          width={width}
-          height={height}
-          color={color}
-          direction='down'
-        />
+        <Triangle width={width} height={height} color={color} direction="down" />
       )}
     </TouchableOpacity>
   );
-};
+});
 
 const styles = StyleSheet.create({
   spike: {
