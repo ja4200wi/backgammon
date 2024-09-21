@@ -8,6 +8,7 @@ import {
   PLAYER_COLORS,
   DICE_COLORS,
   GAME_TYPE,
+  GAME_SETTINGS,
 } from '../utils/constants';
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
@@ -21,6 +22,7 @@ import { DiceProps } from '../components/game/Dice';
 import { on } from 'events';
 import { Turn } from '../gameLogic/turn';
 import LoadingPopup from '../components/misc/LoadingAlert';
+import AnimatedChecker from '../components/game/AnimatedChecker';
 
 interface GameScrProps {
   navigation: any;
@@ -41,6 +43,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
   const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false)
+  const [doCheckerAnimation,setDoCheckerAnimation] = useState<boolean>(false)
+  const [animatedCheckerValues,setAnimatedCheckerValues] = useState<{sx:number,sy:number,ex:number,ey:number}>({sx:0,sy:0,ex:0,ey:0})
   const { gameId, localPlayerId, gameMode } = route.params;
   const {
     game,
@@ -167,9 +171,31 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     //for now naviagate to Join Game
     navigation.navigate('OnlineMatching', {});
   }
+  const handleAnimation = async (startX:number,startY:number,endX:number,endY:number) => {
+    console.log('VALUES FOR ANIMATION:',startX,startY,endX,endY)
+    setAnimatedCheckerValues({sx:startX,sy:startY,ex:endX,ey:endY})
+    setDoCheckerAnimation(true)
+    setTimeout(() => {
+      setDoCheckerAnimation(false)
+    }, GAME_SETTINGS.checkerAnimationDuration);
+  }
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
+      {/* Container for AnimatedChecker to ensure it is on top */}
+      <View style={styles.animatedCheckerContainer}>
+        {doCheckerAnimation && (
+          <AnimatedChecker 
+            color={game ? game.getCurrentPlayer() : PLAYER_COLORS.WHITE}
+            width={DIMENSIONS.spikeWidth}
+            height={DIMENSIONS.spikeWidth}
+            startX={animatedCheckerValues.sx}
+            startY={animatedCheckerValues.sy}
+            endX={animatedCheckerValues.ex}
+            endY={animatedCheckerValues.ey}
+          />
+        )}
+      </View>
       <HeaderSecondary navigation={navigation} headline={gameMode} />
       <View style={styles.boardContainer}>
         <Board
@@ -191,6 +217,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           onMoveChecker={handleMoveChecker}
           legalMovesFrom={legalMovesFrom}
           doubleDice={doubleDice}
+          handleAnimation={handleAnimation}
         />
       </View>
       <GameNavBar
@@ -260,6 +287,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingRight: 16,
     paddingLeft: 16,
+  },
+  animatedCheckerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 999, // High z-index to ensure it's on top of all elements
+    pointerEvents: 'none', // Prevents this container from intercepting touch events
   },
 });
 
