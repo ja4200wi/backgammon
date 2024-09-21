@@ -8,6 +8,7 @@ import GameSelectionScr from './app/screens/GameSelectionScr';
 import ProfileScr from './app/screens/Profile';
 import NavBar from './app/components/navigation/NavBar';
 import Settings from './app/screens/SettingsScr';
+import Friends from './app/screens/FriendsScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './app/utils/constants';
 
@@ -17,8 +18,6 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import OnlineMatching from './app/screens/OnlineMatchingScr';
 import { Button, StyleSheet, View } from 'react-native';
-import { getPlayerInfo, getUserName } from './app/service/profileService';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 Amplify.configure(outputs);
 
@@ -56,6 +55,7 @@ export default function App() {
               <Stack.Screen name='GameSelection' component={GameSelectionScr} />
               <Stack.Screen name='Game' component={GameScreen} />
               <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
+              <Stack.Screen name='Friends' component={Friends} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
