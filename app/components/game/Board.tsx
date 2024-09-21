@@ -63,6 +63,7 @@ const Board: React.FC<BoardProps> = ({
   const [spikePositions, setSpikePositions] = useState<{ index:number, x:number, y:number }[]>([])
   const [checkerPos,setCheckerPos] = useState<{ index:number, x:number, y:number }[]>([])
   const [selectedSource, setSelectedSource] = useState<number | null>(null);
+  const [lastMoves,setLastMoves] = useState<{index:number,from:number[],to:number[],indexHit?:number,fromHit?:number[],toHit?:number[]}[]>([])
   const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
     []
   );
@@ -92,10 +93,8 @@ const Board: React.FC<BoardProps> = ({
       checker = newSpikes[sourceIndex].checkers.pop()!
     }
     const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
-    console.log('I GOT THE STARTING MEASURE:',checkerCoordsStart)
     const endSpike = spikePositions.find((item) => item.index === targetIndex)
     const checkerCoordsEnd = calculateAnimationPositionHelper(false,endSpike!)
-    console.log('I GOT ENDING POSITION',checkerCoordsEnd)
     handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,checkerCoordsEnd[0],checkerCoordsEnd[1])
     console.log('starting pause')
     await pause(GAME_SETTINGS.checkerAnimationDuration - 100)
@@ -112,6 +111,9 @@ const Board: React.FC<BoardProps> = ({
         }
         spikes[targetIndex].checkers.push(checker)
       }
+    }
+    const getAnimationCoords = (checker: React.ReactElement<any, string | React.JSXElementConstructor<any>>) => {
+      
     }
     // Timeout used to await DOM rendering (works eventhough timeout is at 0)
     setTimeout(async ()=> {
@@ -139,7 +141,7 @@ const Board: React.FC<BoardProps> = ({
         else if(spike.count === 3) {y = spikePos.y + 2*checkerWidth + endingBonus}
         else if(spike.count === 4) {y = spikePos.y + 3*checkerWidth + endingBonus}
         else if(spike.count === 5) {y = spikePos.y + 3*checkerWidth + endingBonus}
-        else if(spike.count > 5) {y = spikePos.y + 4*checkerWidth +endingBonus}
+        else if(spike.count > 5) {y = spikePos.y + 3*checkerWidth +endingBonus}
       } else {
         y = spikePos.y
       }
@@ -149,8 +151,8 @@ const Board: React.FC<BoardProps> = ({
         else if(spike.count === 2) {y = spikePos.y + DIMENSIONS.spikeHeight - 2*checkerWidth - endingBonus}
         else if(spike.count === 3) {y = spikePos.y + DIMENSIONS.spikeHeight - 3*checkerWidth - endingBonus}
         else if(spike.count === 4) {y = spikePos.y + DIMENSIONS.spikeHeight - 4*checkerWidth - endingBonus}
-        else if(spike.count === 5) {y = spikePos.y + DIMENSIONS.spikeHeight - 5*checkerWidth - endingBonus}
-        else if(spike.count > 5) {y = spikePos.y + DIMENSIONS.spikeHeight - 5.5*checkerWidth - 0.5*endingBonus}
+        else if(spike.count === 5) {y = spikePos.y + DIMENSIONS.spikeHeight - 4*checkerWidth - endingBonus}
+        else if(spike.count > 5) {y = spikePos.y + DIMENSIONS.spikeHeight - 4*checkerWidth - endingBonus}
       } else {
         y = spikePos.y + DIMENSIONS.spikeHeight - endingBonus
       }
