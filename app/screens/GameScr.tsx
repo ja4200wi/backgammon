@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
@@ -52,6 +52,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     positions,
     pipCount,
     homeCheckers,
+    boardRef,
     onMoveChecker,
     startGame,
     showAcceptMoveButton,
@@ -74,28 +75,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   } = useGameLogic(gameId,localPlayerId,setDoubleAlertVisible,isWaitingForDouble,setIsWaitingForDouble);
 
   const { pointsToWin } = route.params;
-
-  /* useEffect(() => {
-    if (gameId !== undefined || gameId !== null) {
-      const sub = client.models.Turns.observeQuery({
-        filter: { gameId: { eq: gameId } },
-      }).subscribe({
-        next: ({ items, isSynced }) => {
-          setTurns(items);
-        },
-      });
-
-      return () => sub.unsubscribe();
-    }
-  }, []); */
   const [startedGame,setStartedGame] = useState<boolean>(false)
   useEffect(() => {
     if(!startedGame && (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)) {
-      console.log('starting offline game')
       setStartedGame(true)
       startGame(gameMode);
     } else if(!startedGame && gameMode === GAME_TYPE.ONLINE && onlineTurns && onlineTurns.length > 0) {
-      console.log('starting online game')
       setStartedGame(true)
       startGame(gameMode,onlineTurns)
     }
@@ -199,6 +184,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       <HeaderSecondary navigation={navigation} headline={gameMode} />
       <View style={styles.boardContainer}>
         <Board
+          ref={boardRef}
           positions={positions}
           currentPlayer={game?.getCurrentPlayer()!}
           pipCount={pipCount}

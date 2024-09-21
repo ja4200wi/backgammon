@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, forwardRef, useImperativeHandle } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
@@ -33,10 +33,11 @@ interface BoardProps {
   doubleDice: DoubleDice;
   onMoveChecker: (sourceIndex: number, targetIndex: number) => Promise<boolean>;
   legalMovesFrom: (sourceIndex: number) => number[];
-  handleAnimation: (startX:number,startY:number,endX:number,endY:number) => void
+  handleAnimation: (startX:number,startY:number,endX:number,endY:number) => void;
+  onUpdatePosition?: (sourceIndex:number,targetIndex:number) => void;
 }
 
-const Board: React.FC<BoardProps> = ({
+const Board = forwardRef<any, BoardProps>(({
   dice,
   currentPlayer,
   positions,
@@ -47,7 +48,8 @@ const Board: React.FC<BoardProps> = ({
   legalMovesFrom,
   onMoveChecker,
   handleAnimation,
-}) => {
+  onUpdatePosition,
+}, ref) => {
   const spikeRefs = useRef<Array<View | null>>([]);
   const checkerRefs = useRef<Array<View | null>>([]);
   const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
@@ -81,8 +83,11 @@ const Board: React.FC<BoardProps> = ({
       setSelectedSource(null);
     }
   };
-  const updatePosition = async (sourceIndex:number,targetIndex:number) => {
-    const newSpikes = [...spikes];
+  const updatePosition = async (sourceIndex:number,targetIndex:number, type?: 'UNDO') => {
+    if(type) {
+      undoPosition()
+    } else {
+      const newSpikes = [...spikes];
     console.log('UPDATING BOARD:')
     const oppColor = currentPlayer === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
     let checker:React.ReactElement<any, string | React.JSXElementConstructor<any>>
@@ -112,14 +117,16 @@ const Board: React.FC<BoardProps> = ({
         spikes[targetIndex].checkers.push(checker)
       }
     }
-    const getAnimationCoords = (checker: React.ReactElement<any, string | React.JSXElementConstructor<any>>) => {
-      
-    }
     // Timeout used to await DOM rendering (works eventhough timeout is at 0)
     setTimeout(async ()=> {
       await measureChecker()
     },0)
     setSpikes(newSpikes)
+    }
+    
+  }
+  const undoPosition = () => {
+    //do Undo
   }
   const pause = async (duration: number) => {
     return new Promise<void>((resolve) => {
@@ -259,7 +266,9 @@ const Board: React.FC<BoardProps> = ({
       moveChecker(selectedSource, index);
     }
   };
-
+  useImperativeHandle(ref, () => ({
+    updatePosition, 
+  }));
   const distributeCheckers = () => {
     const newSpikes = Array.from({ length: 26 }, (_, index) => ({
       height: DIMENSIONS.spikeHeight,
@@ -321,7 +330,6 @@ const Board: React.FC<BoardProps> = ({
       distributeCheckers();
     }
   }, [positions]);
-
   useEffect(() => {
     if (selectedSource !== null) {
       calculatePossibleMoves(selectedSource);
@@ -444,7 +452,7 @@ const Board: React.FC<BoardProps> = ({
     </View>
   );
   
-};
+});
 
 const styles = StyleSheet.create({
   board: {
