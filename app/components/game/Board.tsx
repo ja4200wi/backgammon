@@ -102,7 +102,7 @@ const Board = forwardRef<any, BoardProps>(({
     const checkerCoordsEnd = calculateAnimationPositionHelper(false,endSpike!)
     handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,checkerCoordsEnd[0],checkerCoordsEnd[1])
     console.log('starting pause')
-    await pause(GAME_SETTINGS.checkerAnimationDuration - 100)
+    await pause(GAME_SETTINGS.checkerAnimationDuration - 25)
     console.log('ending pause')
     if (checker) {
       if (targetIndex === 0 || targetIndex === 25) {

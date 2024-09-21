@@ -1,7 +1,8 @@
 import React, { forwardRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import Triangle from 'react-native-triangle';
-import { PLAYER_COLORS } from '../../utils/constants';
+import { DIMENSIONS, PLAYER_COLORS } from '../../utils/constants';
+import Checker from './Checker';
 
 interface SpikeProps {
   color: string;
@@ -22,7 +23,7 @@ const Spike = forwardRef<TouchableOpacity, SpikeProps>(({
   checkers,
   onPress,
 }, ref) => {
-  const checkerHeight = 24; // Assuming each checker has a height of 24px
+  const checkerHeight = DIMENSIONS.spikeWidth
 
   const renderCheckers = () => {
     const checkerCount = checkers.length;
@@ -37,8 +38,8 @@ const Spike = forwardRef<TouchableOpacity, SpikeProps>(({
               style={[
                 styles.checkerRegular,
                 invert
-                  ? { bottom: index * (checkerHeight + 3) }
-                  : { top: index * (checkerHeight + 3) },
+                  ? { bottom: index * (checkerHeight) }
+                  : { top: index * (checkerHeight) },
               ]}
             >
               {React.cloneElement(CheckerComponent)}
