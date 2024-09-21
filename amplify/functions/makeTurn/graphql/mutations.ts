@@ -8,12 +8,52 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
+export const createFriends = /* GraphQL */ `mutation CreateFriends(
+  $condition: ModelFriendsConditionInput
+  $input: CreateFriendsInput!
+) {
+  createFriends(condition: $condition, input: $input) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateFriendsMutationVariables,
+  APITypes.CreateFriendsMutation
+>;
 export const createPlayer = /* GraphQL */ `mutation CreatePlayer(
   $condition: ModelPlayerConditionInput
   $input: CreatePlayerInput!
 ) {
   createPlayer(condition: $condition, input: $input) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {
@@ -115,12 +155,52 @@ export const createTurns = /* GraphQL */ `mutation CreateTurns(
   APITypes.CreateTurnsMutationVariables,
   APITypes.CreateTurnsMutation
 >;
+export const deleteFriends = /* GraphQL */ `mutation DeleteFriends(
+  $condition: ModelFriendsConditionInput
+  $input: DeleteFriendsInput!
+) {
+  deleteFriends(condition: $condition, input: $input) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteFriendsMutationVariables,
+  APITypes.DeleteFriendsMutation
+>;
 export const deletePlayer = /* GraphQL */ `mutation DeletePlayer(
   $condition: ModelPlayerConditionInput
   $input: DeletePlayerInput!
 ) {
   deletePlayer(condition: $condition, input: $input) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {
@@ -245,12 +325,52 @@ export const makeTurn = /* GraphQL */ `mutation MakeTurn(
   APITypes.MakeTurnMutationVariables,
   APITypes.MakeTurnMutation
 >;
+export const updateFriends = /* GraphQL */ `mutation UpdateFriends(
+  $condition: ModelFriendsConditionInput
+  $input: UpdateFriendsInput!
+) {
+  updateFriends(condition: $condition, input: $input) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateFriendsMutationVariables,
+  APITypes.UpdateFriendsMutation
+>;
 export const updatePlayer = /* GraphQL */ `mutation UpdatePlayer(
   $condition: ModelPlayerConditionInput
   $input: UpdatePlayerInput!
 ) {
   updatePlayer(condition: $condition, input: $input) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {

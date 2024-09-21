@@ -8,9 +8,46 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
+export const onCreateFriends = /* GraphQL */ `subscription OnCreateFriends($filter: ModelSubscriptionFriendsFilterInput) {
+  onCreateFriends(filter: $filter) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateFriendsSubscriptionVariables,
+  APITypes.OnCreateFriendsSubscription
+>;
 export const onCreatePlayer = /* GraphQL */ `subscription OnCreatePlayer($filter: ModelSubscriptionPlayerFilterInput) {
   onCreatePlayer(filter: $filter) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {
@@ -106,9 +143,46 @@ export const onCreateTurns = /* GraphQL */ `subscription OnCreateTurns($filter: 
   APITypes.OnCreateTurnsSubscriptionVariables,
   APITypes.OnCreateTurnsSubscription
 >;
+export const onDeleteFriends = /* GraphQL */ `subscription OnDeleteFriends($filter: ModelSubscriptionFriendsFilterInput) {
+  onDeleteFriends(filter: $filter) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteFriendsSubscriptionVariables,
+  APITypes.OnDeleteFriendsSubscription
+>;
 export const onDeletePlayer = /* GraphQL */ `subscription OnDeletePlayer($filter: ModelSubscriptionPlayerFilterInput) {
   onDeletePlayer(filter: $filter) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {
@@ -204,9 +278,46 @@ export const onDeleteTurns = /* GraphQL */ `subscription OnDeleteTurns($filter: 
   APITypes.OnDeleteTurnsSubscriptionVariables,
   APITypes.OnDeleteTurnsSubscription
 >;
+export const onUpdateFriends = /* GraphQL */ `subscription OnUpdateFriends($filter: ModelSubscriptionFriendsFilterInput) {
+  onUpdateFriends(filter: $filter) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateFriendsSubscriptionVariables,
+  APITypes.OnUpdateFriendsSubscription
+>;
 export const onUpdatePlayer = /* GraphQL */ `subscription OnUpdatePlayer($filter: ModelSubscriptionPlayerFilterInput) {
   onUpdatePlayer(filter: $filter) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {

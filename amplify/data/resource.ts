@@ -41,7 +41,18 @@ const schema = a
         name: a.string(),
         sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
+        friendsAsOne: a.hasMany('Friends', 'userIdOne'),
+        friendsAsTwo: a.hasMany('Friends', 'userIdTwo'),
         turnsMade: a.hasMany('Turns', 'playerId'),
+      })
+      .authorization((allow) => [allow.authenticated()]),
+    Friends: a
+      .model({
+        userIdOne: a.id(),
+        userOne: a.belongsTo('Player', 'userIdOne'),
+        userIdTwo: a.id(),
+        userTwo: a.belongsTo('Player', 'userIdTwo'),
+        isConfirmed: a.boolean(),
       })
       .authorization((allow) => [allow.authenticated()]),
     joinGame: a

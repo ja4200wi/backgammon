@@ -8,176 +8,37 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
-export const createBoard = /* GraphQL */ `mutation CreateBoard(
-  $condition: ModelBoardConditionInput
-  $input: CreateBoardInput!
+export const createFriends = /* GraphQL */ `mutation CreateFriends(
+  $condition: ModelFriendsConditionInput
+  $input: CreateFriendsInput!
 ) {
-  createBoard(condition: $condition, input: $input) {
+  createFriends(condition: $condition, input: $input) {
     createdAt
-    field1 {
-      color
-      count
-      index
-      __typename
-    }
-    field10 {
-      color
-      count
-      index
-      __typename
-    }
-    field11 {
-      color
-      count
-      index
-      __typename
-    }
-    field12 {
-      color
-      count
-      index
-      __typename
-    }
-    field13 {
-      color
-      count
-      index
-      __typename
-    }
-    field14 {
-      color
-      count
-      index
-      __typename
-    }
-    field15 {
-      color
-      count
-      index
-      __typename
-    }
-    field16 {
-      color
-      count
-      index
-      __typename
-    }
-    field17 {
-      color
-      count
-      index
-      __typename
-    }
-    field18 {
-      color
-      count
-      index
-      __typename
-    }
-    field19 {
-      color
-      count
-      index
-      __typename
-    }
-    field2 {
-      color
-      count
-      index
-      __typename
-    }
-    field20 {
-      color
-      count
-      index
-      __typename
-    }
-    field21 {
-      color
-      count
-      index
-      __typename
-    }
-    field22 {
-      color
-      count
-      index
-      __typename
-    }
-    field23 {
-      color
-      count
-      index
-      __typename
-    }
-    field24 {
-      color
-      count
-      index
-      __typename
-    }
-    field3 {
-      color
-      count
-      index
-      __typename
-    }
-    field4 {
-      color
-      count
-      index
-      __typename
-    }
-    field5 {
-      color
-      count
-      index
-      __typename
-    }
-    field6 {
-      color
-      count
-      index
-      __typename
-    }
-    field7 {
-      color
-      count
-      index
-      __typename
-    }
-    field8 {
-      color
-      count
-      index
-      __typename
-    }
-    field9 {
-      color
-      count
-      index
-      __typename
-    }
     id
-    prisonBlack
-    prisonWhite
-    session {
-      boardID
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
       createdAt
-      currentPlayer
       id
-      playerOneID
-      playerTwoID
+      name
       updatedAt
       __typename
     }
-    updatedAt
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.CreateBoardMutationVariables,
-  APITypes.CreateBoardMutation
+  APITypes.CreateFriendsMutationVariables,
+  APITypes.CreateFriendsMutation
 >;
 export const createPlayer = /* GraphQL */ `mutation CreatePlayer(
   $condition: ModelPlayerConditionInput
@@ -185,14 +46,25 @@ export const createPlayer = /* GraphQL */ `mutation CreatePlayer(
 ) {
   createPlayer(condition: $condition, input: $input) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    turnsMade {
       nextToken
       __typename
     }
@@ -209,28 +81,12 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
   $input: CreateSessionInput!
 ) {
   createSession(condition: $condition, input: $input) {
-    board {
-      createdAt
-      id
-      prisonBlack
-      prisonWhite
-      updatedAt
-      __typename
-    }
-    boardID
     createdAt
-    currentPlayer
-    dice {
-      dieOne
-      dieTwo
-      __typename
-    }
     id
     playerOne {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -239,14 +95,12 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
     playerTwoID
     turns {
-      player
-      type
+      nextToken
       __typename
     }
     updatedAt
@@ -257,176 +111,81 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
   APITypes.CreateSessionMutationVariables,
   APITypes.CreateSessionMutation
 >;
-export const deleteBoard = /* GraphQL */ `mutation DeleteBoard(
-  $condition: ModelBoardConditionInput
-  $input: DeleteBoardInput!
+export const createTurns = /* GraphQL */ `mutation CreateTurns(
+  $condition: ModelTurnsConditionInput
+  $input: CreateTurnsInput!
 ) {
-  deleteBoard(condition: $condition, input: $input) {
+  createTurns(condition: $condition, input: $input) {
     createdAt
-    field1 {
-      color
-      count
-      index
+    diceForNextTurn {
+      dieOne
+      dieTwo
       __typename
     }
-    field10 {
-      color
-      count
-      index
-      __typename
-    }
-    field11 {
-      color
-      count
-      index
-      __typename
-    }
-    field12 {
-      color
-      count
-      index
-      __typename
-    }
-    field13 {
-      color
-      count
-      index
-      __typename
-    }
-    field14 {
-      color
-      count
-      index
-      __typename
-    }
-    field15 {
-      color
-      count
-      index
-      __typename
-    }
-    field16 {
-      color
-      count
-      index
-      __typename
-    }
-    field17 {
-      color
-      count
-      index
-      __typename
-    }
-    field18 {
-      color
-      count
-      index
-      __typename
-    }
-    field19 {
-      color
-      count
-      index
-      __typename
-    }
-    field2 {
-      color
-      count
-      index
-      __typename
-    }
-    field20 {
-      color
-      count
-      index
-      __typename
-    }
-    field21 {
-      color
-      count
-      index
-      __typename
-    }
-    field22 {
-      color
-      count
-      index
-      __typename
-    }
-    field23 {
-      color
-      count
-      index
-      __typename
-    }
-    field24 {
-      color
-      count
-      index
-      __typename
-    }
-    field3 {
-      color
-      count
-      index
-      __typename
-    }
-    field4 {
-      color
-      count
-      index
-      __typename
-    }
-    field5 {
-      color
-      count
-      index
-      __typename
-    }
-    field6 {
-      color
-      count
-      index
-      __typename
-    }
-    field7 {
-      color
-      count
-      index
-      __typename
-    }
-    field8 {
-      color
-      count
-      index
-      __typename
-    }
-    field9 {
-      color
-      count
-      index
-      __typename
-    }
-    id
-    prisonBlack
-    prisonWhite
-    session {
-      boardID
+    game {
       createdAt
-      currentPlayer
       id
       playerOneID
       playerTwoID
       updatedAt
       __typename
     }
+    gameId
+    moves {
+      from
+      to
+      __typename
+    }
+    player {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    playerColor
+    playerId
+    turnNumber
+    type
     updatedAt
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.DeleteBoardMutationVariables,
-  APITypes.DeleteBoardMutation
+  APITypes.CreateTurnsMutationVariables,
+  APITypes.CreateTurnsMutation
+>;
+export const deleteFriends = /* GraphQL */ `mutation DeleteFriends(
+  $condition: ModelFriendsConditionInput
+  $input: DeleteFriendsInput!
+) {
+  deleteFriends(condition: $condition, input: $input) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteFriendsMutationVariables,
+  APITypes.DeleteFriendsMutation
 >;
 export const deletePlayer = /* GraphQL */ `mutation DeletePlayer(
   $condition: ModelPlayerConditionInput
@@ -434,14 +193,25 @@ export const deletePlayer = /* GraphQL */ `mutation DeletePlayer(
 ) {
   deletePlayer(condition: $condition, input: $input) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    turnsMade {
       nextToken
       __typename
     }
@@ -458,28 +228,12 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
   $input: DeleteSessionInput!
 ) {
   deleteSession(condition: $condition, input: $input) {
-    board {
-      createdAt
-      id
-      prisonBlack
-      prisonWhite
-      updatedAt
-      __typename
-    }
-    boardID
     createdAt
-    currentPlayer
-    dice {
-      dieOne
-      dieTwo
-      __typename
-    }
     id
     playerOne {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -488,14 +242,12 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
     playerTwoID
     turns {
-      player
-      type
+      nextToken
       __typename
     }
     updatedAt
@@ -506,6 +258,50 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
   APITypes.DeleteSessionMutationVariables,
   APITypes.DeleteSessionMutation
 >;
+export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
+  $condition: ModelTurnsConditionInput
+  $input: DeleteTurnsInput!
+) {
+  deleteTurns(condition: $condition, input: $input) {
+    createdAt
+    diceForNextTurn {
+      dieOne
+      dieTwo
+      __typename
+    }
+    game {
+      createdAt
+      id
+      playerOneID
+      playerTwoID
+      updatedAt
+      __typename
+    }
+    gameId
+    moves {
+      from
+      to
+      __typename
+    }
+    player {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    playerColor
+    playerId
+    turnNumber
+    type
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteTurnsMutationVariables,
+  APITypes.DeleteTurnsMutation
+>;
 export const joinGame = /* GraphQL */ `mutation JoinGame($gameId: String!, $userId: String!) {
   joinGame(gameId: $gameId, userId: $userId)
 }
@@ -513,183 +309,53 @@ export const joinGame = /* GraphQL */ `mutation JoinGame($gameId: String!, $user
   APITypes.JoinGameMutationVariables,
   APITypes.JoinGameMutation
 >;
-export const makeTurn = /* GraphQL */ `mutation MakeTurn($gameId: String!, $turn: AWSJSON!, $userId: String!) {
-  makeTurn(gameId: $gameId, turn: $turn, userId: $userId)
+export const makeTurn = /* GraphQL */ `mutation MakeTurn(
+  $gameId: String!
+  $moves: AWSJSON!
+  $type: MakeTurnType
+  $userId: String!
+) {
+  makeTurn(gameId: $gameId, moves: $moves, type: $type, userId: $userId) {
+    dieOne
+    dieTwo
+    __typename
+  }
 }
 ` as GeneratedMutation<
   APITypes.MakeTurnMutationVariables,
   APITypes.MakeTurnMutation
 >;
-export const updateBoard = /* GraphQL */ `mutation UpdateBoard(
-  $condition: ModelBoardConditionInput
-  $input: UpdateBoardInput!
+export const updateFriends = /* GraphQL */ `mutation UpdateFriends(
+  $condition: ModelFriendsConditionInput
+  $input: UpdateFriendsInput!
 ) {
-  updateBoard(condition: $condition, input: $input) {
+  updateFriends(condition: $condition, input: $input) {
     createdAt
-    field1 {
-      color
-      count
-      index
-      __typename
-    }
-    field10 {
-      color
-      count
-      index
-      __typename
-    }
-    field11 {
-      color
-      count
-      index
-      __typename
-    }
-    field12 {
-      color
-      count
-      index
-      __typename
-    }
-    field13 {
-      color
-      count
-      index
-      __typename
-    }
-    field14 {
-      color
-      count
-      index
-      __typename
-    }
-    field15 {
-      color
-      count
-      index
-      __typename
-    }
-    field16 {
-      color
-      count
-      index
-      __typename
-    }
-    field17 {
-      color
-      count
-      index
-      __typename
-    }
-    field18 {
-      color
-      count
-      index
-      __typename
-    }
-    field19 {
-      color
-      count
-      index
-      __typename
-    }
-    field2 {
-      color
-      count
-      index
-      __typename
-    }
-    field20 {
-      color
-      count
-      index
-      __typename
-    }
-    field21 {
-      color
-      count
-      index
-      __typename
-    }
-    field22 {
-      color
-      count
-      index
-      __typename
-    }
-    field23 {
-      color
-      count
-      index
-      __typename
-    }
-    field24 {
-      color
-      count
-      index
-      __typename
-    }
-    field3 {
-      color
-      count
-      index
-      __typename
-    }
-    field4 {
-      color
-      count
-      index
-      __typename
-    }
-    field5 {
-      color
-      count
-      index
-      __typename
-    }
-    field6 {
-      color
-      count
-      index
-      __typename
-    }
-    field7 {
-      color
-      count
-      index
-      __typename
-    }
-    field8 {
-      color
-      count
-      index
-      __typename
-    }
-    field9 {
-      color
-      count
-      index
-      __typename
-    }
     id
-    prisonBlack
-    prisonWhite
-    session {
-      boardID
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
       createdAt
-      currentPlayer
       id
-      playerOneID
-      playerTwoID
+      name
       updatedAt
       __typename
     }
-    updatedAt
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
     __typename
   }
 }
 ` as GeneratedMutation<
-  APITypes.UpdateBoardMutationVariables,
-  APITypes.UpdateBoardMutation
+  APITypes.UpdateFriendsMutationVariables,
+  APITypes.UpdateFriendsMutation
 >;
 export const updatePlayer = /* GraphQL */ `mutation UpdatePlayer(
   $condition: ModelPlayerConditionInput
@@ -697,14 +363,25 @@ export const updatePlayer = /* GraphQL */ `mutation UpdatePlayer(
 ) {
   updatePlayer(condition: $condition, input: $input) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    turnsMade {
       nextToken
       __typename
     }
@@ -721,28 +398,12 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
   $input: UpdateSessionInput!
 ) {
   updateSession(condition: $condition, input: $input) {
-    board {
-      createdAt
-      id
-      prisonBlack
-      prisonWhite
-      updatedAt
-      __typename
-    }
-    boardID
     createdAt
-    currentPlayer
-    dice {
-      dieOne
-      dieTwo
-      __typename
-    }
     id
     playerOne {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -751,14 +412,12 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
     playerTwoID
     turns {
-      player
-      type
+      nextToken
       __typename
     }
     updatedAt
@@ -768,4 +427,48 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
 ` as GeneratedMutation<
   APITypes.UpdateSessionMutationVariables,
   APITypes.UpdateSessionMutation
+>;
+export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
+  $condition: ModelTurnsConditionInput
+  $input: UpdateTurnsInput!
+) {
+  updateTurns(condition: $condition, input: $input) {
+    createdAt
+    diceForNextTurn {
+      dieOne
+      dieTwo
+      __typename
+    }
+    game {
+      createdAt
+      id
+      playerOneID
+      playerTwoID
+      updatedAt
+      __typename
+    }
+    gameId
+    moves {
+      from
+      to
+      __typename
+    }
+    player {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    playerColor
+    playerId
+    turnNumber
+    type
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateTurnsMutationVariables,
+  APITypes.UpdateTurnsMutation
 >;

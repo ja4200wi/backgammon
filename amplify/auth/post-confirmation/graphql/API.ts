@@ -2,413 +2,35 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type Board = {
-  __typename: "Board",
+export type Friends = {
+  __typename: "Friends",
   createdAt: string,
-  field1?: BoardField1 | null,
-  field10?: BoardField10 | null,
-  field11?: BoardField11 | null,
-  field12?: BoardField12 | null,
-  field13?: BoardField13 | null,
-  field14?: BoardField14 | null,
-  field15?: BoardField15 | null,
-  field16?: BoardField16 | null,
-  field17?: BoardField17 | null,
-  field18?: BoardField18 | null,
-  field19?: BoardField19 | null,
-  field2?: BoardField2 | null,
-  field20?: BoardField20 | null,
-  field21?: BoardField21 | null,
-  field22?: BoardField22 | null,
-  field23?: BoardField23 | null,
-  field24?: BoardField24 | null,
-  field3?: BoardField3 | null,
-  field4?: BoardField4 | null,
-  field5?: BoardField5 | null,
-  field6?: BoardField6 | null,
-  field7?: BoardField7 | null,
-  field8?: BoardField8 | null,
-  field9?: BoardField9 | null,
   id: string,
-  prisonBlack?: number | null,
-  prisonWhite?: number | null,
-  session?: Session | null,
+  isConfirmed?: boolean | null,
   updatedAt: string,
-};
-
-export type BoardField1 = {
-  __typename: "BoardField1",
-  color?: BoardField1Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField1Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField10 = {
-  __typename: "BoardField10",
-  color?: BoardField10Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField10Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField11 = {
-  __typename: "BoardField11",
-  color?: BoardField11Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField11Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField12 = {
-  __typename: "BoardField12",
-  color?: BoardField12Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField12Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField13 = {
-  __typename: "BoardField13",
-  color?: BoardField13Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField13Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField14 = {
-  __typename: "BoardField14",
-  color?: BoardField14Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField14Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField15 = {
-  __typename: "BoardField15",
-  color?: BoardField15Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField15Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField16 = {
-  __typename: "BoardField16",
-  color?: BoardField16Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField16Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField17 = {
-  __typename: "BoardField17",
-  color?: BoardField17Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField17Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField18 = {
-  __typename: "BoardField18",
-  color?: BoardField18Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField18Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField19 = {
-  __typename: "BoardField19",
-  color?: BoardField19Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField19Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField2 = {
-  __typename: "BoardField2",
-  color?: BoardField2Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField2Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField20 = {
-  __typename: "BoardField20",
-  color?: BoardField20Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField20Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField21 = {
-  __typename: "BoardField21",
-  color?: BoardField21Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField21Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField22 = {
-  __typename: "BoardField22",
-  color?: BoardField22Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField22Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField23 = {
-  __typename: "BoardField23",
-  color?: BoardField23Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField23Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField24 = {
-  __typename: "BoardField24",
-  color?: BoardField24Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField24Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField3 = {
-  __typename: "BoardField3",
-  color?: BoardField3Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField3Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField4 = {
-  __typename: "BoardField4",
-  color?: BoardField4Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField4Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField5 = {
-  __typename: "BoardField5",
-  color?: BoardField5Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField5Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField6 = {
-  __typename: "BoardField6",
-  color?: BoardField6Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField6Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField7 = {
-  __typename: "BoardField7",
-  color?: BoardField7Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField7Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField8 = {
-  __typename: "BoardField8",
-  color?: BoardField8Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField8Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type BoardField9 = {
-  __typename: "BoardField9",
-  color?: BoardField9Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export enum BoardField9Color {
-  BLACK = "BLACK",
-  NONE = "NONE",
-  WHITE = "WHITE",
-}
-
-
-export type Session = {
-  __typename: "Session",
-  board?: Board | null,
-  boardID?: string | null,
-  createdAt: string,
-  currentPlayer?: SessionCurrentPlayer | null,
-  dice?: SessionDice | null,
-  id: string,
-  playerOne?: Player | null,
-  playerOneID?: string | null,
-  playerTwo?: Player | null,
-  playerTwoID?: string | null,
-  turns?:  Array<Turn | null > | null,
-  updatedAt: string,
-};
-
-export enum SessionCurrentPlayer {
-  BLACK = "BLACK",
-  WHITE = "WHITE",
-}
-
-
-export type SessionDice = {
-  __typename: "SessionDice",
-  dieOne?: number | null,
-  dieTwo?: number | null,
+  userIdOne?: string | null,
+  userIdTwo?: string | null,
+  userOne?: Player | null,
+  userTwo?: Player | null,
 };
 
 export type Player = {
   __typename: "Player",
   createdAt: string,
+  friendsAsOne?: ModelFriendsConnection | null,
+  friendsAsTwo?: ModelFriendsConnection | null,
   id: string,
   name?: string | null,
-  owner?: string | null,
   sessionsAsPlayerOne?: ModelSessionConnection | null,
   sessionsAsPlayerTwo?: ModelSessionConnection | null,
+  turnsMade?: ModelTurnsConnection | null,
   updatedAt: string,
+};
+
+export type ModelFriendsConnection = {
+  __typename: "ModelFriendsConnection",
+  items:  Array<Friends | null >,
+  nextToken?: string | null,
 };
 
 export type ModelSessionConnection = {
@@ -417,62 +39,75 @@ export type ModelSessionConnection = {
   nextToken?: string | null,
 };
 
-export type Turn = {
-  __typename: "Turn",
-  moveFour?: TurnMoveFour | null,
-  moveOne?: TurnMoveOne | null,
-  moveThree?: TurnMoveThree | null,
-  moveTwo?: TurnMoveTwo | null,
-  player?: TurnPlayer | null,
-  type?: TurnType | null,
+export type Session = {
+  __typename: "Session",
+  createdAt: string,
+  id: string,
+  playerOne?: Player | null,
+  playerOneID?: string | null,
+  playerTwo?: Player | null,
+  playerTwoID?: string | null,
+  turns?: ModelTurnsConnection | null,
+  updatedAt: string,
 };
 
-export type TurnMoveFour = {
-  __typename: "TurnMoveFour",
-  from?: number | null,
-  to?: number | null,
+export type ModelTurnsConnection = {
+  __typename: "ModelTurnsConnection",
+  items:  Array<Turns | null >,
+  nextToken?: string | null,
 };
 
-export type TurnMoveOne = {
-  __typename: "TurnMoveOne",
-  from?: number | null,
-  to?: number | null,
+export type Turns = {
+  __typename: "Turns",
+  createdAt: string,
+  diceForNextTurn?: Dice | null,
+  game?: Session | null,
+  gameId: string,
+  moves?:  Array<Move | null > | null,
+  player?: Player | null,
+  playerColor?: TurnsPlayerColor | null,
+  playerId?: string | null,
+  turnNumber: number,
+  type?: TurnsType | null,
+  updatedAt: string,
 };
 
-export type TurnMoveThree = {
-  __typename: "TurnMoveThree",
-  from?: number | null,
-  to?: number | null,
+export type Dice = {
+  __typename: "Dice",
+  dieOne?: number | null,
+  dieTwo?: number | null,
 };
 
-export type TurnMoveTwo = {
-  __typename: "TurnMoveTwo",
-  from?: number | null,
-  to?: number | null,
+export type Move = {
+  __typename: "Move",
+  from: number,
+  to: number,
 };
 
-export enum TurnPlayer {
+export enum TurnsPlayerColor {
   BLACK = "BLACK",
   WHITE = "WHITE",
 }
 
 
-export enum TurnType {
+export enum TurnsType {
   DOUBLE = "DOUBLE",
   GIVE_UP = "GIVE_UP",
+  INIT = "INIT",
   MOVE = "MOVE",
 }
 
 
-export type ModelBoardFilterInput = {
-  and?: Array< ModelBoardFilterInput | null > | null,
+export type ModelFriendsFilterInput = {
+  and?: Array< ModelFriendsFilterInput | null > | null,
   createdAt?: ModelStringInput | null,
   id?: ModelIDInput | null,
-  not?: ModelBoardFilterInput | null,
-  or?: Array< ModelBoardFilterInput | null > | null,
-  prisonBlack?: ModelIntInput | null,
-  prisonWhite?: ModelIntInput | null,
+  isConfirmed?: ModelBooleanInput | null,
+  not?: ModelFriendsFilterInput | null,
+  or?: Array< ModelFriendsFilterInput | null > | null,
   updatedAt?: ModelStringInput | null,
+  userIdOne?: ModelIDInput | null,
+  userIdTwo?: ModelIDInput | null,
 };
 
 export type ModelStringInput = {
@@ -531,6 +166,59 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
+export type ModelBooleanInput = {
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  eq?: boolean | null,
+  ne?: boolean | null,
+};
+
+export type ModelPlayerFilterInput = {
+  and?: Array< ModelPlayerFilterInput | null > | null,
+  createdAt?: ModelStringInput | null,
+  id?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  not?: ModelPlayerFilterInput | null,
+  or?: Array< ModelPlayerFilterInput | null > | null,
+  updatedAt?: ModelStringInput | null,
+};
+
+export type ModelPlayerConnection = {
+  __typename: "ModelPlayerConnection",
+  items:  Array<Player | null >,
+  nextToken?: string | null,
+};
+
+export type ModelSessionFilterInput = {
+  and?: Array< ModelSessionFilterInput | null > | null,
+  createdAt?: ModelStringInput | null,
+  id?: ModelIDInput | null,
+  not?: ModelSessionFilterInput | null,
+  or?: Array< ModelSessionFilterInput | null > | null,
+  playerOneID?: ModelIDInput | null,
+  playerTwoID?: ModelIDInput | null,
+  updatedAt?: ModelStringInput | null,
+};
+
+export type ModelTurnsFilterInput = {
+  and?: Array< ModelTurnsFilterInput | null > | null,
+  createdAt?: ModelStringInput | null,
+  gameId?: ModelIDInput | null,
+  id?: ModelIDInput | null,
+  not?: ModelTurnsFilterInput | null,
+  or?: Array< ModelTurnsFilterInput | null > | null,
+  playerColor?: ModelTurnsPlayerColorInput | null,
+  playerId?: ModelIDInput | null,
+  turnNumber?: ModelIntInput | null,
+  type?: ModelTurnsTypeInput | null,
+  updatedAt?: ModelStringInput | null,
+};
+
+export type ModelTurnsPlayerColorInput = {
+  eq?: TurnsPlayerColor | null,
+  ne?: TurnsPlayerColor | null,
+};
+
 export type ModelIntInput = {
   attributeExists?: boolean | null,
   attributeType?: ModelAttributeTypes | null,
@@ -543,229 +231,42 @@ export type ModelIntInput = {
   ne?: number | null,
 };
 
-export type ModelBoardConnection = {
-  __typename: "ModelBoardConnection",
-  items:  Array<Board | null >,
-  nextToken?: string | null,
+export type ModelTurnsTypeInput = {
+  eq?: TurnsType | null,
+  ne?: TurnsType | null,
 };
 
-export type ModelPlayerFilterInput = {
-  and?: Array< ModelPlayerFilterInput | null > | null,
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
+export type ModelIntKeyConditionInput = {
+  between?: Array< number | null > | null,
+  eq?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  le?: number | null,
+  lt?: number | null,
+};
+
+export type ModelFriendsConditionInput = {
+  and?: Array< ModelFriendsConditionInput | null > | null,
   createdAt?: ModelStringInput | null,
-  id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  not?: ModelPlayerFilterInput | null,
-  or?: Array< ModelPlayerFilterInput | null > | null,
-  owner?: ModelStringInput | null,
+  isConfirmed?: ModelBooleanInput | null,
+  not?: ModelFriendsConditionInput | null,
+  or?: Array< ModelFriendsConditionInput | null > | null,
   updatedAt?: ModelStringInput | null,
+  userIdOne?: ModelIDInput | null,
+  userIdTwo?: ModelIDInput | null,
 };
 
-export type ModelPlayerConnection = {
-  __typename: "ModelPlayerConnection",
-  items:  Array<Player | null >,
-  nextToken?: string | null,
-};
-
-export type ModelSessionFilterInput = {
-  and?: Array< ModelSessionFilterInput | null > | null,
-  boardID?: ModelIDInput | null,
-  createdAt?: ModelStringInput | null,
-  currentPlayer?: ModelSessionCurrentPlayerInput | null,
-  id?: ModelIDInput | null,
-  not?: ModelSessionFilterInput | null,
-  or?: Array< ModelSessionFilterInput | null > | null,
-  playerOneID?: ModelIDInput | null,
-  playerTwoID?: ModelIDInput | null,
-  updatedAt?: ModelStringInput | null,
-};
-
-export type ModelSessionCurrentPlayerInput = {
-  eq?: SessionCurrentPlayer | null,
-  ne?: SessionCurrentPlayer | null,
-};
-
-export type ModelBoardConditionInput = {
-  and?: Array< ModelBoardConditionInput | null > | null,
-  createdAt?: ModelStringInput | null,
-  not?: ModelBoardConditionInput | null,
-  or?: Array< ModelBoardConditionInput | null > | null,
-  prisonBlack?: ModelIntInput | null,
-  prisonWhite?: ModelIntInput | null,
-  updatedAt?: ModelStringInput | null,
-};
-
-export type CreateBoardInput = {
-  field1?: BoardField1Input | null,
-  field10?: BoardField10Input | null,
-  field11?: BoardField11Input | null,
-  field12?: BoardField12Input | null,
-  field13?: BoardField13Input | null,
-  field14?: BoardField14Input | null,
-  field15?: BoardField15Input | null,
-  field16?: BoardField16Input | null,
-  field17?: BoardField17Input | null,
-  field18?: BoardField18Input | null,
-  field19?: BoardField19Input | null,
-  field2?: BoardField2Input | null,
-  field20?: BoardField20Input | null,
-  field21?: BoardField21Input | null,
-  field22?: BoardField22Input | null,
-  field23?: BoardField23Input | null,
-  field24?: BoardField24Input | null,
-  field3?: BoardField3Input | null,
-  field4?: BoardField4Input | null,
-  field5?: BoardField5Input | null,
-  field6?: BoardField6Input | null,
-  field7?: BoardField7Input | null,
-  field8?: BoardField8Input | null,
-  field9?: BoardField9Input | null,
+export type CreateFriendsInput = {
   id?: string | null,
-  prisonBlack?: number | null,
-  prisonWhite?: number | null,
-};
-
-export type BoardField1Input = {
-  color?: BoardField1Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField10Input = {
-  color?: BoardField10Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField11Input = {
-  color?: BoardField11Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField12Input = {
-  color?: BoardField12Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField13Input = {
-  color?: BoardField13Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField14Input = {
-  color?: BoardField14Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField15Input = {
-  color?: BoardField15Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField16Input = {
-  color?: BoardField16Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField17Input = {
-  color?: BoardField17Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField18Input = {
-  color?: BoardField18Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField19Input = {
-  color?: BoardField19Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField2Input = {
-  color?: BoardField2Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField20Input = {
-  color?: BoardField20Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField21Input = {
-  color?: BoardField21Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField22Input = {
-  color?: BoardField22Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField23Input = {
-  color?: BoardField23Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField24Input = {
-  color?: BoardField24Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField3Input = {
-  color?: BoardField3Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField4Input = {
-  color?: BoardField4Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField5Input = {
-  color?: BoardField5Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField6Input = {
-  color?: BoardField6Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField7Input = {
-  color?: BoardField7Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField8Input = {
-  color?: BoardField8Color | null,
-  count?: number | null,
-  index?: number | null,
-};
-
-export type BoardField9Input = {
-  color?: BoardField9Color | null,
-  count?: number | null,
-  index?: number | null,
+  isConfirmed?: boolean | null,
+  userIdOne?: string | null,
+  userIdTwo?: string | null,
 };
 
 export type ModelPlayerConditionInput = {
@@ -774,7 +275,6 @@ export type ModelPlayerConditionInput = {
   name?: ModelStringInput | null,
   not?: ModelPlayerConditionInput | null,
   or?: Array< ModelPlayerConditionInput | null > | null,
-  owner?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
@@ -785,9 +285,7 @@ export type CreatePlayerInput = {
 
 export type ModelSessionConditionInput = {
   and?: Array< ModelSessionConditionInput | null > | null,
-  boardID?: ModelIDInput | null,
   createdAt?: ModelStringInput | null,
-  currentPlayer?: ModelSessionCurrentPlayerInput | null,
   not?: ModelSessionConditionInput | null,
   or?: Array< ModelSessionConditionInput | null > | null,
   playerOneID?: ModelIDInput | null,
@@ -796,50 +294,43 @@ export type ModelSessionConditionInput = {
 };
 
 export type CreateSessionInput = {
-  boardID?: string | null,
-  currentPlayer?: SessionCurrentPlayer | null,
-  dice?: SessionDiceInput | null,
   id?: string | null,
   playerOneID?: string | null,
   playerTwoID?: string | null,
-  turns?: Array< TurnInput | null > | null,
 };
 
-export type SessionDiceInput = {
+export type ModelTurnsConditionInput = {
+  and?: Array< ModelTurnsConditionInput | null > | null,
+  createdAt?: ModelStringInput | null,
+  not?: ModelTurnsConditionInput | null,
+  or?: Array< ModelTurnsConditionInput | null > | null,
+  playerColor?: ModelTurnsPlayerColorInput | null,
+  playerId?: ModelIDInput | null,
+  type?: ModelTurnsTypeInput | null,
+  updatedAt?: ModelStringInput | null,
+};
+
+export type CreateTurnsInput = {
+  diceForNextTurn?: DiceInput | null,
+  gameId: string,
+  moves?: Array< MoveInput | null > | null,
+  playerColor?: TurnsPlayerColor | null,
+  playerId?: string | null,
+  turnNumber: number,
+  type?: TurnsType | null,
+};
+
+export type DiceInput = {
   dieOne?: number | null,
   dieTwo?: number | null,
 };
 
-export type TurnInput = {
-  moveFour?: TurnMoveFourInput | null,
-  moveOne?: TurnMoveOneInput | null,
-  moveThree?: TurnMoveThreeInput | null,
-  moveTwo?: TurnMoveTwoInput | null,
-  player?: TurnPlayer | null,
-  type?: TurnType | null,
+export type MoveInput = {
+  from: number,
+  to: number,
 };
 
-export type TurnMoveFourInput = {
-  from?: number | null,
-  to?: number | null,
-};
-
-export type TurnMoveOneInput = {
-  from?: number | null,
-  to?: number | null,
-};
-
-export type TurnMoveThreeInput = {
-  from?: number | null,
-  to?: number | null,
-};
-
-export type TurnMoveTwoInput = {
-  from?: number | null,
-  to?: number | null,
-};
-
-export type DeleteBoardInput = {
+export type DeleteFriendsInput = {
   id: string,
 };
 
@@ -851,34 +342,24 @@ export type DeleteSessionInput = {
   id: string,
 };
 
-export type UpdateBoardInput = {
-  field1?: BoardField1Input | null,
-  field10?: BoardField10Input | null,
-  field11?: BoardField11Input | null,
-  field12?: BoardField12Input | null,
-  field13?: BoardField13Input | null,
-  field14?: BoardField14Input | null,
-  field15?: BoardField15Input | null,
-  field16?: BoardField16Input | null,
-  field17?: BoardField17Input | null,
-  field18?: BoardField18Input | null,
-  field19?: BoardField19Input | null,
-  field2?: BoardField2Input | null,
-  field20?: BoardField20Input | null,
-  field21?: BoardField21Input | null,
-  field22?: BoardField22Input | null,
-  field23?: BoardField23Input | null,
-  field24?: BoardField24Input | null,
-  field3?: BoardField3Input | null,
-  field4?: BoardField4Input | null,
-  field5?: BoardField5Input | null,
-  field6?: BoardField6Input | null,
-  field7?: BoardField7Input | null,
-  field8?: BoardField8Input | null,
-  field9?: BoardField9Input | null,
+export type DeleteTurnsInput = {
+  gameId: string,
+  turnNumber: number,
+};
+
+export enum MakeTurnType {
+  DOUBLE = "DOUBLE",
+  GIVE_UP = "GIVE_UP",
+  INIT = "INIT",
+  MOVE = "MOVE",
+}
+
+
+export type UpdateFriendsInput = {
   id: string,
-  prisonBlack?: number | null,
-  prisonWhite?: number | null,
+  isConfirmed?: boolean | null,
+  userIdOne?: string | null,
+  userIdTwo?: string | null,
 };
 
 export type UpdatePlayerInput = {
@@ -887,23 +368,30 @@ export type UpdatePlayerInput = {
 };
 
 export type UpdateSessionInput = {
-  boardID?: string | null,
-  currentPlayer?: SessionCurrentPlayer | null,
-  dice?: SessionDiceInput | null,
   id: string,
   playerOneID?: string | null,
   playerTwoID?: string | null,
-  turns?: Array< TurnInput | null > | null,
 };
 
-export type ModelSubscriptionBoardFilterInput = {
-  and?: Array< ModelSubscriptionBoardFilterInput | null > | null,
+export type UpdateTurnsInput = {
+  diceForNextTurn?: DiceInput | null,
+  gameId: string,
+  moves?: Array< MoveInput | null > | null,
+  playerColor?: TurnsPlayerColor | null,
+  playerId?: string | null,
+  turnNumber: number,
+  type?: TurnsType | null,
+};
+
+export type ModelSubscriptionFriendsFilterInput = {
+  and?: Array< ModelSubscriptionFriendsFilterInput | null > | null,
   createdAt?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
-  or?: Array< ModelSubscriptionBoardFilterInput | null > | null,
-  prisonBlack?: ModelSubscriptionIntInput | null,
-  prisonWhite?: ModelSubscriptionIntInput | null,
+  isConfirmed?: ModelSubscriptionBooleanInput | null,
+  or?: Array< ModelSubscriptionFriendsFilterInput | null > | null,
   updatedAt?: ModelSubscriptionStringInput | null,
+  userIdOne?: ModelSubscriptionIDInput | null,
+  userIdTwo?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionStringInput = {
@@ -936,6 +424,43 @@ export type ModelSubscriptionIDInput = {
   notIn?: Array< string | null > | null,
 };
 
+export type ModelSubscriptionBooleanInput = {
+  eq?: boolean | null,
+  ne?: boolean | null,
+};
+
+export type ModelSubscriptionPlayerFilterInput = {
+  and?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  id?: ModelSubscriptionIDInput | null,
+  name?: ModelSubscriptionStringInput | null,
+  or?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+};
+
+export type ModelSubscriptionSessionFilterInput = {
+  and?: Array< ModelSubscriptionSessionFilterInput | null > | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  id?: ModelSubscriptionIDInput | null,
+  or?: Array< ModelSubscriptionSessionFilterInput | null > | null,
+  playerOneID?: ModelSubscriptionIDInput | null,
+  playerTwoID?: ModelSubscriptionIDInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+};
+
+export type ModelSubscriptionTurnsFilterInput = {
+  and?: Array< ModelSubscriptionTurnsFilterInput | null > | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  gameId?: ModelSubscriptionIDInput | null,
+  id?: ModelSubscriptionIDInput | null,
+  or?: Array< ModelSubscriptionTurnsFilterInput | null > | null,
+  playerColor?: ModelSubscriptionStringInput | null,
+  playerId?: ModelSubscriptionIDInput | null,
+  turnNumber?: ModelSubscriptionIntInput | null,
+  type?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+};
+
 export type ModelSubscriptionIntInput = {
   between?: Array< number | null > | null,
   eq?: number | null,
@@ -948,194 +473,33 @@ export type ModelSubscriptionIntInput = {
   notIn?: Array< number | null > | null,
 };
 
-export type ModelSubscriptionPlayerFilterInput = {
-  and?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
-  createdAt?: ModelSubscriptionStringInput | null,
-  id?: ModelSubscriptionIDInput | null,
-  name?: ModelSubscriptionStringInput | null,
-  or?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
-  owner?: ModelStringInput | null,
-  updatedAt?: ModelSubscriptionStringInput | null,
-};
-
-export type ModelSubscriptionSessionFilterInput = {
-  and?: Array< ModelSubscriptionSessionFilterInput | null > | null,
-  boardID?: ModelSubscriptionIDInput | null,
-  createdAt?: ModelSubscriptionStringInput | null,
-  currentPlayer?: ModelSubscriptionStringInput | null,
-  id?: ModelSubscriptionIDInput | null,
-  or?: Array< ModelSubscriptionSessionFilterInput | null > | null,
-  playerOneID?: ModelSubscriptionIDInput | null,
-  playerTwoID?: ModelSubscriptionIDInput | null,
-  updatedAt?: ModelSubscriptionStringInput | null,
-};
-
-export type GetBoardQueryVariables = {
+export type GetFriendsQueryVariables = {
   id: string,
 };
 
-export type GetBoardQuery = {
-  getBoard?:  {
-    __typename: "Board",
+export type GetFriendsQuery = {
+  getFriends?:  {
+    __typename: "Friends",
     createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
     id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
-      __typename: "Session",
-      boardID?: string | null,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
-      playerOneID?: string | null,
-      playerTwoID?: string | null,
+      name?: string | null,
       updatedAt: string,
     } | null,
-    updatedAt: string,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
@@ -1147,15 +511,26 @@ export type GetPlayerQuery = {
   getPlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -1169,29 +544,13 @@ export type GetSessionQueryVariables = {
 export type GetSessionQuery = {
   getSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -1200,35 +559,77 @@ export type GetSessionQuery = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
-    } | null > | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
     updatedAt: string,
   } | null,
 };
 
-export type ListBoardsQueryVariables = {
-  filter?: ModelBoardFilterInput | null,
+export type GetTurnsQueryVariables = {
+  gameId: string,
+  turnNumber: number,
+};
+
+export type GetTurnsQuery = {
+  getTurns?:  {
+    __typename: "Turns",
+    createdAt: string,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
+    } | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      id: string,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
+    } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListFriendsQueryVariables = {
+  filter?: ModelFriendsFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
 };
 
-export type ListBoardsQuery = {
-  listBoards?:  {
-    __typename: "ModelBoardConnection",
+export type ListFriendsQuery = {
+  listFriends?:  {
+    __typename: "ModelFriendsConnection",
     items:  Array< {
-      __typename: "Board",
+      __typename: "Friends",
       createdAt: string,
       id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
+      isConfirmed?: boolean | null,
       updatedAt: string,
+      userIdOne?: string | null,
+      userIdTwo?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1248,7 +649,6 @@ export type ListPlayersQuery = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null >,
     nextToken?: string | null,
@@ -1266,9 +666,7 @@ export type ListSessionsQuery = {
     __typename: "ModelSessionConnection",
     items:  Array< {
       __typename: "Session",
-      boardID?: string | null,
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -1278,173 +676,60 @@ export type ListSessionsQuery = {
   } | null,
 };
 
-export type CreateBoardMutationVariables = {
-  condition?: ModelBoardConditionInput | null,
-  input: CreateBoardInput,
+export type ListTurnsQueryVariables = {
+  filter?: ModelTurnsFilterInput | null,
+  gameId?: string | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
+  turnNumber?: ModelIntKeyConditionInput | null,
 };
 
-export type CreateBoardMutation = {
-  createBoard?:  {
-    __typename: "Board",
-    createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
-      __typename: "Session",
-      boardID?: string | null,
+export type ListTurnsQuery = {
+  listTurns?:  {
+    __typename: "ModelTurnsConnection",
+    items:  Array< {
+      __typename: "Turns",
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
+      gameId: string,
+      playerColor?: TurnsPlayerColor | null,
+      playerId?: string | null,
+      turnNumber: number,
+      type?: TurnsType | null,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type CreateFriendsMutationVariables = {
+  condition?: ModelFriendsConditionInput | null,
+  input: CreateFriendsInput,
+};
+
+export type CreateFriendsMutation = {
+  createFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
       id: string,
-      playerOneID?: string | null,
-      playerTwoID?: string | null,
+      name?: string | null,
       updatedAt: string,
     } | null,
-    updatedAt: string,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
@@ -1457,15 +742,26 @@ export type CreatePlayerMutation = {
   createPlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -1480,29 +776,13 @@ export type CreateSessionMutationVariables = {
 export type CreateSessionMutation = {
   createSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -1511,186 +791,88 @@ export type CreateSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
-    } | null > | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
     updatedAt: string,
   } | null,
 };
 
-export type DeleteBoardMutationVariables = {
-  condition?: ModelBoardConditionInput | null,
-  input: DeleteBoardInput,
+export type CreateTurnsMutationVariables = {
+  condition?: ModelTurnsConditionInput | null,
+  input: CreateTurnsInput,
 };
 
-export type DeleteBoardMutation = {
-  deleteBoard?:  {
-    __typename: "Board",
+export type CreateTurnsMutation = {
+  createTurns?:  {
+    __typename: "Turns",
     createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
     } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
+    game?:  {
       __typename: "Session",
-      boardID?: string | null,
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
       updatedAt: string,
     } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
+    } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
     updatedAt: string,
+  } | null,
+};
+
+export type DeleteFriendsMutationVariables = {
+  condition?: ModelFriendsConditionInput | null,
+  input: DeleteFriendsInput,
+};
+
+export type DeleteFriendsMutation = {
+  deleteFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
@@ -1703,15 +885,26 @@ export type DeletePlayerMutation = {
   deletePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -1726,29 +919,13 @@ export type DeleteSessionMutationVariables = {
 export type DeleteSessionMutation = {
   deleteSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -1757,15 +934,56 @@ export type DeleteSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteTurnsMutationVariables = {
+  condition?: ModelTurnsConditionInput | null,
+  input: DeleteTurnsInput,
+};
+
+export type DeleteTurnsMutation = {
+  deleteTurns?:  {
+    __typename: "Turns",
+    createdAt: string,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
+    } | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      id: string,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
     } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
     updatedAt: string,
   } | null,
 };
@@ -1781,181 +999,47 @@ export type JoinGameMutation = {
 
 export type MakeTurnMutationVariables = {
   gameId: string,
-  turn: string,
+  moves: string,
+  type?: MakeTurnType | null,
   userId: string,
 };
 
 export type MakeTurnMutation = {
-  makeTurn?: string | null,
+  makeTurn?:  {
+    __typename: "Dice",
+    dieOne?: number | null,
+    dieTwo?: number | null,
+  } | null,
 };
 
-export type UpdateBoardMutationVariables = {
-  condition?: ModelBoardConditionInput | null,
-  input: UpdateBoardInput,
+export type UpdateFriendsMutationVariables = {
+  condition?: ModelFriendsConditionInput | null,
+  input: UpdateFriendsInput,
 };
 
-export type UpdateBoardMutation = {
-  updateBoard?:  {
-    __typename: "Board",
+export type UpdateFriendsMutation = {
+  updateFriends?:  {
+    __typename: "Friends",
     createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
     id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
-      __typename: "Session",
-      boardID?: string | null,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
-      playerOneID?: string | null,
-      playerTwoID?: string | null,
+      name?: string | null,
       updatedAt: string,
     } | null,
-    updatedAt: string,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
@@ -1968,15 +1052,26 @@ export type UpdatePlayerMutation = {
   updatePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -1991,29 +1086,13 @@ export type UpdateSessionMutationVariables = {
 export type UpdateSessionMutation = {
   updateSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -2022,206 +1101,118 @@ export type UpdateSessionMutation = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
-    } | null > | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
     updatedAt: string,
   } | null,
 };
 
-export type OnCreateBoardSubscriptionVariables = {
-  filter?: ModelSubscriptionBoardFilterInput | null,
+export type UpdateTurnsMutationVariables = {
+  condition?: ModelTurnsConditionInput | null,
+  input: UpdateTurnsInput,
 };
 
-export type OnCreateBoardSubscription = {
-  onCreateBoard?:  {
-    __typename: "Board",
+export type UpdateTurnsMutation = {
+  updateTurns?:  {
+    __typename: "Turns",
     createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
     } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
+    game?:  {
       __typename: "Session",
-      boardID?: string | null,
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
       updatedAt: string,
     } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
+    } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
     updatedAt: string,
+  } | null,
+};
+
+export type OnCreateFriendsSubscriptionVariables = {
+  filter?: ModelSubscriptionFriendsFilterInput | null,
+};
+
+export type OnCreateFriendsSubscription = {
+  onCreateFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
 export type OnCreatePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnCreatePlayerSubscription = {
   onCreatePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -2235,29 +1226,13 @@ export type OnCreateSessionSubscriptionVariables = {
 export type OnCreateSessionSubscription = {
   onCreateSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -2266,206 +1241,117 @@ export type OnCreateSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
-    } | null > | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
     updatedAt: string,
   } | null,
 };
 
-export type OnDeleteBoardSubscriptionVariables = {
-  filter?: ModelSubscriptionBoardFilterInput | null,
+export type OnCreateTurnsSubscriptionVariables = {
+  filter?: ModelSubscriptionTurnsFilterInput | null,
 };
 
-export type OnDeleteBoardSubscription = {
-  onDeleteBoard?:  {
-    __typename: "Board",
+export type OnCreateTurnsSubscription = {
+  onCreateTurns?:  {
+    __typename: "Turns",
     createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
     } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
+    game?:  {
       __typename: "Session",
-      boardID?: string | null,
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
       updatedAt: string,
     } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
+    } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
     updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteFriendsSubscriptionVariables = {
+  filter?: ModelSubscriptionFriendsFilterInput | null,
+};
+
+export type OnDeleteFriendsSubscription = {
+  onDeleteFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
 export type OnDeletePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnDeletePlayerSubscription = {
   onDeletePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -2479,29 +1365,13 @@ export type OnDeleteSessionSubscriptionVariables = {
 export type OnDeleteSessionSubscription = {
   onDeleteSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -2510,206 +1380,117 @@ export type OnDeleteSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
-    } | null > | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
     updatedAt: string,
   } | null,
 };
 
-export type OnUpdateBoardSubscriptionVariables = {
-  filter?: ModelSubscriptionBoardFilterInput | null,
+export type OnDeleteTurnsSubscriptionVariables = {
+  filter?: ModelSubscriptionTurnsFilterInput | null,
 };
 
-export type OnUpdateBoardSubscription = {
-  onUpdateBoard?:  {
-    __typename: "Board",
+export type OnDeleteTurnsSubscription = {
+  onDeleteTurns?:  {
+    __typename: "Turns",
     createdAt: string,
-    field1?:  {
-      __typename: "BoardField1",
-      color?: BoardField1Color | null,
-      count?: number | null,
-      index?: number | null,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
     } | null,
-    field10?:  {
-      __typename: "BoardField10",
-      color?: BoardField10Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field11?:  {
-      __typename: "BoardField11",
-      color?: BoardField11Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field12?:  {
-      __typename: "BoardField12",
-      color?: BoardField12Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field13?:  {
-      __typename: "BoardField13",
-      color?: BoardField13Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field14?:  {
-      __typename: "BoardField14",
-      color?: BoardField14Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field15?:  {
-      __typename: "BoardField15",
-      color?: BoardField15Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field16?:  {
-      __typename: "BoardField16",
-      color?: BoardField16Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field17?:  {
-      __typename: "BoardField17",
-      color?: BoardField17Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field18?:  {
-      __typename: "BoardField18",
-      color?: BoardField18Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field19?:  {
-      __typename: "BoardField19",
-      color?: BoardField19Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field2?:  {
-      __typename: "BoardField2",
-      color?: BoardField2Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field20?:  {
-      __typename: "BoardField20",
-      color?: BoardField20Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field21?:  {
-      __typename: "BoardField21",
-      color?: BoardField21Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field22?:  {
-      __typename: "BoardField22",
-      color?: BoardField22Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field23?:  {
-      __typename: "BoardField23",
-      color?: BoardField23Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field24?:  {
-      __typename: "BoardField24",
-      color?: BoardField24Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field3?:  {
-      __typename: "BoardField3",
-      color?: BoardField3Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field4?:  {
-      __typename: "BoardField4",
-      color?: BoardField4Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field5?:  {
-      __typename: "BoardField5",
-      color?: BoardField5Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field6?:  {
-      __typename: "BoardField6",
-      color?: BoardField6Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field7?:  {
-      __typename: "BoardField7",
-      color?: BoardField7Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field8?:  {
-      __typename: "BoardField8",
-      color?: BoardField8Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    field9?:  {
-      __typename: "BoardField9",
-      color?: BoardField9Color | null,
-      count?: number | null,
-      index?: number | null,
-    } | null,
-    id: string,
-    prisonBlack?: number | null,
-    prisonWhite?: number | null,
-    session?:  {
+    game?:  {
       __typename: "Session",
-      boardID?: string | null,
       createdAt: string,
-      currentPlayer?: SessionCurrentPlayer | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
       updatedAt: string,
     } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
+    } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
     updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateFriendsSubscriptionVariables = {
+  filter?: ModelSubscriptionFriendsFilterInput | null,
+};
+
+export type OnUpdateFriendsSubscription = {
+  onUpdateFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
   } | null,
 };
 
 export type OnUpdatePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnUpdatePlayerSubscription = {
   onUpdatePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
-    owner?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    turnsMade?:  {
+      __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -2723,29 +1504,13 @@ export type OnUpdateSessionSubscriptionVariables = {
 export type OnUpdateSessionSubscription = {
   onUpdateSession?:  {
     __typename: "Session",
-    board?:  {
-      __typename: "Board",
-      createdAt: string,
-      id: string,
-      prisonBlack?: number | null,
-      prisonWhite?: number | null,
-      updatedAt: string,
-    } | null,
-    boardID?: string | null,
     createdAt: string,
-    currentPlayer?: SessionCurrentPlayer | null,
-    dice?:  {
-      __typename: "SessionDice",
-      dieOne?: number | null,
-      dieTwo?: number | null,
-    } | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
@@ -2754,15 +1519,55 @@ export type OnUpdateSessionSubscription = {
       createdAt: string,
       id: string,
       name?: string | null,
-      owner?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
-    turns?:  Array< {
-      __typename: "Turn",
-      player?: TurnPlayer | null,
-      type?: TurnType | null,
+    turns?:  {
+      __typename: "ModelTurnsConnection",
+      nextToken?: string | null,
+    } | null,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateTurnsSubscriptionVariables = {
+  filter?: ModelSubscriptionTurnsFilterInput | null,
+};
+
+export type OnUpdateTurnsSubscription = {
+  onUpdateTurns?:  {
+    __typename: "Turns",
+    createdAt: string,
+    diceForNextTurn?:  {
+      __typename: "Dice",
+      dieOne?: number | null,
+      dieTwo?: number | null,
+    } | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      id: string,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    moves?:  Array< {
+      __typename: "Move",
+      from: number,
+      to: number,
     } | null > | null,
+    player?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    playerColor?: TurnsPlayerColor | null,
+    playerId?: string | null,
+    turnNumber: number,
+    type?: TurnsType | null,
     updatedAt: string,
   } | null,
 };
