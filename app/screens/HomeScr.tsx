@@ -13,7 +13,16 @@ import AvatarWithPuzzle from '../components/misc/AvatarWithPuzzle';
 import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
 import Header from '../components/navigation/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
-import { getUserNickname } from '../service/profileService';
+import {
+  getPlayerInfo,
+  getUserName,
+  getUserNickname,
+} from '../service/profileService';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+
+const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 function UserCard({
   ELO,
@@ -24,11 +33,12 @@ function UserCard({
   Coins: number;
   GlobalRank: number;
 }) {
-  const [profileName, setProfileName] = useState('');
+  const [profile, setProfile] = useState<PlayerInfo>();
 
   const fetchUserData = async () => {
-    const nickname = await getUserNickname();
-    setProfileName(nickname);
+    const username = await getUserName();
+    const userInfo = await getPlayerInfo(username);
+    userInfo && setProfile(userInfo);
   };
 
   fetchUserData();
@@ -37,7 +47,7 @@ function UserCard({
       <View style={styles.userRow}>
         <AvatarWithFlag country={COUNTRIES.JAPAN} />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
-          {profileName}
+          {profile?.name}
         </Text>
       </View>
       <View style={styles.statsRow}>

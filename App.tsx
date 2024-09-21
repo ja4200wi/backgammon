@@ -17,6 +17,8 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import OnlineMatching from './app/screens/OnlineMatchingScr';
 import { Button, StyleSheet, View } from 'react-native';
+import { getPlayerInfo, getUserName } from './app/service/profileService';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 Amplify.configure(outputs);
 
@@ -42,15 +44,6 @@ function HomeTabs() {
 }
 
 export default function App() {
-  const SignOutButton = () => {
-    const { signOut } = useAuthenticator();
-
-    return (
-      <View style={styles.signOutButton}>
-        <Button title='Sign Out' onPress={signOut} />
-      </View>
-    );
-  };
   return (
     <Authenticator.Provider>
       <Authenticator>

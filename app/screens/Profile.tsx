@@ -19,7 +19,17 @@ import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import { getUserJoined, getUserNickname } from '../service/profileService';
+import {
+  getPlayerInfo,
+  getUserName,
+  getUserNickname,
+} from '../service/profileService';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 function UserProfile({ dateJoined }: { dateJoined: Date }) {
   const formattedDate = dateJoined.toLocaleDateString('en-US', {
@@ -28,14 +38,11 @@ function UserProfile({ dateJoined }: { dateJoined: Date }) {
     day: 'numeric',
   });
 
-  const [nickname, setProfileName] = useState('');
-  const [userJoinedDate, setUserJoinedDate] = useState('');
+  const [player, setPlayer] = useState<PlayerInfo>();
 
   const fetchUserData = async () => {
-    const nickname = await getUserNickname();
-    const joined = await getUserJoined();
-    setProfileName(nickname);
-    setUserJoinedDate(joined);
+    const playerInfo = await getPlayerInfo(await getUserName());
+    playerInfo && setPlayer(playerInfo);
   };
 
   fetchUserData();
@@ -51,9 +58,9 @@ function UserProfile({ dateJoined }: { dateJoined: Date }) {
             marginLeft: 16,
           }}
         >
-          <Text style={[GLOBAL_STYLES.headline]}>{nickname}</Text>
+          <Text style={[GLOBAL_STYLES.headline]}>{player?.name}</Text>
           <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-            Joined {userJoinedDate}
+            Joined {new Date(player?.createdAt!).toLocaleDateString()}
           </Text>
         </View>
         <Icon
