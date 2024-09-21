@@ -12,6 +12,7 @@ import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { GAME_TYPE } from '../utils/constants';
+import { getPlayerName } from '../service/profileService';
 
 const client = generateClient<Schema>();
 
@@ -35,6 +36,10 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
     });
   };
 
+  const fetchPlayerName = async (playerId: string): Promise<String> => {
+    return await getPlayerName(playerId);
+  };
+
   useEffect(() => {
     const sub = client.models.Session.observeQuery().subscribe({
       next: ({ items, isSynced }) => {
@@ -44,9 +49,36 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
     return () => sub.unsubscribe();
   }, []);
 
+  const PlayerNameText = ({
+    playerId,
+  }: {
+    playerId: string | null | undefined;
+  }) => {
+    const [playerName, setPlayerName] = useState<String>('');
+
+    useEffect(() => {
+      const fetchName = async () => {
+        if (playerId === null || playerId === undefined) {
+          setPlayerName('');
+        } else {
+          const name = await fetchPlayerName(playerId);
+          setPlayerName(name);
+        }
+      };
+
+      fetchName();
+    }, [playerId]);
+
+    return (
+      <Text style={styles.gameText}>Player One ID: {playerName || ''}</Text>
+    );
+  };
+
   const renderItem = ({ item }: { item: Session }) => (
     <View style={styles.gameItem}>
-      <Text style={styles.gameText}>Player One ID: {item.playerOneID}</Text>
+      <Text style={styles.gameText}>
+        <PlayerNameText playerId={item.playerOneID} />
+      </Text>
       <Text style={styles.gameText}>Game ID: {item.id}</Text>
       {/* Join button */}
       <Button
