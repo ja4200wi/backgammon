@@ -13,11 +13,7 @@ import AvatarWithPuzzle from '../components/misc/AvatarWithPuzzle';
 import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
 import Header from '../components/navigation/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
-import {
-  getPlayerInfo,
-  getUserName,
-  getUserNickname,
-} from '../service/profileService';
+import { getPlayerInfo, getUserName } from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 

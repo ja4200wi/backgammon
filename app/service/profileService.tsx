@@ -28,8 +28,3 @@ export async function getPlayerInfo(
   );
   return player.data;
 }
-
-export async function getUserNickname(): Promise<string> {
-  const { nickname } = await fetchUserAttributes();
-  return nickname || getUserName();
-}

@@ -19,25 +19,14 @@ import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import {
-  getPlayerInfo,
-  getUserName,
-  getUserNickname,
-} from '../service/profileService';
+import { getPlayerInfo, getUserName } from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
-function UserProfile({ dateJoined }: { dateJoined: Date }) {
-  const formattedDate = dateJoined.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
+function UserProfile() {
   const [player, setPlayer] = useState<PlayerInfo>();
 
   const fetchUserData = async () => {
@@ -223,14 +212,6 @@ function HistoryContent() {
 }
 
 export default function Profile({ navigation }: { navigation: any }) {
-  const [nickname, setProfileName] = useState('');
-
-  const fetchUserData = async () => {
-    const nickname = await getUserNickname();
-    setProfileName(nickname);
-  };
-
-  fetchUserData();
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
@@ -244,7 +225,7 @@ export default function Profile({ navigation }: { navigation: any }) {
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
         <ScrollView style={{ zIndex: 2 }}>
-          <UserProfile dateJoined={new Date('2018-03-11')} />
+          <UserProfile />
           <Headline headline='Statistics' />
           <ProfileContent
             GamesPlayed='243'
