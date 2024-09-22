@@ -1,9 +1,8 @@
-import { generateClient, SelectionSet } from 'aws-amplify/api';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Schema } from '../../amplify/data/resource';
-import { getUserName } from '../service/profileService';
 import { Button, Divider, SearchBar } from '@rneui/themed';
+import { generateClient, SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
 
 const client = generateClient<Schema>();
 
@@ -17,9 +16,10 @@ export default function FriendListScreen({
 }: {
   localPlayerId: string;
 }) {
-  const [friends, setFriends] = useState<Friends[]>();
+  const [friends, setFriends] = useState<Friends[]>([]);
   const [search, setSearch] = useState('');
-  const [searchResults, setSearchResults] = useState<Player[]>();
+  const [searchResults, setSearchResults] = useState<Player[]>([]);
+  const [userNames, setUserNames] = useState<{ [key: string]: string }>({}); // State to hold userId to name mapping
 
   useEffect(() => {
     if (!localPlayerId) return;
@@ -35,12 +35,41 @@ export default function FriendListScreen({
         ],
       },
     }).subscribe({
-      next: ({ items, isSynced }) => {
+      next: async ({ items, isSynced }) => {
         setFriends([...items]);
+        // Fetch user names for all the friends
+        const userIds = items
+          .flatMap((item) => [item.userIdOne, item.userIdTwo])
+          .filter((id) => id !== localPlayerId);
+
+        // Remove duplicates
+        const uniqueUserIds = Array.from(new Set(userIds));
+        await fetchUserNames(uniqueUserIds);
       },
     });
     return () => sub.unsubscribe();
   }, [localPlayerId]);
+
+  const fetchUserNames = async (userIds: (string | null | undefined)[]) => {
+    // Filter out null or undefined values
+    const validUserIds = userIds.filter(
+      (id): id is string => id !== null && id !== undefined
+    );
+
+    const nameMapping: { [key: string]: string } = {};
+    for (const userId of validUserIds) {
+      const { data: player, errors } = await client.models.Player.get({
+        id: userId,
+      });
+      if (errors) {
+        console.error(errors);
+      } else if (player) {
+        // Ensure player.name is a string, use a fallback if it's null or undefined
+        nameMapping[userId] = player.name ?? 'Unknown Player';
+      }
+    }
+    setUserNames((prevState) => ({ ...prevState, ...nameMapping }));
+  };
 
   const searchPlayers = async (search: string) => {
     const { data: player, errors } = await client.models.Player.list({
@@ -55,7 +84,6 @@ export default function FriendListScreen({
       console.error(errors);
     } else {
       setSearchResults(player);
-      console.log(player);
     }
   };
 
@@ -75,6 +103,13 @@ export default function FriendListScreen({
   };
 
   const confirmFriend = async (friendId: string) => {
+    // only let second player (the one who was invited) confirm the friendship
+    if (
+      friends.find((friend) => friend.id === friendId)?.userIdTwo !==
+      localPlayerId
+    ) {
+      return;
+    }
     await client.models.Friends.update({
       id: friendId,
       isConfirmed: true,
@@ -93,16 +128,14 @@ export default function FriendListScreen({
         value={search}
         style={{ borderRadius: 10 }}
       />
-      {searchResults?.map((player) => {
+      {searchResults.map((player) => {
         return (
           <View key={player.id} style={styles.gameItem}>
             <Text style={styles.gameText}>{player.name}</Text>
             <Button
               title={'Invite'}
               buttonStyle={styles.inviteButton}
-              onPress={() => {
-                handleInvite(player.id);
-              }}
+              onPress={() => handleInvite(player.id)}
             />
           </View>
         );
@@ -115,15 +148,24 @@ export default function FriendListScreen({
           opacity: 0.5,
         }}
       />
-      {friends?.map((friend) => {
+      {friends.map((friend) => {
+        // Determine the correct friend ID
+        const friendId =
+          friend.userIdOne === localPlayerId
+            ? friend.userIdTwo
+            : friend.userIdOne;
+
+        // Check that friendId is not null or undefined before using it
+        if (!friendId) {
+          return null; // Skip rendering this item if friendId is invalid
+        }
+
+        const friendName = userNames[friendId] || 'Unknown Player'; // Fallback to 'Unknown Player' if name is missing
+
         return (
           <View key={friend.id} style={styles.gameItem}>
-            <Text style={styles.gameText}>
-              {friend.userIdOne === localPlayerId
-                ? friend.userIdTwo
-                : friend.userIdOne}
-            </Text>
-            {friend.isConfirmed ? (
+            <Text style={styles.gameText}>{friendName}</Text>
+            {friend.isConfirmed || friend.userIdOne === localPlayerId ? (
               <Button
                 title={'Remove'}
                 buttonStyle={styles.removeButton}
@@ -170,22 +212,6 @@ const styles = StyleSheet.create({
   gameText: {
     fontSize: 16,
     color: '#333',
-  },
-  noGamesText: {
-    textAlign: 'center',
-    fontSize: 18,
-    color: '#888',
-    marginTop: 20,
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  startButton: {
-    marginTop: 10,
-    backgroundColor: '#6B9C41',
-    borderRadius: 5,
   },
   inviteButton: {
     backgroundColor: '#6B9C41',
