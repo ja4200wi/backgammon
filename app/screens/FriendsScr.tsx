@@ -10,6 +10,7 @@ import {
 import { DIMENSIONS, GAME_TYPE } from '../utils/constants';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import FriendListScreen from '../components/FriendList';
+import { getUserName } from '../service/profileService';
 
 export default function Friends({
   route,
@@ -18,6 +19,14 @@ export default function Friends({
   route: any;
   navigation: any;
 }) {
+  const [localPlayerId, setLocalPlayerId] = useState<string>('');
+  const fetchUserData = async () => {
+    const username = await getUserName();
+    setLocalPlayerId(username);
+  };
+  useEffect(() => {
+    fetchUserData();
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
@@ -30,7 +39,7 @@ export default function Friends({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <FriendListScreen />
+        <FriendListScreen localPlayerId={localPlayerId} />
       </ImageBackground>
     </SafeAreaView>
   );
