@@ -84,7 +84,8 @@ const Board = forwardRef<any, BoardProps>(({
     }
   };
   const updatePosition = async (sourceIndex:number,targetIndex:number, type?: 'UNDO') => {
-    if(type) {
+    if(type === 'UNDO') {
+      console.log('UNDOING POSITION in updatePosition BOARD')
       undoPosition()
     } else {
       const newSpikes = [...spikes];
@@ -125,8 +126,9 @@ const Board = forwardRef<any, BoardProps>(({
     }
     
   }
-  const undoPosition = () => {
-    //do Undo
+  const undoPosition = async () => {
+    console.log('in undoPosition; distributing checker now')
+    distributeCheckers()
   }
   const pause = async (duration: number) => {
     return new Promise<void>((resolve) => {
@@ -316,6 +318,9 @@ const Board = forwardRef<any, BoardProps>(({
   
     setPrisonCheckers(prisonCheckers);
     setSpikes(newSpikes);
+    setTimeout(() => {
+      measureChecker()
+    }, 0);
   };
   
   
@@ -368,6 +373,7 @@ const Board = forwardRef<any, BoardProps>(({
           player={PLAYER_COLORS.BLACK}
           doubleDice={doubleDice}
           isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.BLACK}
+          checker={homeChecker}
         />
       </View>
   
@@ -447,6 +453,7 @@ const Board = forwardRef<any, BoardProps>(({
           player={PLAYER_COLORS.WHITE}
           doubleDice={doubleDice}
           isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.WHITE}
+          checker={homeChecker}
         />
       </View>
     </View>

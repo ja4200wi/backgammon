@@ -11,14 +11,16 @@ interface HomeProps {
   player: PLAYER_COLORS;
   doubleDice: DoubleDice;
   isHighlighted: boolean;
+  checker: React.ReactElement[];
 }
 
-const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighlighted }) => {
-  const checkers = [];
+const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighlighted,checker }) => {
+  const newCheckers = [];
+  const ownChecker = checker.filter((item) => item.props.color === player)
   for (let i = 0; i < count; i++) {
-    checkers.push(
+    newCheckers.push(
       <View key={i} style={[styles.checkerContainer, { right: i * 6 }]}>
-        <Checker height={30} width={30} color={player} />
+        {ownChecker[i]}
         {i === count - 1 && (
           <Text
             style={[
@@ -48,7 +50,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighl
         ) : null
       }
       <TouchableOpacity style={[styles.container,{backgroundColor: isHighlighted ? APP_COLORS.appBlue : APP_COLORS.iconGrey}]} onPress={() => onPress(100)}>
-        <View style={styles.checkersContainer}>{checkers}</View>
+        <View style={styles.checkersContainer}>{newCheckers}</View>
       </TouchableOpacity>
     </View>
   );

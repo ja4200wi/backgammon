@@ -408,16 +408,16 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
   const isOnlineGame = () => {
     return (gamemode === GAME_TYPE.ONLINE || gamemode === GAME_TYPE.ELO || gamemode === GAME_TYPE.FRIENDLIST)
   }
-  const updatePositionHandler = async (sourceIndex:number,targetIndex:number) => {
+  const updatePositionHandler = async (sourceIndex:number,targetIndex:number, type?:'UNDO') => {
     console.log('Boardref is:',boardRef.current)
     if (boardRef.current) {
-      console.log('in handler with',sourceIndex,targetIndex)
-      boardRef.current.updatePosition(sourceIndex, targetIndex);  
+      console.log('in handler with',sourceIndex,targetIndex,type)
+      boardRef.current.updatePosition(sourceIndex, targetIndex,type);  
       return true
     }
     return false
   };
-  const updateGameState = () => {
+  const updateGameState = async () => {
     if (game) {
       setPositions(game.getCurrentPositions());
       const distances = game.getDistances();
@@ -503,10 +503,11 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
       ]);
     }
   };
-  const undoMove = () => {
+  const undoMove = async () => {
     if (game) {
       game.undoMove();
-      updateGameState();
+      await updateGameState();
+      await updatePositionHandler(0,0,'UNDO')
     }
   };
   const legalMovesFrom = (from: number): number[] => {
