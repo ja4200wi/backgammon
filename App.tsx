@@ -9,6 +9,7 @@ import ProfileScr from './app/screens/Profile';
 import NavBar from './app/components/navigation/NavBar';
 import Settings from './app/screens/SettingsScr';
 import Friends from './app/screens/FriendsScr';
+import PlayFriend from './app/screens/PlayFriendScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './app/utils/constants';
 
@@ -56,6 +57,7 @@ export default function App() {
               <Stack.Screen name='Game' component={GameScreen} />
               <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
               <Stack.Screen name='Friends' component={Friends} />
+              <Stack.Screen name='PlayFriend' component={PlayFriend} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

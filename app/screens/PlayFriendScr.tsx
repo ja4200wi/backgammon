@@ -9,6 +9,7 @@ import {
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
+import FriendGameList from '../components/FriendGameList.tsx';
 
 export default function PlayFriend({
   route,
@@ -17,6 +18,7 @@ export default function PlayFriend({
   route: any;
   navigation: any;
 }) {
+  const localPlayerId = route.params.localPlayerId;
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
@@ -29,7 +31,7 @@ export default function PlayFriend({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <GameListScreen navigation={navigation} />
+        <FriendGameList navigation={navigation} localPlayerId={localPlayerId} />
       </ImageBackground>
     </SafeAreaView>
   );

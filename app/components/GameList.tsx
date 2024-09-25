@@ -19,7 +19,13 @@ const client = generateClient<Schema>();
 const selectionSet = ['id', 'playerOneID'] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 
-export default function GameListScreen({ navigation }: { navigation: any }) {
+export default function GameListScreen({
+  navigation,
+  localPlayerId,
+}: {
+  navigation: any;
+  localPlayerId: string;
+}) {
   const [games, setGames] = useState<Session[]>();
 
   const joinGame = async (gameId: string) => {
@@ -28,7 +34,6 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
       gameId,
       userId,
     });
-    console.log('joinGame:', userId);
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
@@ -41,7 +46,7 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
   };
 
   useEffect(() => {
-    const sub = client.models.Session.observeQuery().subscribe({
+    const sub = client.models.Session.observeQuery({}).subscribe({
       next: ({ items, isSynced }) => {
         setGames([...items]);
       },
@@ -70,7 +75,10 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
     }, [playerId]);
 
     return (
-      <Text style={styles.gameText}>Player One ID: {playerName || ''}</Text>
+      <Text style={styles.gameText}>
+        Play against{' '}
+        <Text style={{ fontWeight: 'bold' }}>{playerName || ''}</Text>
+      </Text>
     );
   };
 
@@ -79,7 +87,6 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
       <Text style={styles.gameText}>
         <PlayerNameText playerId={item.playerOneID} />
       </Text>
-      <Text style={styles.gameText}>Game ID: {item.id}</Text>
       {/* Join button */}
       <Button
         title='Join Game'
@@ -112,7 +119,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   gameItem: {
-    padding: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     marginBottom: 8,
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -141,7 +153,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   startButton: {
-    marginTop: 10,
     backgroundColor: '#6B9C41',
     borderRadius: 5,
   },

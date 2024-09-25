@@ -33,6 +33,7 @@ const schema = a
         playerOne: a.belongsTo('Player', 'playerOneID'),
         playerTwoID: a.id(),
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
+        gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
         turns: a.hasMany('Turns', 'gameId'),
       })
       .authorization((allow) => [allow.authenticated()]),
