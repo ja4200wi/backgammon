@@ -88,6 +88,10 @@ export enum BOT_DIFFICULTY {
   MEDIUM = 'medium',
   HARD = 'hard',
 }
+
+export enum BOT_NAMES {
+  RIANA = 'riana',
+}
 export const ICONS = {
   TrophyIcon: (
     <Icon
