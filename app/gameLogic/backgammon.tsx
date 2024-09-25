@@ -31,7 +31,7 @@ export class Game {
       this.board = board;
     } else {
       this.board = new Array(BOARD_SIZE).fill([]).map(() => []);
-      this.setupTestBoard();
+      this.setupDefaultBoard();
     }
     if (currentPlayer) {
       this.currentPlayer = currentPlayer;
@@ -68,17 +68,16 @@ export class Game {
   }
 
   private setupTestBoard() {
-    this.board[0] = this.createStones(1, PLAYER_COLORS.WHITE);
-    this.board[1] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[2] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[4] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[5] = this.createStones(7, PLAYER_COLORS.BLACK);
+    this.board[25] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[19] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[20] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[21] = this.createStones(3, PLAYER_COLORS.WHITE);
     this.board[22] = this.createStones(3, PLAYER_COLORS.WHITE);
-    this.board[23] = this.createStones(2, PLAYER_COLORS.WHITE);
+    this.board[23] = this.createStones(3, PLAYER_COLORS.WHITE);
   }
 
   private setupTestBoard2() {

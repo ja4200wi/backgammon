@@ -66,7 +66,7 @@ export const useGameLogic = (
   const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI,setWhoAmI] = useState<PLAYER_COLORS>()
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('') 
-  const bot = new Bot(BOT_DIFFICULTY.MEDIUM); 
+  const bot = new Bot(BOT_DIFFICULTY.CUSTOM,BOT_NAMES.RIANA); 
   // #endregion
 
 
@@ -207,8 +207,10 @@ export const useGameLogic = (
       if (disableScreen) {
         setDisableScreen(false);
       }
-      await checkForLegalMove(false);
-      runGame();
+      const didswitch = await checkForLegalMove(false);
+      if(game.getCurrentPlayer() === PLAYER_COLORS.BLACK && gamemode === GAME_TYPE.COMPUTER && !didswitch) {
+        runGame();
+      }
     } else if (game && !game.isGameOver() && gamemode === GAME_TYPE.ONLINE && whoAmI === game.getCurrentPlayer()) {
       const turn = game.getTurnAfterMove()
       const newOnlineDice = await sendTurnToServer(turn) 
@@ -413,6 +415,9 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
       if(gamemode === GAME_TYPE.ONLINE && whoAmI !== game.getCurrentPlayer()) {
         return
       }
+      if(gamemode === GAME_TYPE.COMPUTER && game.getCurrentPlayer() === PLAYER_COLORS.BLACK){
+        return
+      }
       checkForLegalMove(true,game);
     }
   };
@@ -445,19 +450,24 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
     if(currentGame && !currentGame.hasLegalMove()) {
       if (fastSwitch) {
         switchplayer();
+        return true
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         switchplayer();
+        return true
       }
     }
     else if (!currentGame && game && !game.hasLegalMove()) {
       if (fastSwitch) {
         switchplayer();
+        return true
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1500));
         switchplayer();
+        return true
       }
     }
+    return false
   };
   const showAcceptMoveButton = (currentGame: Game) => {
     if (game) {
@@ -501,14 +511,13 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
       return game?.getLegalMovesFrom(from) ?? [];
     } else return [];
   };
-  const runBot = () => {
+  const runBot = async () => {
     if (game) {
       if (game.getMovesLeft().length === 0) {
-        setTimeout(() => updateMoveIsOver(), 1000);
       } else {
         if (game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
           setDisableScreen(true);
-          makeBotMove();
+          await makeBotMove();
         }
       }
     }
@@ -516,9 +525,9 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
   const makeBotMove = async () => {
     if (game) {
       //const botTurn = bot.tempTurnEasyBot(game);
-      const botTurn = bot.makeMove(game,BOT_NAMES.RIANA)
-      if(botTurn)
-      await makeTurn(botTurn);
+      const botTurn = bot.makeMove(game)
+      if(botTurn) {
+      await makeTurn(botTurn);}
     else
     console.log('FAILED')
     }

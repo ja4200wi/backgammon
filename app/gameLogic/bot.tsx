@@ -7,22 +7,24 @@ import { Turn } from "./turn";
 export class Bot {
     private difficulty: BOT_DIFFICULTY
     private lastTurn: Turn
+    private botType: BOT_NAMES // set DEFAULT if difficulty is not custom
 
-    constructor(difficulty: BOT_DIFFICULTY) {
+    constructor(difficulty: BOT_DIFFICULTY,botType: BOT_NAMES) {
         this.difficulty = difficulty
+        this.botType = botType
         this.lastTurn = new Turn()
     }
     public getLastTurn() {
         return this.lastTurn
     }
 
-    public makeMove(game:Game, botType?:BOT_NAMES): (Turn|null) {
+    public makeMove(game:Game): (Turn|null) {
         switch(this.difficulty) {
-            case BOT_DIFFICULTY.EASY:
+            case BOT_DIFFICULTY.RANDOM:
                 return (this.makeMoveEasyBot(game))
                 break
-            case BOT_DIFFICULTY.MEDIUM:
-                return (this.makeMoveMediumBot(game,botType))
+            case BOT_DIFFICULTY.CUSTOM:
+                return (this.makeMoveMediumBot(game))
                 break
             case BOT_DIFFICULTY.HARD:
                 return (this.makeMoveHardBot(game))
@@ -34,14 +36,8 @@ export class Bot {
     private makeMoveEasyBot(game:Game): (Turn | null) {
         return this.tempTurnEasyBot(game)
     }
-    private makeMoveMediumBot(game: Game, botType?:BOT_NAMES): (Turn | null) {
-        let bestTurn:{ turn: Turn; score: number; }
-        if(botType) {
-            bestTurn = this.getMediumScore(game, [],botType);
-        } else {
-            bestTurn = {turn:new Turn(),score:0}
-        }
-        console.log('Best turn is:', bestTurn);
+    private makeMoveMediumBot(game: Game): (Turn | null) {
+        let bestTurn = this.getMediumScore(game, [],this.botType);
         return bestTurn.turn;
     }    
     private makeMoveHardBot(game:Game): (Turn | null) {
@@ -76,9 +72,9 @@ export class Bot {
         }
         return new Turn(moves)
     }
-    private getMediumScore(game: Game, savedMoves: Move[],botType:BOT_NAMES): { turn: Turn, score: number } {
+    private getMediumScore(game: Game, savedMoves: Move[],botType:BOT_NAMES,count?:number): { turn: Turn, score: number } {
         // Base case: if no moves are left, calculate the score
-        if (game.getMovesLeft().length === 0) {
+        if (game.getMovesLeft().length === 0 || !game.hasLegalMove()) {
             const board = this.transformPositionToBoard(game.getCurrentPositions());
             let bot:any
             switch (botType) {
@@ -91,7 +87,6 @@ export class Bot {
                     break;
             }
             const positionScore = bot.getPositionScore();
-            //console.log('Done with analysis: SCORE:', positionScore);
             return { turn: new Turn(savedMoves), score: positionScore };
         }
     
