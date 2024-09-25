@@ -63,6 +63,7 @@ export const handler: Schema['makeTurn']['functionHandler'] = async (event) => {
   const turnNumber = type === 'INIT' ? 0 : turns!.data.listTurns.items.length;
 
   const color = (await getColorOfPlayer(gameId, userId)) as TurnsPlayerColor;
+  console.log('color: ', color);
 
   const createTurnResponse = await client
     .graphql({

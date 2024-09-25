@@ -1,6 +1,6 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 
@@ -38,10 +38,24 @@ export default function StartFriendGame({
     setUserNames((prevState) => ({ ...prevState, ...nameMapping }));
   };
 
-  const createGameWithFriend = async (userIdOne: string, userIdTwo: string) => {
+  const createGameWithFriend = async (userIdOne: string, friendId: string) => {
+    // look if games with this player already exist
+    const { data: sessions, errors } = await client.models.Session.list({
+      filter: {
+        or: [
+          { playerOneID: { eq: friendId } },
+          { playerTwoID: { eq: friendId } },
+        ],
+      },
+    });
+    if (sessions?.length > 0) {
+      // game already exists
+      Alert.alert('Game already exists');
+      return;
+    }
     client.models.Session.create({
       playerOneID: userIdOne,
-      playerTwoID: userIdTwo,
+      playerTwoID: friendId,
       gameType: 'FRIENDLIST',
     });
   };

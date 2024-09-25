@@ -15,6 +15,8 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import { APP_COLORS, GAME_TYPE } from '../utils/constants';
 import { getPlayerName } from '../service/profileService';
 import StartFriendGame from './StartFriendGame';
+import { initGame } from '../service/gameService';
+import GameListItem from './GameListItem';
 
 const client = generateClient<Schema>();
 
@@ -24,6 +26,7 @@ type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 interface TurnInfo {
   player: string;
   date: string;
+  numTurns: number;
 }
 
 export default function FriendGameList({
@@ -56,6 +59,7 @@ export default function FriendGameList({
         gameMapping[gameId] = {
           player: 'Unknown Player',
           date: 'Unknown Date',
+          numTurns: 0,
         };
         continue;
       }
@@ -63,6 +67,7 @@ export default function FriendGameList({
         gameMapping[gameId] = {
           player: 'Game started',
           date: allTurns[0].createdAt,
+          numTurns: 1,
         };
         continue;
       }
@@ -79,6 +84,7 @@ export default function FriendGameList({
             ((await fetchPlayerName(turn.playerId!)) as string) ??
             'Unknown Player',
           date: turn.createdAt,
+          numTurns: numTurns,
         };
       }
     }
@@ -87,10 +93,9 @@ export default function FriendGameList({
 
   const joinGame = async (gameId: string) => {
     const { userId } = await getCurrentUser();
-    const { errors, data } = await client.mutations.joinGame({
-      gameId,
-      userId,
-    });
+    if (lastTurns[gameId]?.numTurns === 0) {
+      initGame(gameId, userId);
+    }
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
@@ -157,39 +162,41 @@ export default function FriendGameList({
     );
   };
 
-  const renderItem = ({ item }: { item: Session }) => {
-    const turnInfo = lastTurns[item.id]; // Get the object containing player and date
-    const hasGameStarted = turnInfo && turnInfo.player !== 'Unknown Player';
-    const isPlayerOne = item.playerOneID === localPlayerId;
-    const buttonTitle = hasGameStarted ? 'Continue' : 'Start Game';
-    // disable button if playerOne and game has not started yet
-    const disabled = !hasGameStarted && isPlayerOne;
-    return (
-      <View style={styles.gameItem}>
-        <Text style={styles.gameText}>
-          {/* Display the player name */}
-          {localPlayerId === item.playerOneID ? (
-            <PlayerNameText playerId={item.playerTwoID} />
-          ) : (
-            <PlayerNameText playerId={item.playerOneID} />
+  const openRequests =
+    games?.filter(
+      (game) =>
+        game.playerTwoID === localPlayerId && lastTurns[game.id]?.numTurns === 0
+    ) || [];
+
+  const sentRequests =
+    games?.filter(
+      (game) =>
+        game.playerOneID === localPlayerId && lastTurns[game.id]?.numTurns === 0
+    ) || [];
+
+  const currentGames =
+    games?.filter((game) => lastTurns[game.id]?.numTurns > 0) || [];
+
+  const renderGameList = (gameList: Session[], title: string) => (
+    <View style={{ marginBottom: 20 }}>
+      <Text style={styles.listTitle}>{title}</Text>
+      {gameList.length === 0 ? (
+        <Text style={styles.noGamesText}>No games available.</Text>
+      ) : (
+        <FlatList
+          data={gameList}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <GameListItem
+              navigation={navigation}
+              localPlayerId={localPlayerId}
+              item={item}
+            />
           )}
-        </Text>
-        <Text>
-          Last Move:{' '}
-          {turnInfo ? `${turnInfo.player} on ${turnInfo.date}` : 'Loading...'}
-        </Text>
-        {/* Join button */}
-        <Button
-          title={buttonTitle}
-          buttonStyle={
-            hasGameStarted ? styles.continueButton : styles.startButton
-          }
-          disabled={disabled}
-          onPress={() => joinGame(item.id)}
         />
-      </View>
-    );
-  };
+      )}
+    </View>
+  );
 
   const handleStartGameWithFriend = () => async () => {
     setModalVisible(true);
@@ -197,15 +204,9 @@ export default function FriendGameList({
 
   return (
     <View style={styles.container}>
-      {games?.length === 0 ? (
-        <Text style={styles.noGamesText}>No games available.</Text>
-      ) : (
-        <FlatList
-          data={games}
-          keyExtractor={(item, index) => index.toString()} // Assuming `id` is a unique key for each game
-          renderItem={renderItem}
-        />
-      )}
+      {renderGameList(openRequests, 'Open Requests')}
+      {renderGameList(currentGames, 'Current Games')}
+      {renderGameList(sentRequests, 'Sent Requests')}
       <Button
         title={'Start New Game'}
         buttonStyle={styles.startNewButton}
@@ -326,5 +327,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'darkred',
     color: 'black',
     padding: 2,
+  },
+  listTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
 });
