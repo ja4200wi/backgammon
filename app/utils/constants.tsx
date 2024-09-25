@@ -84,9 +84,14 @@ export enum GAME_TYPE {
   PASSPLAY = 'PassandPlay',
 }
 export enum BOT_DIFFICULTY {
-  EASY = 'easy',
-  MEDIUM = 'medium',
+  RANDOM = 'random',
+  CUSTOM = 'custom',
   HARD = 'hard',
+}
+
+export enum BOT_NAMES {
+  RIANA = 'riana',
+  DEFAULT = 'default'
 }
 export const ICONS = {
   TrophyIcon: (

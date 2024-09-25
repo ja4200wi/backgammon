@@ -87,11 +87,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const [startedGame,setStartedGame] = useState<boolean>(false)
   useEffect(() => {
     if(!startedGame && (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)) {
-      console.log('starting offline game')
       setStartedGame(true)
       startGame(gameMode);
     } else if(!startedGame && gameMode === GAME_TYPE.ONLINE && onlineTurns && onlineTurns.length > 0) {
-      console.log('starting online game')
       setStartedGame(true)
       startGame(gameMode,onlineTurns)
     }
