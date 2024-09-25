@@ -10,6 +10,7 @@ import PipCount from './PipCount';
 import { DICE_COLORS, PLAYER_COLORS, DIMENSIONS, BOARD_COLORS, GAME_SETTINGS } from '../../utils/constants';
 import { DoubleDice } from '../../gameLogic/doubleDice';
 import AnimatedChecker from './AnimatedChecker';
+import { identifyUser } from 'aws-amplify/in-app-messaging';
 
 export interface Position {
   index: number;
@@ -106,10 +107,13 @@ const Board = forwardRef<any, BoardProps>(({
     } else {
       checker = newSpikes[sourceIndex].checkers.pop()!
     }
+    console.log('checker index is:',checker.props.index)
     if(targetIndex !== 100) {
+      console.log(checkerPos)
     const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
     const endSpike = spikePositions.find((item) => item.index === targetIndex)
     const checkerCoordsEnd = calculateAnimationPositionHelper(false,endSpike!)
+    console.log('FINDING checkercoords',checkerCoordsStart,checkerCoordsEnd)
     handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,checkerCoordsEnd[0],checkerCoordsEnd[1])
     } else {
       const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
@@ -119,22 +123,31 @@ const Board = forwardRef<any, BoardProps>(({
     await pause(GAME_SETTINGS.checkerAnimationDuration - 25)
     if (checker) {
       if (targetIndex === 0 || targetIndex === 25) {
-        prisonCheckers.push(checker);
+        prisonCheckers.unshift(checker); // Push the checker to the bottom of the prison stack
       } else if (targetIndex === 100) {
-        lastMoves.push({index:checker.props.index,from:sourceIndex,to:targetIndex})
-        homeChecker.push(checker);
+        lastMoves.push({ index: checker.props.index, from: sourceIndex, to: targetIndex });
+        homeChecker.unshift(checker); // Push the checker to the bottom of the home stack
       } else {
-        if(spikes[targetIndex].checkers[0]?.props.color === oppColor && spikes[targetIndex].checkers.length === 1) {
-          const oppChecker = spikes[targetIndex].checkers.pop()!
-          const prisonIndex = oppChecker.props.color === PLAYER_COLORS.WHITE ? 0 : 25
-          lastMoves.push({index:checker.props.index,from:sourceIndex,to:targetIndex,indexHit:oppChecker.props.index,fromHit:targetIndex,toHit:prisonIndex})
-          prisonCheckers.push(oppChecker)
+        if (spikes[targetIndex].checkers[0]?.props.color === oppColor && spikes[targetIndex].checkers.length === 1) {
+          const oppChecker = spikes[targetIndex].checkers.pop()!;
+          const prisonIndex = oppChecker.props.color === PLAYER_COLORS.WHITE ? 0 : 25;
+          lastMoves.push({
+            index: checker.props.index,
+            from: sourceIndex,
+            to: targetIndex,
+            indexHit: oppChecker.props.index,
+            fromHit: targetIndex,
+            toHit: prisonIndex
+          });
+          prisonCheckers.unshift(oppChecker); // Push the opponent's checker to the bottom of the prison stack
         } else {
-          lastMoves.push({index:checker.props.index,from:sourceIndex,to:targetIndex})
+          lastMoves.push({ index: checker.props.index, from: sourceIndex, to: targetIndex });
         }
-        spikes[targetIndex].checkers.push(checker)
+        spikes[targetIndex].checkers.unshift(checker); // Push the checker to the bottom of the spike stack
+        console.log('pushed checker to ',targetIndex)
       }
     }
+    
     // Timeout used to await DOM rendering (works eventhough timeout is at 0)
     setTimeout(async ()=> {
       await measureChecker()
@@ -269,7 +282,7 @@ const Board = forwardRef<any, BoardProps>(({
               resolve(); 
             });
           } else {
-            console.warn(`Checker ref not found for index: ${index}`);
+            positions.push({index,x:0,y:0})
             resolve(); // Resolve even if there's no ref to avoid blocking
           }
         });
@@ -340,16 +353,7 @@ const setCheckerRef = (index: number) => (ref: View | null) => {
   if (ref) {
     checkerRefs.current[index] = ref;
   } else {
-    setTimeout(() => {
-      // Attempt to manually find the view handle for the checker
-      const handle = findNodeHandle(checkerRefs.current[index]);
-      if (handle) {
-        console.log(`Found checker with handle for index ${index}:`, handle);
-        //checkerRefs.current[index] = handle;
-      } else {
-        console.warn(`Unable to find handle for checker index ${index}`);
-      }
-    }, 0);
+    checkerRefs.current[index] = null;
   }
 };
     
@@ -359,7 +363,7 @@ const setCheckerRef = (index: number) => (ref: View | null) => {
       for (let i = 0; i < count; i++) {
         const checker = (
           <Checker
-            key={`${color}-${index}-${i}`}
+            key={checkerIndex}
             color={color}
             width={DIMENSIONS.spikeWidth}
             height={DIMENSIONS.spikeWidth}
