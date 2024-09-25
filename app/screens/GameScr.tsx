@@ -157,7 +157,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     navigation.navigate('OnlineMatching', {});
   }
   const handleAnimation = async (startX:number,startY:number,endX:number,endY:number) => {
-    console.log('VALUES FOR ANIMATION:',startX,startY,endX,endY)
     setAnimatedCheckerValues({sx:startX,sy:startY,ex:endX,ey:endY})
     setDoCheckerAnimation(true)
     setTimeout(() => {

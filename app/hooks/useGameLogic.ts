@@ -409,9 +409,7 @@ const getLatestOnlineTurn = (latestTurn:OnlineTurn[]) => {
     return (gamemode === GAME_TYPE.ONLINE || gamemode === GAME_TYPE.ELO || gamemode === GAME_TYPE.FRIENDLIST)
   }
   const updatePositionHandler = async (sourceIndex:number,targetIndex:number, type?:'UNDO') => {
-    console.log('Boardref is:',boardRef.current)
     if (boardRef.current) {
-      console.log('in handler with',sourceIndex,targetIndex,type)
       boardRef.current.updatePosition(sourceIndex, targetIndex,type);  
       return true
     }

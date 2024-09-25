@@ -29,8 +29,6 @@ const AnimatedChecker: React.FC<AnimatedCheckerProps> = ({ color, width, height,
 
   // Run the animation on mount
   useEffect(() => {
-    console.log('Start:', startX, startY);
-    console.log('End:', endX, endY);
     translateX.value = startX; // Reset to start position
     translateY.value = startY; // Reset to start position
     translateX.value = withTiming(endX, { duration: GAME_SETTINGS.checkerAnimationDuration });

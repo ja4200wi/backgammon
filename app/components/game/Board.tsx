@@ -99,7 +99,22 @@ const Board = forwardRef<any, BoardProps>(({
       undoPosition()
     } else {
     const newSpikes = [...spikes];
-    const oppColor = currentPlayer === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
+    const checker = getChecker(sourceIndex,newSpikes)
+
+    doAnimation(checker,targetIndex)
+    await pause(GAME_SETTINGS.checkerAnimationDuration - 25)
+
+    pushChecker(checker,sourceIndex,targetIndex)
+    
+    // Timeout used to await DOM rendering (works eventhough timeout is at 0)
+    setTimeout(async ()=> {
+      await measureChecker()
+    },0)
+    setSpikes(newSpikes)
+    }
+    
+  }
+  const getChecker = (sourceIndex:number, newSpikes:any) => {
     let checker:React.ReactElement<any, string | React.JSXElementConstructor<any>>
     if(sourceIndex === 0 || sourceIndex === 25) {
       const indexToRemove = prisonCheckers.findIndex(checker => checker.props.color === PLAYER_COLORS.WHITE);
@@ -107,20 +122,22 @@ const Board = forwardRef<any, BoardProps>(({
     } else {
       checker = newSpikes[sourceIndex].checkers.pop()!
     }
-    console.log('checker index is:',checker.props.index)
+    return checker
+  }
+  const doAnimation = (checker:React.ReactElement<any, string | React.JSXElementConstructor<any>>,targetIndex:number) => {
     if(targetIndex !== 100) {
-      console.log(checkerPos)
-    const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
-    const endSpike = spikePositions.find((item) => item.index === targetIndex)
-    const checkerCoordsEnd = calculateAnimationPositionHelper(false,endSpike!)
-    console.log('FINDING checkercoords',checkerCoordsStart,checkerCoordsEnd)
-    handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,checkerCoordsEnd[0],checkerCoordsEnd[1])
-    } else {
       const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
-      const homeCoords = calculateAnimationHomeCoords()
-      handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,homeCoords[0],homeCoords[1])
-    }
-    await pause(GAME_SETTINGS.checkerAnimationDuration - 25)
+      const endSpike = spikePositions.find((item) => item.index === targetIndex)
+      const checkerCoordsEnd = calculateAnimationPositionHelper(false,endSpike!)
+      handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,checkerCoordsEnd[0],checkerCoordsEnd[1])
+      } else {
+        const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
+        const homeCoords = calculateAnimationHomeCoords()
+        handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,homeCoords[0],homeCoords[1])
+      }
+  }
+  const pushChecker = (checker:any,sourceIndex:number,targetIndex:number) => {
+    const oppColor = currentPlayer === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
     if (checker) {
       if (targetIndex === 0 || targetIndex === 25) {
         prisonCheckers.unshift(checker); // Push the checker to the bottom of the prison stack
@@ -144,17 +161,8 @@ const Board = forwardRef<any, BoardProps>(({
           lastMoves.push({ index: checker.props.index, from: sourceIndex, to: targetIndex });
         }
         spikes[targetIndex].checkers.unshift(checker); // Push the checker to the bottom of the spike stack
-        console.log('pushed checker to ',targetIndex)
       }
     }
-    
-    // Timeout used to await DOM rendering (works eventhough timeout is at 0)
-    setTimeout(async ()=> {
-      await measureChecker()
-    },0)
-    setSpikes(newSpikes)
-    }
-    
   }
   const undoPosition = async () => {
     const currentLastMove = lastMoves.pop()
@@ -181,6 +189,97 @@ const Board = forwardRef<any, BoardProps>(({
       measureChecker()
     }, 0);
   }
+  const handlePrisonPress = (index: number) => {
+    if (selectedSource === null && prisonCheckers.length > 0) {
+      if (currentPlayer === PLAYER_COLORS.WHITE) {
+        setSelectedSource(0);
+      } else {
+        setSelectedSource(25);
+      }
+    } else if (selectedSource !== null) {
+      moveChecker(selectedSource, index);
+    }
+  };
+  const handleSpikePress = (index: number) => {
+    if (selectedSource === null && spikes[index].checkers.length > 0) {
+      setSelectedSource(index);
+    } else if (selectedSource !== null) {
+      if(possibleMoves.includes(index)) {
+        moveChecker(selectedSource, index);
+      } else {
+        setSelectedSource(index)
+      }
+    }
+  };
+  const handleHomePress = (index: number) => {
+    if (selectedSource === null) {
+      return;
+    } else if (selectedSource !== null) {
+      moveChecker(selectedSource, index);
+    }
+  };
+  const measureSpikes = async () => {
+    const positions: { index: number; x: number; y: number }[] = [];
+    const measurePromises = spikeRefs.current.map((spikeRef, index) => {
+      return new Promise<void>((resolve) => {
+        if (spikeRef) {
+          spikeRef.measure((x, y, width, height, pageX, pageY) => {
+            const centerX = pageX
+            const centerY = pageY
+
+            positions.push({ index, x: centerX, y: centerY });
+            resolve(); 
+          });
+        } else {
+          resolve(); 
+        }
+      });
+    });
+    await Promise.all(measurePromises);
+    setSpikePositions(positions);
+  };
+  const measureChecker = async () => {
+    try {
+      const positions: { index: number; x: number; y: number }[] = [];
+      const measurePromises = checkerRefs.current.map((checkerRef, index) => {
+        return new Promise<void>((resolve, reject) => {
+          if (checkerRef) {
+            checkerRef.measure((x, y, width, height, pageX, pageY) => {
+              if (pageX !== undefined && pageY !== undefined) {
+                const centerX = pageX;
+                const centerY = pageY;
+                positions.push({ index, x: centerX, y: centerY });
+              }
+              resolve(); 
+            });
+          } else {
+            positions.push({index,x:0,y:0})
+            resolve(); // Resolve even if there's no ref to avoid blocking
+          }
+        });
+      });
+  
+      await Promise.all(measurePromises);
+  
+      if (positions.length > 0) {
+        setCheckerPos(positions);
+      }
+    } catch (error) {
+      console.error('Error measuring checkers:', error);
+    }
+  };
+  const measureHome = (color: 'white' | 'black') => {
+    if (homeRefs.current[color]) {
+      homeRefs.current[color]?.measure((x, y, width, height, pageX, pageY) => {
+        const homeX = pageX + DIMENSIONS.homeWidth - DIMENSIONS.spikeWidth - 5 ;
+        const homeY = pageY + (DIMENSIONS.spikeWidth / 3) - 4;
+        setHomePositions((prevPositions) => ({
+          ...prevPositions,
+          [color]: {homeX, homeY },
+        }));
+      });
+    }
+  };
   const pause = async (duration: number) => {
     return new Promise<void>((resolve) => {
       setTimeout(resolve, duration);
@@ -224,114 +323,6 @@ const Board = forwardRef<any, BoardProps>(({
     const homeCount = homeChecker.filter((item) => item.props.color === currentPlayer).length
     return [home.homeX - (homeCount * 6),home.homeY]
   }
-  const handlePrisonPress = (index: number) => {
-    if (selectedSource === null && prisonCheckers.length > 0) {
-      if (currentPlayer === PLAYER_COLORS.WHITE) {
-        setSelectedSource(0);
-      } else {
-        setSelectedSource(25);
-      }
-    } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index);
-    }
-  };
-  useLayoutEffect(() => {
-    if(dice.startingSeq) {
-      setTimeout(() => {
-        measureChecker();
-        measureSpikes()
-        measureHome('black')
-        measureHome('white')
-      }, 500);
-    }
-  }, [positions]);
-  
-  const measureSpikes = async () => {
-    const positions: { index: number; x: number; y: number }[] = [];
-    const measurePromises = spikeRefs.current.map((spikeRef, index) => {
-      return new Promise<void>((resolve) => {
-        if (spikeRef) {
-          spikeRef.measure((x, y, width, height, pageX, pageY) => {
-            const centerX = pageX
-            const centerY = pageY
-
-            positions.push({ index, x: centerX, y: centerY });
-            resolve(); 
-          });
-        } else {
-          resolve(); 
-        }
-      });
-    });
-    await Promise.all(measurePromises);
-    setSpikePositions(positions);
-  };
-  const measureChecker = async () => {
-    try {
-      const positions: { index: number; x: number; y: number }[] = [];
-      console.log('CheckerRefs size:', checkerRefs.current.length);
-      const measurePromises = checkerRefs.current.map((checkerRef, index) => {
-        return new Promise<void>((resolve, reject) => {
-          if (checkerRef) {
-            checkerRef.measure((x, y, width, height, pageX, pageY) => {
-              if (pageX !== undefined && pageY !== undefined) {
-                const centerX = pageX;
-                const centerY = pageY;
-                positions.push({ index, x: centerX, y: centerY });
-              }
-              resolve(); 
-            });
-          } else {
-            positions.push({index,x:0,y:0})
-            resolve(); // Resolve even if there's no ref to avoid blocking
-          }
-        });
-      });
-  
-      await Promise.all(measurePromises);
-  
-      if (positions.length > 0) {
-        setCheckerPos(positions);
-      }
-    } catch (error) {
-      console.error('Error measuring checkers:', error);
-    }
-  };
-  const measureHome = (color: 'white' | 'black') => {
-    if (homeRefs.current[color]) {
-      homeRefs.current[color]?.measure((x, y, width, height, pageX, pageY) => {
-        const homeX = pageX + DIMENSIONS.homeWidth - DIMENSIONS.spikeWidth - 5 ;
-        const homeY = pageY + (DIMENSIONS.spikeWidth / 3) - 4;
-        setHomePositions((prevPositions) => ({
-          ...prevPositions,
-          [color]: {homeX, homeY },
-        }));
-      });
-    }
-  };
-  
-  const handleSpikePress = (index: number) => {
-    if (selectedSource === null && spikes[index].checkers.length > 0) {
-      setSelectedSource(index);
-    } else if (selectedSource !== null) {
-      if(possibleMoves.includes(index)) {
-        moveChecker(selectedSource, index);
-      } else {
-        setSelectedSource(index)
-      }
-    }
-  };
-
-  const handleHomePress = (index: number) => {
-    if (selectedSource === null) {
-      return;
-    } else if (selectedSource !== null) {
-      moveChecker(selectedSource, index);
-    }
-  };
-  useImperativeHandle(ref, () => ({
-    updatePosition, 
-  }));
   const distributeCheckers = () => {
     const newSpikes = Array.from({ length: 26 }, (_, index) => ({
       height: DIMENSIONS.spikeHeight,
@@ -345,19 +336,8 @@ const Board = forwardRef<any, BoardProps>(({
     const tempPrisonCheckers: React.ReactElement[] = [];
     const tempHomeCheckers: React.ReactElement[] = [];
   
-    let checkerIndex = 0; // To uniquely assign refs to each checker
-  
-    // Function to set the ref correctly
+    let checkerIndex = 0;
     
-const setCheckerRef = (index: number) => (ref: View | null) => {
-  if (ref) {
-    checkerRefs.current[index] = ref;
-  } else {
-    checkerRefs.current[index] = null;
-  }
-};
-    
-  
     positions.forEach((position) => {
       const { index, color, count } = position;
       for (let i = 0; i < count; i++) {
@@ -391,14 +371,30 @@ const setCheckerRef = (index: number) => (ref: View | null) => {
       }, 0);
     }
   };
-  
-  
-
+  const setCheckerRef = (index: number) => (ref: View | null) => {
+    if (ref) {
+      checkerRefs.current[index] = ref;
+    } else {
+      checkerRefs.current[index] = null;
+    }
+  };
   const calculatePossibleMoves = (sourceIndex: number) => {
     const possibleMovesFrom = legalMovesFrom(sourceIndex);
     setPossibleMoves(possibleMovesFrom);
   };
-
+  useImperativeHandle(ref, () => ({
+    updatePosition, 
+  }));
+  useLayoutEffect(() => {
+    if(dice.startingSeq) {
+      setTimeout(() => {
+        measureChecker();
+        measureSpikes()
+        measureHome('black')
+        measureHome('white')
+      }, 500);
+    }
+  }, [positions]);
   useEffect(() => {
     if(dice.startingSeq) {
       distributeCheckers();
