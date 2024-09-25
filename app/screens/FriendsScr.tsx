@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { DIMENSIONS, GAME_TYPE } from '../utils/constants';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
-import FriendListScreen from '../components/FriendList';
+import FriendListScreen from '../components/Friends';
 import { getUserName } from '../service/profileService';
 
 export default function Friends({
