@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Checker from './Checker'; // Import your Checker component
-import { APP_COLORS, PLAYER_COLORS } from '../../utils/constants';
+import { APP_COLORS, DIMENSIONS, PLAYER_COLORS } from '../../utils/constants';
 import DoubleDiceComp from './doubleDiceComp';
 import { DoubleDice } from '../../gameLogic/doubleDice';
 
@@ -14,14 +14,14 @@ interface HomeProps {
   checker: React.ReactElement[];
 }
 
-const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighlighted,checker }) => {
+const Home = forwardRef<View,HomeProps> (({ onPress, count, player, doubleDice, isHighlighted,checker },ref) => {
   const newCheckers = [];
   const ownChecker = checker.filter((item) => item.props.color === player)
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < ownChecker.length; i++) {
     newCheckers.push(
       <View key={i} style={[styles.checkerContainer, { right: i * 6 }]}>
-        {ownChecker[i]}
-        {i === count - 1 && (
+        {ownChecker[i] || <Checker height={DIMENSIONS.spikeWidth} width={DIMENSIONS.spikeWidth} color={player} />}
+        {i === ownChecker.length - 1 && (
           <Text
             style={[
               styles.checkerText,
@@ -33,7 +33,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighl
               },
             ]}
           >
-            {count}
+            {ownChecker.length}
           </Text>
         )}
       </View>
@@ -41,7 +41,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighl
   }
 
   return (
-    <View style={[styles.wrapper]}>
+    <View ref={ref} style={[styles.wrapper]}>
       {
         player === doubleDice.getLastDobule() ? (
           <View style={styles.doubleDiceCompContainer}>
@@ -54,7 +54,7 @@ const Home: React.FC<HomeProps> = ({ onPress, count, player, doubleDice, isHighl
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 5,
     height: 34,
-    width: 135,
+    width: DIMENSIONS.homeWidth,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',

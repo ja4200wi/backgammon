@@ -29,7 +29,7 @@ interface GameScrProps {
   route: any;
 }
 
-const initialSpikes: React.ReactElement[][] = new Array(24)
+const initialSpikes: React.ReactElement[][] = new Array(26)
   .fill(null)
   .map(() => []);
 

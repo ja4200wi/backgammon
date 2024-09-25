@@ -9,7 +9,7 @@ import {
 import { Game } from './backgammon';
 
 export const initializeSpikes = (): ReactElement[][] => {
-  return new Array(24).fill(null).map(() => []);
+  return new Array(26).fill(null).map(() => []);
 };
 export const initializeCheckers = (
   color: PLAYER_COLORS.WHITE | PLAYER_COLORS.BLACK

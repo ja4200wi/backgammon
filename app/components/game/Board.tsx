@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, forwardRef, useImperativeHandle } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, findNodeHandle } from 'react-native';
 import Spike from './Spike';
 import Checker from './Checker';
 import Dice from './Dice';
@@ -52,6 +52,10 @@ const Board = forwardRef<any, BoardProps>(({
 }, ref) => {
   const spikeRefs = useRef<Array<View | null>>([]);
   const checkerRefs = useRef<Array<View | null>>([]);
+  const homeRefs = useRef<{ [key: string]: View | null }>({
+    white: null,
+    black: null,
+  });
   const initialSpikes = Array.from({ length: 26 }, (_, index) => ({
     height: DIMENSIONS.spikeHeight,
     color: index % 2 === 0 ? colors.spikeDarkColor : colors.spikeLightColor,
@@ -64,14 +68,20 @@ const Board = forwardRef<any, BoardProps>(({
   const [spikes, setSpikes] = useState(initialSpikes);
   const [spikePositions, setSpikePositions] = useState<{ index:number, x:number, y:number }[]>([])
   const [checkerPos,setCheckerPos] = useState<{ index:number, x:number, y:number }[]>([])
+  const [homePositions, setHomePositions] = useState<{ [key: string]: {homeX: number; homeY: number } }>({
+    white: { homeX: 0, homeY: 0 },
+    black: { homeX: 0, homeY: 0 },
+  });
   const [selectedSource, setSelectedSource] = useState<number | null>(null);
-  const [lastMoves,setLastMoves] = useState<{index:number,from:number[],to:number[],indexHit?:number,fromHit?:number[],toHit?:number[]}[]>([])
+  const [lastMoves,setLastMoves] = useState<{index:number,from:number,to:number,indexHit?:number,fromHit?:number,toHit?:number}[]>([])
   const [prisonCheckers, setPrisonCheckers] = useState<React.ReactElement[]>(
     []
   );
   const [homeChecker, setHomeChecker] = useState<React.ReactElement[]>(
     []
   );
+  const WHITEHOMEINDEX = 0
+  const BLACKHOMEINDEX = 1
   const [possibleMoves, setPossibleMoves] = useState<number[]>([]);
   const moveChecker = async (sourceIndex: number, targetIndex: number) => {
     const success = await onMoveChecker(sourceIndex, targetIndex);
@@ -85,11 +95,9 @@ const Board = forwardRef<any, BoardProps>(({
   };
   const updatePosition = async (sourceIndex:number,targetIndex:number, type?: 'UNDO') => {
     if(type === 'UNDO') {
-      console.log('UNDOING POSITION in updatePosition BOARD')
       undoPosition()
     } else {
-      const newSpikes = [...spikes];
-    console.log('UPDATING BOARD:')
+    const newSpikes = [...spikes];
     const oppColor = currentPlayer === PLAYER_COLORS.WHITE ? PLAYER_COLORS.BLACK : PLAYER_COLORS.WHITE
     let checker:React.ReactElement<any, string | React.JSXElementConstructor<any>>
     if(sourceIndex === 0 || sourceIndex === 25) {
@@ -98,22 +106,31 @@ const Board = forwardRef<any, BoardProps>(({
     } else {
       checker = newSpikes[sourceIndex].checkers.pop()!
     }
+    if(targetIndex !== 100) {
     const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
     const endSpike = spikePositions.find((item) => item.index === targetIndex)
     const checkerCoordsEnd = calculateAnimationPositionHelper(false,endSpike!)
     handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,checkerCoordsEnd[0],checkerCoordsEnd[1])
-    console.log('starting pause')
+    } else {
+      const checkerCoordsStart = checkerPos.find((item) => item.index === checker.props.index)
+      const homeCoords = calculateAnimationHomeCoords()
+      handleAnimation(checkerCoordsStart!.x,checkerCoordsStart!.y,homeCoords[0],homeCoords[1])
+    }
     await pause(GAME_SETTINGS.checkerAnimationDuration - 25)
-    console.log('ending pause')
     if (checker) {
       if (targetIndex === 0 || targetIndex === 25) {
         prisonCheckers.push(checker);
       } else if (targetIndex === 100) {
+        lastMoves.push({index:checker.props.index,from:sourceIndex,to:targetIndex})
         homeChecker.push(checker);
       } else {
         if(spikes[targetIndex].checkers[0]?.props.color === oppColor && spikes[targetIndex].checkers.length === 1) {
           const oppChecker = spikes[targetIndex].checkers.pop()!
+          const prisonIndex = oppChecker.props.color === PLAYER_COLORS.WHITE ? 0 : 25
+          lastMoves.push({index:checker.props.index,from:sourceIndex,to:targetIndex,indexHit:oppChecker.props.index,fromHit:targetIndex,toHit:prisonIndex})
           prisonCheckers.push(oppChecker)
+        } else {
+          lastMoves.push({index:checker.props.index,from:sourceIndex,to:targetIndex})
         }
         spikes[targetIndex].checkers.push(checker)
       }
@@ -127,8 +144,29 @@ const Board = forwardRef<any, BoardProps>(({
     
   }
   const undoPosition = async () => {
-    console.log('in undoPosition; distributing checker now')
-    distributeCheckers()
+    const currentLastMove = lastMoves.pop()
+    let checker:React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    let oppChecker:React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    if(currentLastMove) {
+      if(currentLastMove.to === 100) {
+        const indexToRemove = homeChecker.findIndex(checker => checker.props.index === currentLastMove.index);
+        checker = homeChecker.splice(indexToRemove, 1).pop()!
+      } else {
+        checker = spikes[currentLastMove.to].checkers.pop()!
+      }
+      spikes[currentLastMove.from].checkers.push(checker)
+      if(currentLastMove.indexHit) {
+        const indexToRemove = prisonCheckers.findIndex(checker => checker.props.index === currentLastMove.indexHit);
+        oppChecker = prisonCheckers.splice(indexToRemove, 1).pop()!
+        spikes[currentLastMove.fromHit!].checkers.push(checker)
+      }
+    }
+    setSpikes([...spikes])
+    setPrisonCheckers([...prisonCheckers])
+    setHomeChecker([...homeChecker])
+    setTimeout(() => {
+      measureChecker()
+    }, 0);
   }
   const pause = async (duration: number) => {
     return new Promise<void>((resolve) => {
@@ -141,7 +179,7 @@ const Board = forwardRef<any, BoardProps>(({
     const checkerWidth = DIMENSIONS.spikeWidth
     const spike = positions.find((item)=> item.index === spikePos.index)
     const hitBonus = spike?.color !== currentPlayer ? -checkerWidth : 0
-    console.log('HITBONUS',hitBonus)
+
     const endingBonus = isStart ? 0 : checkerWidth
     if(spikePos.index <= 12) {
       if(spike) {
@@ -168,8 +206,10 @@ const Board = forwardRef<any, BoardProps>(({
     }
     return[x,y]
   }
-  const isInBoardMove = (sourceIndex:number,targetIndex:number) => {
-    return (sourceIndex > 0 && sourceIndex < 25 && targetIndex > 0 && targetIndex < 25)
+  const calculateAnimationHomeCoords = () => {
+    const home = currentPlayer === PLAYER_COLORS.WHITE ? homePositions['white'] : homePositions['black']
+    const homeCount = homeChecker.filter((item) => item.props.color === currentPlayer).length
+    return [home.homeX - (homeCount * 6),home.homeY]
   }
   const handlePrisonPress = (index: number) => {
     if (selectedSource === null && prisonCheckers.length > 0) {
@@ -187,6 +227,8 @@ const Board = forwardRef<any, BoardProps>(({
       setTimeout(() => {
         measureChecker();
         measureSpikes()
+        measureHome('black')
+        measureHome('white')
       }, 500);
     }
   }, [positions]);
@@ -212,10 +254,9 @@ const Board = forwardRef<any, BoardProps>(({
     setSpikePositions(positions);
   };
   const measureChecker = async () => {
-    console.log('measuring checkers')
     try {
       const positions: { index: number; x: number; y: number }[] = [];
-    
+      console.log('CheckerRefs size:', checkerRefs.current.length);
       const measurePromises = checkerRefs.current.map((checkerRef, index) => {
         return new Promise<void>((resolve, reject) => {
           if (checkerRef) {
@@ -238,16 +279,23 @@ const Board = forwardRef<any, BoardProps>(({
   
       if (positions.length > 0) {
         setCheckerPos(positions);
-        console.log('FINISHED MEASURING');
       }
     } catch (error) {
       console.error('Error measuring checkers:', error);
     }
   };
-  
-  useEffect(() => {
-    console.log('CHECKER POS UPDATED')
-  },[checkerPos])
+  const measureHome = (color: 'white' | 'black') => {
+    if (homeRefs.current[color]) {
+      homeRefs.current[color]?.measure((x, y, width, height, pageX, pageY) => {
+        const homeX = pageX + DIMENSIONS.homeWidth - DIMENSIONS.spikeWidth - 5 ;
+        const homeY = pageY + (DIMENSIONS.spikeWidth / 3) - 4;
+        setHomePositions((prevPositions) => ({
+          ...prevPositions,
+          [color]: {homeX, homeY },
+        }));
+      });
+    }
+  };
   
   const handleSpikePress = (index: number) => {
     if (selectedSource === null && spikes[index].checkers.length > 0) {
@@ -281,15 +329,29 @@ const Board = forwardRef<any, BoardProps>(({
       onPress: handleSpikePress,
     }));
   
-    const prisonCheckers: React.ReactElement[] = [];
-    const homeCheckers: React.ReactElement[] = [];
+    const tempPrisonCheckers: React.ReactElement[] = [];
+    const tempHomeCheckers: React.ReactElement[] = [];
   
     let checkerIndex = 0; // To uniquely assign refs to each checker
   
     // Function to set the ref correctly
-    const setCheckerRef = (index: number) => (ref: View | null) => {
-      checkerRefs.current[index] = ref;
-    };
+    
+const setCheckerRef = (index: number) => (ref: View | null) => {
+  if (ref) {
+    checkerRefs.current[index] = ref;
+  } else {
+    setTimeout(() => {
+      // Attempt to manually find the view handle for the checker
+      const handle = findNodeHandle(checkerRefs.current[index]);
+      if (handle) {
+        console.log(`Found checker with handle for index ${index}:`, handle);
+        //checkerRefs.current[index] = handle;
+      } else {
+        console.warn(`Unable to find handle for checker index ${index}`);
+      }
+    }, 0);
+  }
+};
     
   
     positions.forEach((position) => {
@@ -307,20 +369,23 @@ const Board = forwardRef<any, BoardProps>(({
         );
         checkerIndex++; // Increment the checker index to handle multiple refs
         if (index === 0 || index === 25) {
-          prisonCheckers.push(checker);
+          tempPrisonCheckers.push(checker);
         } else if (index === 100) {
-          homeCheckers.push(checker);
+          tempHomeCheckers.push(checker);
         } else {
           newSpikes[index].checkers.push(checker);
         }
       }
     });
   
-    setPrisonCheckers(prisonCheckers);
+    setPrisonCheckers(tempPrisonCheckers);
+    setHomeChecker(tempHomeCheckers)
     setSpikes(newSpikes);
-    setTimeout(() => {
-      measureChecker()
-    }, 0);
+    if(!dice.startingSeq) {
+        setTimeout(() => {
+        measureChecker()
+      }, 0);
+    }
   };
   
   
@@ -374,6 +439,7 @@ const Board = forwardRef<any, BoardProps>(({
           doubleDice={doubleDice}
           isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.BLACK}
           checker={homeChecker}
+          ref={(ref) => (homeRefs.current.black = ref)}
         />
       </View>
   
@@ -454,6 +520,7 @@ const Board = forwardRef<any, BoardProps>(({
           doubleDice={doubleDice}
           isHighlighted={possibleMoves.includes(100) && currentPlayer === PLAYER_COLORS.WHITE}
           checker={homeChecker}
+          ref={(ref) => (homeRefs.current.white = ref)}
         />
       </View>
     </View>

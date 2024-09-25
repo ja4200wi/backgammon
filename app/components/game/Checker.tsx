@@ -6,7 +6,7 @@ interface CheckerProps {
   color: PLAYER_COLORS;
   width: number;
   height: number;
-  index: number;
+  index?: number;
   style?: any;
 }
 
