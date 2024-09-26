@@ -22,7 +22,13 @@ import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
 import SearchPlayer from '../components/friends/SearchPlayer';
 
-const selectionSet = ['id', 'userIdOne', 'userIdTwo', 'isConfirmed'] as const;
+const selectionSet = [
+  'id',
+  'userIdOne',
+  'userIdTwo',
+  'isConfirmed',
+  'createdAt',
+] as const;
 type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
 
 const client = generateClient<Schema>();
@@ -136,6 +142,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                     friendId={friend.id}
                     nickname={friendName}
                     country={COUNTRIES.UNITED_STATES}
+                    extraInfo={friend.createdAt}
                   />
                 );
               })}
@@ -159,6 +166,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                     <SentRequest
                       nickname={friendName}
                       country={COUNTRIES.GERMANY}
+                      extraInfo={friend.createdAt}
                     />
                   );
                 } else {
@@ -167,7 +175,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                       friendId={friend.id}
                       nickname={friendName}
                       country={COUNTRIES.GERMANY}
-                      extraInfo=''
+                      extraInfo={friend.createdAt}
                     />
                   );
                 }

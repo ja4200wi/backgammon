@@ -12,6 +12,11 @@ import { GLOBAL_STYLES } from '../../utils/globalStyles';
 import { Button } from '@rneui/base';
 import LetterIcon from '../../images/letter.svg';
 import { confirmFriend, removeFriend } from '../../service/friendService';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en';
+
+TimeAgo.addDefaultLocale(en);
+const timeAgo = new TimeAgo('en-US');
 
 // Headline Component
 export function Headline({ headline }: { headline: string }) {
@@ -92,7 +97,7 @@ export function OpenRequest({
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-              {extraInfo}
+              {timeAgo.format(new Date(extraInfo))}
             </Text>
           </View>
         </View>
@@ -120,10 +125,12 @@ export function Friend({
   friendId,
   nickname,
   country,
+  extraInfo,
 }: {
   friendId: string;
   nickname: string;
   country: COUNTRIES;
+  extraInfo?: string;
 }) {
   // confirm remove friend modal
   const confirmRemoveFriend = () => {
@@ -153,6 +160,14 @@ export function Friend({
           <AvatarWithFlag country={country} />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
+            <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
+              {extraInfo && (
+                <>
+                  {'friends since '}
+                  {timeAgo.format(new Date(extraInfo), 'twitter')}
+                </>
+              )}
+            </Text>
           </View>
         </View>
 
@@ -188,7 +203,7 @@ export function SentRequest({
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-              {extraInfo}
+              {extraInfo && timeAgo.format(new Date(extraInfo))}
             </Text>
           </View>
         </View>
