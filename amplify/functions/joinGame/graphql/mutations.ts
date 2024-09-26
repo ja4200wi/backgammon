@@ -82,6 +82,7 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
 ) {
   createSession(condition: $condition, input: $input) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -124,6 +125,7 @@ export const createTurns = /* GraphQL */ `mutation CreateTurns(
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
@@ -229,6 +231,7 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
 ) {
   deleteSession(condition: $condition, input: $input) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -271,6 +274,7 @@ export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
@@ -399,6 +403,7 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
 ) {
   updateSession(condition: $condition, input: $input) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -441,6 +446,7 @@ export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID

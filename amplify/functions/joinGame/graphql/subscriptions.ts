@@ -73,6 +73,7 @@ export const onCreatePlayer = /* GraphQL */ `subscription OnCreatePlayer($filter
 export const onCreateSession = /* GraphQL */ `subscription OnCreateSession($filter: ModelSubscriptionSessionFilterInput) {
   onCreateSession(filter: $filter) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -112,6 +113,7 @@ export const onCreateTurns = /* GraphQL */ `subscription OnCreateTurns($filter: 
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
@@ -208,6 +210,7 @@ export const onDeletePlayer = /* GraphQL */ `subscription OnDeletePlayer($filter
 export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession($filter: ModelSubscriptionSessionFilterInput) {
   onDeleteSession(filter: $filter) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -247,6 +250,7 @@ export const onDeleteTurns = /* GraphQL */ `subscription OnDeleteTurns($filter: 
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
@@ -343,6 +347,7 @@ export const onUpdatePlayer = /* GraphQL */ `subscription OnUpdatePlayer($filter
 export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession($filter: ModelSubscriptionSessionFilterInput) {
   onUpdateSession(filter: $filter) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -382,6 +387,7 @@ export const onUpdateTurns = /* GraphQL */ `subscription OnUpdateTurns($filter: 
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID

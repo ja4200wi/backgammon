@@ -42,6 +42,7 @@ export type ModelSessionConnection = {
 export type Session = {
   __typename: "Session",
   createdAt: string,
+  gameType?: SessionGameType | null,
   id: string,
   playerOne?: Player | null,
   playerOneID?: string | null,
@@ -50,6 +51,14 @@ export type Session = {
   turns?: ModelTurnsConnection | null,
   updatedAt: string,
 };
+
+export enum SessionGameType {
+  COMPUTER = "COMPUTER",
+  ELO = "ELO",
+  FRIENDLIST = "FRIENDLIST",
+  RANDOM = "RANDOM",
+}
+
 
 export type ModelTurnsConnection = {
   __typename: "ModelTurnsConnection",
@@ -192,12 +201,18 @@ export type ModelPlayerConnection = {
 export type ModelSessionFilterInput = {
   and?: Array< ModelSessionFilterInput | null > | null,
   createdAt?: ModelStringInput | null,
+  gameType?: ModelSessionGameTypeInput | null,
   id?: ModelIDInput | null,
   not?: ModelSessionFilterInput | null,
   or?: Array< ModelSessionFilterInput | null > | null,
   playerOneID?: ModelIDInput | null,
   playerTwoID?: ModelIDInput | null,
   updatedAt?: ModelStringInput | null,
+};
+
+export type ModelSessionGameTypeInput = {
+  eq?: SessionGameType | null,
+  ne?: SessionGameType | null,
 };
 
 export type ModelTurnsFilterInput = {
@@ -286,6 +301,7 @@ export type CreatePlayerInput = {
 export type ModelSessionConditionInput = {
   and?: Array< ModelSessionConditionInput | null > | null,
   createdAt?: ModelStringInput | null,
+  gameType?: ModelSessionGameTypeInput | null,
   not?: ModelSessionConditionInput | null,
   or?: Array< ModelSessionConditionInput | null > | null,
   playerOneID?: ModelIDInput | null,
@@ -294,6 +310,7 @@ export type ModelSessionConditionInput = {
 };
 
 export type CreateSessionInput = {
+  gameType?: SessionGameType | null,
   id?: string | null,
   playerOneID?: string | null,
   playerTwoID?: string | null,
@@ -368,6 +385,7 @@ export type UpdatePlayerInput = {
 };
 
 export type UpdateSessionInput = {
+  gameType?: SessionGameType | null,
   id: string,
   playerOneID?: string | null,
   playerTwoID?: string | null,
@@ -441,6 +459,7 @@ export type ModelSubscriptionPlayerFilterInput = {
 export type ModelSubscriptionSessionFilterInput = {
   and?: Array< ModelSubscriptionSessionFilterInput | null > | null,
   createdAt?: ModelSubscriptionStringInput | null,
+  gameType?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
   or?: Array< ModelSubscriptionSessionFilterInput | null > | null,
   playerOneID?: ModelSubscriptionIDInput | null,
@@ -545,6 +564,7 @@ export type GetSessionQuery = {
   getSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -587,6 +607,7 @@ export type GetTurnsQuery = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -667,6 +688,7 @@ export type ListSessionsQuery = {
     items:  Array< {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -777,6 +799,7 @@ export type CreateSessionMutation = {
   createSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -819,6 +842,7 @@ export type CreateTurnsMutation = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -920,6 +944,7 @@ export type DeleteSessionMutation = {
   deleteSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -962,6 +987,7 @@ export type DeleteTurnsMutation = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -1087,6 +1113,7 @@ export type UpdateSessionMutation = {
   updateSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -1129,6 +1156,7 @@ export type UpdateTurnsMutation = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -1227,6 +1255,7 @@ export type OnCreateSessionSubscription = {
   onCreateSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -1268,6 +1297,7 @@ export type OnCreateTurnsSubscription = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -1366,6 +1396,7 @@ export type OnDeleteSessionSubscription = {
   onDeleteSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -1407,6 +1438,7 @@ export type OnDeleteTurnsSubscription = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -1505,6 +1537,7 @@ export type OnUpdateSessionSubscription = {
   onUpdateSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -1546,6 +1579,7 @@ export type OnUpdateTurnsSubscription = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,

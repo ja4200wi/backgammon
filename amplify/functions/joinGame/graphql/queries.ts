@@ -70,6 +70,7 @@ export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
 export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
   getSession(id: $id) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -109,6 +110,7 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
@@ -189,6 +191,7 @@ export const listSessions = /* GraphQL */ `query ListSessions(
   listSessions(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
