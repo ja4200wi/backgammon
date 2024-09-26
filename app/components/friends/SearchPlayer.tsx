@@ -7,6 +7,7 @@ import { Button, SearchBar } from '@rneui/themed';
 import { APP_COLORS, COUNTRIES } from '../../utils/constants';
 import { ScrollView } from 'react-native-gesture-handler';
 import AvatarWithFlag from '../misc/AvatarWithFlag';
+import { inviteFriend } from '../../service/friendService';
 
 const selectionSetPlayer = ['id', 'name'] as const;
 type Player = SelectionSet<Schema['Player']['type'], typeof selectionSetPlayer>;
@@ -25,15 +26,6 @@ export default function SearchPlayer() {
     } else {
       setSearchResults([]);
     }
-  };
-
-  const handleInvite = async (playerId: string) => {
-    console.log('Inviting player with id:', playerId);
-    await client.models.Friends.create({
-      userIdOne: localPlayerId,
-      userIdTwo: playerId,
-      isConfirmed: false,
-    });
   };
 
   const searchPlayers = async (search: string) => {
@@ -74,7 +66,7 @@ export default function SearchPlayer() {
                 <Button
                   title={'+'}
                   buttonStyle={styles.inviteButton}
-                  onPress={() => handleInvite(player.id)}
+                  onPress={() => inviteFriend(localPlayerId!, player.id)}
                 />
               </View>
             );

@@ -118,30 +118,61 @@ export default function FriendList({ navigation }: { navigation: any }) {
         <ScrollView style={{ zIndex: 2 }}>
           <InviteFriend />
           <SearchPlayer />
-          {hasOpenRequest && (
-            <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
-              <Headline headline='Open Requests' />
-              <OpenRequest
-                nickname={'jacky'}
-                extraInfo='sent request 3 days ago'
-                country={COUNTRIES.BELGIUM}
-              />
-            </View>
-          )}
           <Headline headline='Friends' />
           <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
-            <Friend nickname={'JannProGamerHD'} country={COUNTRIES.MEXICO} />
+            {friends
+              .filter((friend) => friend.isConfirmed)
+              .map((friend) => {
+                const friendId =
+                  friend.userIdOne === localPlayerId
+                    ? friend.userIdTwo
+                    : friend.userIdOne;
+                if (!friendId) {
+                  return null;
+                }
+                const friendName = userNames[friendId] || 'Unknown Player';
+                return (
+                  <Friend
+                    friendId={friend.id}
+                    nickname={friendName}
+                    country={COUNTRIES.UNITED_STATES}
+                  />
+                );
+              })}
           </View>
-          {hasSentRequest && (
-            <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
-              <Headline headline='Sent Requests' />
-              <SentRequest
-                nickname={'captionJizz'}
-                country={COUNTRIES.SOUTH_AFRICA}
-                extraInfo='sent request 3 days ago'
-              />
-            </View>
-          )}
+          <Headline headline='Open Requests' />
+          <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
+            {friends
+              .filter((friend) => !friend.isConfirmed)
+              .map((friend) => {
+                const friendId =
+                  friend.userIdOne === localPlayerId
+                    ? friend.userIdTwo
+                    : friend.userIdOne;
+                if (!friendId) {
+                  return null;
+                }
+                const didISendRequest = friend.userIdOne === localPlayerId;
+                const friendName = userNames[friendId] || 'Unknown Player';
+                if (didISendRequest) {
+                  return (
+                    <SentRequest
+                      nickname={friendName}
+                      country={COUNTRIES.GERMANY}
+                    />
+                  );
+                } else {
+                  return (
+                    <OpenRequest
+                      friendId={friend.id}
+                      nickname={friendName}
+                      country={COUNTRIES.GERMANY}
+                      extraInfo=''
+                    />
+                  );
+                }
+              })}
+          </View>
         </ScrollView>
       </ImageBackground>
     </SafeAreaView>
