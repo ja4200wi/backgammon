@@ -46,7 +46,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
           {hasSentRequest && (
             <View style={{backgroundColor: APP_COLORS.backgroundColor}}>
             <Headline headline="Sent Requests" />
-            <SentRequest nickname={'jacky'} country={COUNTRIES.BELGIUM} extraInfo='sent request 3 days ago'/>
+            <SentRequest nickname={'captionJizz'} country={COUNTRIES.SOUTH_AFRICA} extraInfo='sent request 3 days ago'/>
             </View>
             )}
         </ScrollView>
