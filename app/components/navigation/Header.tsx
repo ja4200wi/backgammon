@@ -7,7 +7,7 @@ import { GLOBAL_STYLES } from '../../utils/globalStyles';
 export default function Header({ navigation }: { navigation: any }) {
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => console.log('Friends')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Friends')}>
         <Icon
           name='people'
           type='material'
