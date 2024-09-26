@@ -8,182 +8,57 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
-export const getBoard = /* GraphQL */ `query GetBoard($id: ID!) {
-  getBoard(id: $id) {
+export const getFriends = /* GraphQL */ `query GetFriends($id: ID!) {
+  getFriends(id: $id) {
     createdAt
-    field1 {
-      color
-      count
-      index
-      __typename
-    }
-    field10 {
-      color
-      count
-      index
-      __typename
-    }
-    field11 {
-      color
-      count
-      index
-      __typename
-    }
-    field12 {
-      color
-      count
-      index
-      __typename
-    }
-    field13 {
-      color
-      count
-      index
-      __typename
-    }
-    field14 {
-      color
-      count
-      index
-      __typename
-    }
-    field15 {
-      color
-      count
-      index
-      __typename
-    }
-    field16 {
-      color
-      count
-      index
-      __typename
-    }
-    field17 {
-      color
-      count
-      index
-      __typename
-    }
-    field18 {
-      color
-      count
-      index
-      __typename
-    }
-    field19 {
-      color
-      count
-      index
-      __typename
-    }
-    field2 {
-      color
-      count
-      index
-      __typename
-    }
-    field20 {
-      color
-      count
-      index
-      __typename
-    }
-    field21 {
-      color
-      count
-      index
-      __typename
-    }
-    field22 {
-      color
-      count
-      index
-      __typename
-    }
-    field23 {
-      color
-      count
-      index
-      __typename
-    }
-    field24 {
-      color
-      count
-      index
-      __typename
-    }
-    field3 {
-      color
-      count
-      index
-      __typename
-    }
-    field4 {
-      color
-      count
-      index
-      __typename
-    }
-    field5 {
-      color
-      count
-      index
-      __typename
-    }
-    field6 {
-      color
-      count
-      index
-      __typename
-    }
-    field7 {
-      color
-      count
-      index
-      __typename
-    }
-    field8 {
-      color
-      count
-      index
-      __typename
-    }
-    field9 {
-      color
-      count
-      index
-      __typename
-    }
     id
-    prisonBlack
-    prisonWhite
-    session {
-      boardID
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
       createdAt
-      currentPlayer
       id
-      playerOneID
-      playerTwoID
+      name
       updatedAt
       __typename
     }
-    updatedAt
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
     __typename
   }
 }
-` as GeneratedQuery<APITypes.GetBoardQueryVariables, APITypes.GetBoardQuery>;
+` as GeneratedQuery<
+  APITypes.GetFriendsQueryVariables,
+  APITypes.GetFriendsQuery
+>;
 export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
   getPlayer(id: $id) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
-    owner
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    turnsMade {
       nextToken
       __typename
     }
@@ -194,28 +69,13 @@ export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
 ` as GeneratedQuery<APITypes.GetPlayerQueryVariables, APITypes.GetPlayerQuery>;
 export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
   getSession(id: $id) {
-    board {
-      createdAt
-      id
-      prisonBlack
-      prisonWhite
-      updatedAt
-      __typename
-    }
-    boardID
     createdAt
-    currentPlayer
-    dice {
-      dieOne
-      dieTwo
-      __typename
-    }
+    gameType
     id
     playerOne {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -224,14 +84,12 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
     playerTwoID
     turns {
-      player
-      type
+      nextToken
       __typename
     }
     updatedAt
@@ -242,18 +100,58 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
   APITypes.GetSessionQueryVariables,
   APITypes.GetSessionQuery
 >;
-export const listBoards = /* GraphQL */ `query ListBoards(
-  $filter: ModelBoardFilterInput
+export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber: Int!) {
+  getTurns(gameId: $gameId, turnNumber: $turnNumber) {
+    createdAt
+    diceForNextTurn {
+      dieOne
+      dieTwo
+      __typename
+    }
+    game {
+      createdAt
+      gameType
+      id
+      playerOneID
+      playerTwoID
+      updatedAt
+      __typename
+    }
+    gameId
+    moves {
+      from
+      to
+      __typename
+    }
+    player {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    playerColor
+    playerId
+    turnNumber
+    type
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetTurnsQueryVariables, APITypes.GetTurnsQuery>;
+export const listFriends = /* GraphQL */ `query ListFriends(
+  $filter: ModelFriendsFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listBoards(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listFriends(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       createdAt
       id
-      prisonBlack
-      prisonWhite
+      isConfirmed
       updatedAt
+      userIdOne
+      userIdTwo
       __typename
     }
     nextToken
@@ -261,8 +159,8 @@ export const listBoards = /* GraphQL */ `query ListBoards(
   }
 }
 ` as GeneratedQuery<
-  APITypes.ListBoardsQueryVariables,
-  APITypes.ListBoardsQuery
+  APITypes.ListFriendsQueryVariables,
+  APITypes.ListFriendsQuery
 >;
 export const listPlayers = /* GraphQL */ `query ListPlayers(
   $filter: ModelPlayerFilterInput
@@ -274,7 +172,6 @@ export const listPlayers = /* GraphQL */ `query ListPlayers(
       createdAt
       id
       name
-      owner
       updatedAt
       __typename
     }
@@ -293,9 +190,8 @@ export const listSessions = /* GraphQL */ `query ListSessions(
 ) {
   listSessions(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
-      boardID
       createdAt
-      currentPlayer
+      gameType
       id
       playerOneID
       playerTwoID
@@ -310,3 +206,34 @@ export const listSessions = /* GraphQL */ `query ListSessions(
   APITypes.ListSessionsQueryVariables,
   APITypes.ListSessionsQuery
 >;
+export const listTurns = /* GraphQL */ `query ListTurns(
+  $filter: ModelTurnsFilterInput
+  $gameId: ID
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+  $turnNumber: ModelIntKeyConditionInput
+) {
+  listTurns(
+    filter: $filter
+    gameId: $gameId
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+    turnNumber: $turnNumber
+  ) {
+    items {
+      createdAt
+      gameId
+      playerColor
+      playerId
+      turnNumber
+      type
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListTurnsQueryVariables, APITypes.ListTurnsQuery>;

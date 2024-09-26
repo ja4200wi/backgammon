@@ -8,6 +8,8 @@ import GameSelectionScr from './app/screens/GameSelectionScr';
 import ProfileScr from './app/screens/Profile';
 import NavBar from './app/components/navigation/NavBar';
 import Settings from './app/screens/SettingsScr';
+import Friends from './app/screens/FriendsScr';
+import PlayFriend from './app/screens/PlayFriendScr';
 import FriendList from './app/screens/FriendListScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './app/utils/constants';
@@ -44,15 +46,6 @@ function HomeTabs() {
 }
 
 export default function App() {
-  const SignOutButton = () => {
-    const { signOut } = useAuthenticator();
-
-    return (
-      <View style={styles.signOutButton}>
-        <Button title='Sign Out' onPress={signOut} />
-      </View>
-    );
-  };
   return (
     <Authenticator.Provider>
       <Authenticator>
@@ -65,6 +58,8 @@ export default function App() {
               <Stack.Screen name='GameSelection' component={GameSelectionScr} />
               <Stack.Screen name='Game' component={GameScreen} />
               <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
+              <Stack.Screen name='Friends' component={Friends} />
+              <Stack.Screen name='PlayFriend' component={PlayFriend} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

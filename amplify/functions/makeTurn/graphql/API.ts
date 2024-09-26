@@ -2,15 +2,35 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type Friends = {
+  __typename: "Friends",
+  createdAt: string,
+  id: string,
+  isConfirmed?: boolean | null,
+  updatedAt: string,
+  userIdOne?: string | null,
+  userIdTwo?: string | null,
+  userOne?: Player | null,
+  userTwo?: Player | null,
+};
+
 export type Player = {
   __typename: "Player",
   createdAt: string,
+  friendsAsOne?: ModelFriendsConnection | null,
+  friendsAsTwo?: ModelFriendsConnection | null,
   id: string,
   name?: string | null,
   sessionsAsPlayerOne?: ModelSessionConnection | null,
   sessionsAsPlayerTwo?: ModelSessionConnection | null,
   turnsMade?: ModelTurnsConnection | null,
   updatedAt: string,
+};
+
+export type ModelFriendsConnection = {
+  __typename: "ModelFriendsConnection",
+  items:  Array<Friends | null >,
+  nextToken?: string | null,
 };
 
 export type ModelSessionConnection = {
@@ -22,6 +42,7 @@ export type ModelSessionConnection = {
 export type Session = {
   __typename: "Session",
   createdAt: string,
+  gameType?: SessionGameType | null,
   id: string,
   playerOne?: Player | null,
   playerOneID?: string | null,
@@ -30,6 +51,14 @@ export type Session = {
   turns?: ModelTurnsConnection | null,
   updatedAt: string,
 };
+
+export enum SessionGameType {
+  COMPUTER = "COMPUTER",
+  ELO = "ELO",
+  FRIENDLIST = "FRIENDLIST",
+  RANDOM = "RANDOM",
+}
+
 
 export type ModelTurnsConnection = {
   __typename: "ModelTurnsConnection",
@@ -78,14 +107,16 @@ export enum TurnsType {
 }
 
 
-export type ModelPlayerFilterInput = {
-  and?: Array< ModelPlayerFilterInput | null > | null,
+export type ModelFriendsFilterInput = {
+  and?: Array< ModelFriendsFilterInput | null > | null,
   createdAt?: ModelStringInput | null,
   id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  not?: ModelPlayerFilterInput | null,
-  or?: Array< ModelPlayerFilterInput | null > | null,
+  isConfirmed?: ModelBooleanInput | null,
+  not?: ModelFriendsFilterInput | null,
+  or?: Array< ModelFriendsFilterInput | null > | null,
   updatedAt?: ModelStringInput | null,
+  userIdOne?: ModelIDInput | null,
+  userIdTwo?: ModelIDInput | null,
 };
 
 export type ModelStringInput = {
@@ -144,6 +175,23 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
+export type ModelBooleanInput = {
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  eq?: boolean | null,
+  ne?: boolean | null,
+};
+
+export type ModelPlayerFilterInput = {
+  and?: Array< ModelPlayerFilterInput | null > | null,
+  createdAt?: ModelStringInput | null,
+  id?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  not?: ModelPlayerFilterInput | null,
+  or?: Array< ModelPlayerFilterInput | null > | null,
+  updatedAt?: ModelStringInput | null,
+};
+
 export type ModelPlayerConnection = {
   __typename: "ModelPlayerConnection",
   items:  Array<Player | null >,
@@ -153,12 +201,18 @@ export type ModelPlayerConnection = {
 export type ModelSessionFilterInput = {
   and?: Array< ModelSessionFilterInput | null > | null,
   createdAt?: ModelStringInput | null,
+  gameType?: ModelSessionGameTypeInput | null,
   id?: ModelIDInput | null,
   not?: ModelSessionFilterInput | null,
   or?: Array< ModelSessionFilterInput | null > | null,
   playerOneID?: ModelIDInput | null,
   playerTwoID?: ModelIDInput | null,
   updatedAt?: ModelStringInput | null,
+};
+
+export type ModelSessionGameTypeInput = {
+  eq?: SessionGameType | null,
+  ne?: SessionGameType | null,
 };
 
 export type ModelTurnsFilterInput = {
@@ -212,6 +266,24 @@ export type ModelIntKeyConditionInput = {
   lt?: number | null,
 };
 
+export type ModelFriendsConditionInput = {
+  and?: Array< ModelFriendsConditionInput | null > | null,
+  createdAt?: ModelStringInput | null,
+  isConfirmed?: ModelBooleanInput | null,
+  not?: ModelFriendsConditionInput | null,
+  or?: Array< ModelFriendsConditionInput | null > | null,
+  updatedAt?: ModelStringInput | null,
+  userIdOne?: ModelIDInput | null,
+  userIdTwo?: ModelIDInput | null,
+};
+
+export type CreateFriendsInput = {
+  id?: string | null,
+  isConfirmed?: boolean | null,
+  userIdOne?: string | null,
+  userIdTwo?: string | null,
+};
+
 export type ModelPlayerConditionInput = {
   and?: Array< ModelPlayerConditionInput | null > | null,
   createdAt?: ModelStringInput | null,
@@ -229,6 +301,7 @@ export type CreatePlayerInput = {
 export type ModelSessionConditionInput = {
   and?: Array< ModelSessionConditionInput | null > | null,
   createdAt?: ModelStringInput | null,
+  gameType?: ModelSessionGameTypeInput | null,
   not?: ModelSessionConditionInput | null,
   or?: Array< ModelSessionConditionInput | null > | null,
   playerOneID?: ModelIDInput | null,
@@ -237,6 +310,7 @@ export type ModelSessionConditionInput = {
 };
 
 export type CreateSessionInput = {
+  gameType?: SessionGameType | null,
   id?: string | null,
   playerOneID?: string | null,
   playerTwoID?: string | null,
@@ -273,6 +347,10 @@ export type MoveInput = {
   to: number,
 };
 
+export type DeleteFriendsInput = {
+  id: string,
+};
+
 export type DeletePlayerInput = {
   id: string,
 };
@@ -294,12 +372,20 @@ export enum MakeTurnType {
 }
 
 
+export type UpdateFriendsInput = {
+  id: string,
+  isConfirmed?: boolean | null,
+  userIdOne?: string | null,
+  userIdTwo?: string | null,
+};
+
 export type UpdatePlayerInput = {
   id: string,
   name?: string | null,
 };
 
 export type UpdateSessionInput = {
+  gameType?: SessionGameType | null,
   id: string,
   playerOneID?: string | null,
   playerTwoID?: string | null,
@@ -315,13 +401,15 @@ export type UpdateTurnsInput = {
   type?: TurnsType | null,
 };
 
-export type ModelSubscriptionPlayerFilterInput = {
-  and?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+export type ModelSubscriptionFriendsFilterInput = {
+  and?: Array< ModelSubscriptionFriendsFilterInput | null > | null,
   createdAt?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
-  name?: ModelSubscriptionStringInput | null,
-  or?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  isConfirmed?: ModelSubscriptionBooleanInput | null,
+  or?: Array< ModelSubscriptionFriendsFilterInput | null > | null,
   updatedAt?: ModelSubscriptionStringInput | null,
+  userIdOne?: ModelSubscriptionIDInput | null,
+  userIdTwo?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionStringInput = {
@@ -354,9 +442,24 @@ export type ModelSubscriptionIDInput = {
   notIn?: Array< string | null > | null,
 };
 
+export type ModelSubscriptionBooleanInput = {
+  eq?: boolean | null,
+  ne?: boolean | null,
+};
+
+export type ModelSubscriptionPlayerFilterInput = {
+  and?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  id?: ModelSubscriptionIDInput | null,
+  name?: ModelSubscriptionStringInput | null,
+  or?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+};
+
 export type ModelSubscriptionSessionFilterInput = {
   and?: Array< ModelSubscriptionSessionFilterInput | null > | null,
   createdAt?: ModelSubscriptionStringInput | null,
+  gameType?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
   or?: Array< ModelSubscriptionSessionFilterInput | null > | null,
   playerOneID?: ModelSubscriptionIDInput | null,
@@ -389,6 +492,36 @@ export type ModelSubscriptionIntInput = {
   notIn?: Array< number | null > | null,
 };
 
+export type GetFriendsQueryVariables = {
+  id: string,
+};
+
+export type GetFriendsQuery = {
+  getFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type GetPlayerQueryVariables = {
   id: string,
 };
@@ -397,6 +530,14 @@ export type GetPlayerQuery = {
   getPlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -423,6 +564,7 @@ export type GetSessionQuery = {
   getSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -465,6 +607,7 @@ export type GetTurnsQuery = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -488,6 +631,28 @@ export type GetTurnsQuery = {
     turnNumber: number,
     type?: TurnsType | null,
     updatedAt: string,
+  } | null,
+};
+
+export type ListFriendsQueryVariables = {
+  filter?: ModelFriendsFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListFriendsQuery = {
+  listFriends?:  {
+    __typename: "ModelFriendsConnection",
+    items:  Array< {
+      __typename: "Friends",
+      createdAt: string,
+      id: string,
+      isConfirmed?: boolean | null,
+      updatedAt: string,
+      userIdOne?: string | null,
+      userIdTwo?: string | null,
+    } | null >,
+    nextToken?: string | null,
   } | null,
 };
 
@@ -523,6 +688,7 @@ export type ListSessionsQuery = {
     items:  Array< {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -558,6 +724,37 @@ export type ListTurnsQuery = {
   } | null,
 };
 
+export type CreateFriendsMutationVariables = {
+  condition?: ModelFriendsConditionInput | null,
+  input: CreateFriendsInput,
+};
+
+export type CreateFriendsMutation = {
+  createFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type CreatePlayerMutationVariables = {
   condition?: ModelPlayerConditionInput | null,
   input: CreatePlayerInput,
@@ -567,6 +764,14 @@ export type CreatePlayerMutation = {
   createPlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -594,6 +799,7 @@ export type CreateSessionMutation = {
   createSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -636,6 +842,7 @@ export type CreateTurnsMutation = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -662,6 +869,37 @@ export type CreateTurnsMutation = {
   } | null,
 };
 
+export type DeleteFriendsMutationVariables = {
+  condition?: ModelFriendsConditionInput | null,
+  input: DeleteFriendsInput,
+};
+
+export type DeleteFriendsMutation = {
+  deleteFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type DeletePlayerMutationVariables = {
   condition?: ModelPlayerConditionInput | null,
   input: DeletePlayerInput,
@@ -671,6 +909,14 @@ export type DeletePlayerMutation = {
   deletePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -698,6 +944,7 @@ export type DeleteSessionMutation = {
   deleteSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -740,6 +987,7 @@ export type DeleteTurnsMutation = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -790,6 +1038,37 @@ export type MakeTurnMutation = {
   } | null,
 };
 
+export type UpdateFriendsMutationVariables = {
+  condition?: ModelFriendsConditionInput | null,
+  input: UpdateFriendsInput,
+};
+
+export type UpdateFriendsMutation = {
+  updateFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type UpdatePlayerMutationVariables = {
   condition?: ModelPlayerConditionInput | null,
   input: UpdatePlayerInput,
@@ -799,6 +1078,14 @@ export type UpdatePlayerMutation = {
   updatePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -826,6 +1113,7 @@ export type UpdateSessionMutation = {
   updateSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -868,6 +1156,7 @@ export type UpdateTurnsMutation = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -894,6 +1183,36 @@ export type UpdateTurnsMutation = {
   } | null,
 };
 
+export type OnCreateFriendsSubscriptionVariables = {
+  filter?: ModelSubscriptionFriendsFilterInput | null,
+};
+
+export type OnCreateFriendsSubscription = {
+  onCreateFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type OnCreatePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
 };
@@ -902,6 +1221,14 @@ export type OnCreatePlayerSubscription = {
   onCreatePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -928,6 +1255,7 @@ export type OnCreateSessionSubscription = {
   onCreateSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -969,6 +1297,7 @@ export type OnCreateTurnsSubscription = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -995,6 +1324,36 @@ export type OnCreateTurnsSubscription = {
   } | null,
 };
 
+export type OnDeleteFriendsSubscriptionVariables = {
+  filter?: ModelSubscriptionFriendsFilterInput | null,
+};
+
+export type OnDeleteFriendsSubscription = {
+  onDeleteFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type OnDeletePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
 };
@@ -1003,6 +1362,14 @@ export type OnDeletePlayerSubscription = {
   onDeletePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -1029,6 +1396,7 @@ export type OnDeleteSessionSubscription = {
   onDeleteSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -1070,6 +1438,7 @@ export type OnDeleteTurnsSubscription = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
@@ -1096,6 +1465,36 @@ export type OnDeleteTurnsSubscription = {
   } | null,
 };
 
+export type OnUpdateFriendsSubscriptionVariables = {
+  filter?: ModelSubscriptionFriendsFilterInput | null,
+};
+
+export type OnUpdateFriendsSubscription = {
+  onUpdateFriends?:  {
+    __typename: "Friends",
+    createdAt: string,
+    id: string,
+    isConfirmed?: boolean | null,
+    updatedAt: string,
+    userIdOne?: string | null,
+    userIdTwo?: string | null,
+    userOne?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+    userTwo?:  {
+      __typename: "Player",
+      createdAt: string,
+      id: string,
+      name?: string | null,
+      updatedAt: string,
+    } | null,
+  } | null,
+};
+
 export type OnUpdatePlayerSubscriptionVariables = {
   filter?: ModelSubscriptionPlayerFilterInput | null,
 };
@@ -1104,6 +1503,14 @@ export type OnUpdatePlayerSubscription = {
   onUpdatePlayer?:  {
     __typename: "Player",
     createdAt: string,
+    friendsAsOne?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
+    friendsAsTwo?:  {
+      __typename: "ModelFriendsConnection",
+      nextToken?: string | null,
+    } | null,
     id: string,
     name?: string | null,
     sessionsAsPlayerOne?:  {
@@ -1130,6 +1537,7 @@ export type OnUpdateSessionSubscription = {
   onUpdateSession?:  {
     __typename: "Session",
     createdAt: string,
+    gameType?: SessionGameType | null,
     id: string,
     playerOne?:  {
       __typename: "Player",
@@ -1171,6 +1579,7 @@ export type OnUpdateTurnsSubscription = {
     game?:  {
       __typename: "Session",
       createdAt: string,
+      gameType?: SessionGameType | null,
       id: string,
       playerOneID?: string | null,
       playerTwoID?: string | null,
