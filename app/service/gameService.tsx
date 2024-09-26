@@ -1,5 +1,6 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { GAME_TYPE } from '../utils/constants';
 
 type SendableTurn = {
   gameId: string;
@@ -29,7 +30,7 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
 export async function saveGameStats(
   gameId: string,
   winnerId: string,
-  gameType: 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER',
+  gameType: GAME_TYPE,
   duration: number,
   numTurns: number,
   bet: number,
@@ -37,9 +38,11 @@ export async function saveGameStats(
   doubleDiceValue: number,
   reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
 ): Promise<void> {
+  let gameTypeConversion: 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER';
+  gameTypeConversion = gameType as 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER';
   const response = client.models.SessionStat.create({
     gameId,
-    gameType,
+    gameType: gameTypeConversion,
     winnerId,
     scores,
     doubleDiceValue,
