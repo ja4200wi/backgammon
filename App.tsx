@@ -20,6 +20,7 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import OnlineMatching from './app/screens/OnlineMatchingScr';
 import { Button, StyleSheet, View } from 'react-native';
+import { UserProvider } from './app/utils/UserContent';
 
 Amplify.configure(outputs);
 
@@ -49,20 +50,31 @@ export default function App() {
   return (
     <Authenticator.Provider>
       <Authenticator>
-        <SafeAreaView
-          style={{ flex: 1, backgroundColor: APP_COLORS.headerBackGroundColor }}
-        >
-          <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name='Main' component={HomeTabs} />
-              <Stack.Screen name='GameSelection' component={GameSelectionScr} />
-              <Stack.Screen name='Game' component={GameScreen} />
-              <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
-              <Stack.Screen name='Friends' component={Friends} />
-              <Stack.Screen name='PlayFriend' component={PlayFriend} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SafeAreaView>
+        <UserProvider>
+          <SafeAreaView
+            style={{
+              flex: 1,
+              backgroundColor: APP_COLORS.headerBackGroundColor,
+            }}
+          >
+            <NavigationContainer>
+              <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Screen name='Main' component={HomeTabs} />
+                <Stack.Screen
+                  name='GameSelection'
+                  component={GameSelectionScr}
+                />
+                <Stack.Screen name='Game' component={GameScreen} />
+                <Stack.Screen
+                  name='OnlineMatching'
+                  component={OnlineMatching}
+                />
+                <Stack.Screen name='Friends' component={Friends} />
+                <Stack.Screen name='PlayFriend' component={PlayFriend} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </SafeAreaView>
+        </UserProvider>
       </Authenticator>
     </Authenticator.Provider>
   );
