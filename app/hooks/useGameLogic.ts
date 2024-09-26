@@ -281,7 +281,6 @@ export const useGameLogic = (
       } else {
         setDisableScreen(true);
       }
-      const deepCopy = game.deepCopy();
       await checkForLegalMove(false, game);
     }
   };
@@ -328,17 +327,16 @@ export const useGameLogic = (
   };
   const makeTurn = async (turn: Turn) => {
     if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 100);
+      setTimeout(() => doPlayerTwoMove(turn), 750);
     } else {
-      setTimeout(() => updateMoveIsOver(), 100);
+      setTimeout(() => updateMoveIsOver(), 750);
     }
   };
   const doPlayerTwoMove = async (turn: Turn) => {
     const move = turn.nextMove();
     if (move) {
       await updatePositionHandler(move.getFrom(), move.getTo());
-      const success = await onMoveChecker(move.getFrom(), move.getTo());
-      makeTurn(turn);
+      await makeTurn(turn);
     }
   };
   // #endregion
