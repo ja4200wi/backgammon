@@ -5,6 +5,7 @@ import {
   StatusBar,
   SafeAreaView,
   ImageBackground,
+  Text,
 } from 'react-native';
 import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
 import Header from '../components/navigation/Header';
@@ -19,6 +20,7 @@ import {
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
+import SearchPlayer from '../components/friends/SearchPlayer';
 
 const selectionSet = ['id', 'userIdOne', 'userIdTwo', 'isConfirmed'] as const;
 type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
@@ -115,6 +117,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
         <View style={styles.overlaySquare} />
         <ScrollView style={{ zIndex: 2 }}>
           <InviteFriend />
+          <SearchPlayer />
           {hasOpenRequest && (
             <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
               <Headline headline='Open Requests' />
