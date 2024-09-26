@@ -99,7 +99,7 @@ export const useGameLogic = (
 
   useEffect(() => {
     if (
-      gamemode === GAME_TYPE.RANDOM &&
+      isOnlineGame() &&
       game &&
       onlineTurns &&
       onlineTurns.length > 0 &&
@@ -143,7 +143,7 @@ export const useGameLogic = (
   };
   const setUpGame = async () => {
     if (game) {
-      if (gamemode === GAME_TYPE.RANDOM && onlineTurns) {
+      if (isOnlineGame() && onlineTurns) {
         setDice(getOnlineDice(onlineTurns));
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
@@ -167,7 +167,7 @@ export const useGameLogic = (
           runGame();
         }, 2250);
       }
-    } else if (gamemode === GAME_TYPE.RANDOM && game) {
+    } else if (isOnlineGame() && game) {
       const iAM = await getWhoAmI();
       if (iAM === game.getCurrentPlayer()) {
         setTimeout(() => {
@@ -253,7 +253,7 @@ export const useGameLogic = (
     } else if (
       game &&
       !game.isGameOver() &&
-      gamemode === GAME_TYPE.RANDOM &&
+      isOnlineGame() &&
       whoAmI === game.getCurrentPlayer()
     ) {
       const turn = game.getTurnAfterMove();
@@ -269,7 +269,7 @@ export const useGameLogic = (
     } else if (
       game &&
       !game.isGameOver() &&
-      gamemode === GAME_TYPE.RANDOM &&
+      isOnlineGame() &&
       whoAmI !== game.getCurrentPlayer() &&
       onlineTurns
     ) {
@@ -527,7 +527,7 @@ export const useGameLogic = (
       const distances = game.getDistances();
       updatePipCount(distances.distBlack, distances.distWhite);
       updateHomeCheckers(game);
-      if (gamemode === GAME_TYPE.RANDOM && whoAmI !== game.getCurrentPlayer()) {
+      if (isOnlineGame() && whoAmI !== game.getCurrentPlayer()) {
         return;
       }
       if (
@@ -547,7 +547,7 @@ export const useGameLogic = (
           console.log(whoAmI, 'setting game over with', winner, 'GAME_OVER');
           setGameOver({ gameover: true, winner: winner, reason: 'GAME_OVER' });
           return true;
-        } else if (gamemode === GAME_TYPE.RANDOM && onlineTurns) {
+        } else if (isOnlineGame() && onlineTurns) {
           const onlineWinner =
             game.whoIsWinner() === whoAmI ? localPlayerId : opponentPlayerId;
           console.log(
@@ -571,7 +571,7 @@ export const useGameLogic = (
   const disabledScreen = (currentGame: Game): boolean => {
     if (gamemode === GAME_TYPE.COMPUTER) {
       return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
-    } else if (gamemode === GAME_TYPE.RANDOM) {
+    } else if (isOnlineGame()) {
       return whoAmI !== currentGame.getCurrentPlayer();
     }
     return false;
