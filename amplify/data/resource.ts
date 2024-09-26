@@ -18,7 +18,7 @@ const schema = a
         turnNumber: a.integer().required(),
         gameId: a.id().required(),
         game: a.belongsTo('Session', 'gameId'),
-        type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT']),
+        type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT', 'GAME_OVER']),
         playerColor: a.enum(['WHITE', 'BLACK']),
         playerId: a.id(),
         player: a.belongsTo('Player', 'playerId'),
@@ -35,6 +35,26 @@ const schema = a
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
         gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
         turns: a.hasMany('Turns', 'gameId'),
+        statisticId: a.id(),
+        statistics: a.hasOne('SessionStat', 'gameId'),
+      })
+      .authorization((allow) => [allow.authenticated()]),
+    SessionStat: a
+      .model({
+        gameId: a.id().required(),
+        game: a.belongsTo('Session', 'gameId'),
+        gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
+        winnerId: a.id(),
+        winner: a.belongsTo('Player', 'winnerId'),
+        scores: a.customType({
+          white: a.integer(),
+          black: a.integer(),
+        }),
+        bet: a.integer(),
+        doubleDiceValue: a.integer(),
+        duration: a.integer(),
+        reason: a.enum(['GIVE_UP', 'DOUBLE', 'TIMEOUT', 'GAME_OVER']),
+        numTurns: a.integer(),
       })
       .authorization((allow) => [allow.authenticated()]),
     Player: a
@@ -42,6 +62,7 @@ const schema = a
         name: a.string(),
         sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
+        sessionsWon: a.hasMany('SessionStat', 'winnerId'),
         friendsAsOne: a.hasMany('Friends', 'userIdOne'),
         friendsAsTwo: a.hasMany('Friends', 'userIdTwo'),
         turnsMade: a.hasMany('Turns', 'playerId'),
@@ -71,7 +92,7 @@ const schema = a
         gameId: a.string().required(),
         userId: a.string().required(),
         moves: a.json().required(),
-        type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT']),
+        type: a.enum(['MOVE', 'GIVE_UP', 'DOUBLE', 'INIT', 'GAME_OVER']),
       })
       .returns(a.ref('Dice'))
       .handler(a.handler.function(makeTurn))

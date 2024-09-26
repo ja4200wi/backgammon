@@ -21,6 +21,7 @@ interface GameNavBarProps {
   disableButtons: boolean;
   allowDouble: boolean;
   showRestartGame: boolean;
+  showGiveUp: boolean;
 }
 
 const GameNavBar: React.FC<GameNavBarProps> = ({
@@ -34,6 +35,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
   showUndoMoveButton,
   disableButtons,
   showRestartGame,
+  showGiveUp,
 }) => {
   const [isAcceptButtonDisabled, setIsAcceptButtonDisabled] = useState(false);
 
@@ -96,7 +98,7 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
 
   return (
     <View style={styles.footerContainer}>
-      <TouchableOpacity onPress={showActionSheet}>
+      <TouchableOpacity onPress={showActionSheet} disabled={!showGiveUp || disableButtons}>
         <Icon name='flag' type='material' color={APP_COLORS.iconGrey} size={36} />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />

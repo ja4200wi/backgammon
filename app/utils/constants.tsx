@@ -72,16 +72,16 @@ export enum BOARD_COLORS {
 }
 export enum BOARD_TYPE {
   DEFAULT = 'default',
-  EMPTY ='empty',
-  CUSTOM ='custom',
+  EMPTY = 'empty',
+  CUSTOM = 'custom',
 }
 
 export enum GAME_TYPE {
-  ELO = 'Elo',
-  ONLINE = 'online',
-  FRIENDLIST = 'FriendList',
-  COMPUTER = 'Computer',
-  PASSPLAY = 'PassandPlay',
+  ELO = 'ELO',
+  RANDOM = 'RANDOM',
+  FRIENDLIST = 'FRIENDLIST',
+  COMPUTER = 'COMPUTER',
+  PASSPLAY = 'PASSANDPLAY',
 }
 export enum BOT_DIFFICULTY {
   RANDOM = 'random',
@@ -173,5 +173,5 @@ export const GAME_SETTINGS = {
   checkerCount: 15,
   startDice: [1, 2],
   startHomeCheckerCount: [0, 0],
-  startingScore: [0,0],
+  startingScore: [0, 0],
 };

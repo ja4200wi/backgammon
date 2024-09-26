@@ -91,22 +91,22 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 
     return (
       <TouchableOpacity
-        onPress={() => handleSelectMode(GAME_TYPE.ONLINE)}
-        disabled={selectedMode === GAME_TYPE.ONLINE}
+        onPress={() => handleSelectMode(GAME_TYPE.RANDOM)}
+        disabled={selectedMode === GAME_TYPE.RANDOM}
       >
         <Card
           containerStyle={[
             styles.card,
-            selectedMode === GAME_TYPE.ONLINE && styles.selectedCard,
+            selectedMode === GAME_TYPE.RANDOM && styles.selectedCard,
           ]}
         >
           <View style={styles.cardHeader}>
             <View style={{ flexDirection: 'row', alignContent: 'flex-start' }}>
-              {selectedMode !== GAME_TYPE.ONLINE && ICONS.WifiIcon}
+              {selectedMode !== GAME_TYPE.RANDOM && ICONS.WifiIcon}
               <Text
                 style={[
                   GLOBAL_STYLES.headline,
-                  selectedMode !== GAME_TYPE.ONLINE && {
+                  selectedMode !== GAME_TYPE.RANDOM && {
                     fontSize: 20,
                     fontWeight: '600',
                   },
@@ -116,7 +116,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               </Text>
             </View>
           </View>
-          {selectedMode === GAME_TYPE.ONLINE && (
+          {selectedMode === GAME_TYPE.RANDOM && (
             <>
               <View style={styles.cardDetailContainer}>
                 <Text style={GLOBAL_STYLES.lineItems}>
