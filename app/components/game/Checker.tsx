@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { PLAYER_COLORS } from '../../utils/constants';
 
@@ -6,13 +6,16 @@ interface CheckerProps {
   color: PLAYER_COLORS;
   width: number;
   height: number;
+  index?: number;
   style?: any;
 }
 
-const Checker: React.FC<CheckerProps> = ({ color, width, height }) => {
+// Using forwardRef to pass ref to the View component
+const Checker = forwardRef<View, CheckerProps>(({ color, width, height }, ref) => {
   const colorCode = color === PLAYER_COLORS.WHITE ? 'white' : 'black';
   return (
     <View
+      ref={ref} // Attach the ref to the main View container
       style={[
         styles.checker,
         { backgroundColor: colorCode, width: width, height: height },
@@ -28,7 +31,7 @@ const Checker: React.FC<CheckerProps> = ({ color, width, height }) => {
       ></View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   checker: {

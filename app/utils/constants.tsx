@@ -91,7 +91,7 @@ export enum BOT_DIFFICULTY {
 
 export enum BOT_NAMES {
   RIANA = 'riana',
-  DEFAULT = 'default'
+  DEFAULT = 'default',
 }
 export const ICONS = {
   TrophyIcon: (
@@ -147,6 +147,7 @@ const boardWidth = screenWidth * 0.95;
 const boardHeight = screenHeight * 0.65;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 3;
+const homeWidth = 135;
 
 // Define dimensions used in the application
 export const DIMENSIONS = {
@@ -156,15 +157,16 @@ export const DIMENSIONS = {
   boardHeight,
   spikeWidth,
   spikeHeight,
+  homeWidth,
 };
 
 export const GAME_SETTINGS = {
   startingPositions: [
     { index: 1, color: PLAYER_COLORS.WHITE, count: 2 },
-    { index: 15, color: PLAYER_COLORS.WHITE, count: 5 },
+    { index: 12, color: PLAYER_COLORS.WHITE, count: 5 },
     { index: 17, color: PLAYER_COLORS.WHITE, count: 3 },
     { index: 19, color: PLAYER_COLORS.WHITE, count: 5 },
-    { index: 23, color: PLAYER_COLORS.BLACK, count: 2 },
+    { index: 24, color: PLAYER_COLORS.BLACK, count: 2 },
     { index: 13, color: PLAYER_COLORS.BLACK, count: 5 },
     { index: 8, color: PLAYER_COLORS.BLACK, count: 3 },
     { index: 6, color: PLAYER_COLORS.BLACK, count: 5 },
@@ -174,4 +176,5 @@ export const GAME_SETTINGS = {
   startDice: [1, 2],
   startHomeCheckerCount: [0, 0],
   startingScore: [0, 0],
+  checkerAnimationDuration: 500,
 };

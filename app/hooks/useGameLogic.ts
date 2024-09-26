@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import {
   BOT_DIFFICULTY,
@@ -68,6 +68,7 @@ export const useGameLogic = (
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
   const bot = new Bot(BOT_DIFFICULTY.CUSTOM, BOT_NAMES.RIANA);
+  const boardRef = useRef<any>(null); // Define a ref for the Board component
   // #endregion
 
   // #region Effects
@@ -219,6 +220,17 @@ export const useGameLogic = (
         break;
     }
   };
+  const updatePositionHandler = async (
+    sourceIndex: number,
+    targetIndex: number,
+    type?: 'UNDO'
+  ) => {
+    if (boardRef.current) {
+      boardRef.current.updatePosition(sourceIndex, targetIndex, type);
+      return true;
+    }
+    return false;
+  };
   const switchplayer = async () => {
     if (
       game &&
@@ -324,7 +336,8 @@ export const useGameLogic = (
   const doPlayerTwoMove = async (turn: Turn) => {
     const move = turn.nextMove();
     if (move) {
-      await onMoveChecker(move.getFrom(), move.getTo());
+      await updatePositionHandler(move.getFrom(), move.getTo());
+      const success = await onMoveChecker(move.getFrom(), move.getTo());
       makeTurn(turn);
     }
   };
@@ -510,7 +523,7 @@ export const useGameLogic = (
       gamemode === GAME_TYPE.FRIENDLIST
     );
   };
-  const updateGameState = () => {
+  const updateGameState = async () => {
     if (game) {
       setPositions(game.getCurrentPositions());
       const distances = game.getDistances();
@@ -618,10 +631,11 @@ export const useGameLogic = (
       ]);
     }
   };
-  const undoMove = () => {
+  const undoMove = async () => {
     if (game) {
       game.undoMove();
-      updateGameState();
+      await updateGameState();
+      await updatePositionHandler(0, 0, 'UNDO');
     }
   };
   const legalMovesFrom = (from: number): number[] => {
@@ -657,6 +671,7 @@ export const useGameLogic = (
     positions,
     pipCount,
     homeCheckers,
+    boardRef,
     onMoveChecker,
     startGame,
     showAcceptMoveButton,
