@@ -28,6 +28,7 @@ export default function SearchPlayer() {
   };
 
   const handleInvite = async (playerId: string) => {
+    console.log('Inviting player with id:', playerId);
     await client.models.Friends.create({
       userIdOne: localPlayerId,
       userIdTwo: playerId,
@@ -61,20 +62,25 @@ export default function SearchPlayer() {
         inputContainerStyle={styles.inputContainerStyle}
         inputStyle={styles.inputStyle}
       />
-      <ScrollView horizontal={true} contentContainerStyle={styles.scrollStyle}>
-        {searchResults.map((player) => {
-          return (
-            <View key={player.id} style={styles.gameItem}>
-              <Text style={styles.gameText}>{player.name}</Text>
-              <Button
-                title={'+'}
-                buttonStyle={styles.inviteButton}
-                onPress={() => handleInvite(player.id)}
-              />
-            </View>
-          );
-        })}
-      </ScrollView>
+      {searchResults.length > 0 && (
+        <ScrollView
+          horizontal={true}
+          contentContainerStyle={styles.scrollStyle}
+        >
+          {searchResults.map((player) => {
+            return (
+              <View key={player.id} style={styles.gameItem}>
+                <Text style={styles.gameText}>{player.name}</Text>
+                <Button
+                  title={'+'}
+                  buttonStyle={styles.inviteButton}
+                  onPress={() => handleInvite(player.id)}
+                />
+              </View>
+            );
+          })}
+        </ScrollView>
+      )}
     </View>
   );
 }
