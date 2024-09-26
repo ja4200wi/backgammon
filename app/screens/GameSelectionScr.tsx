@@ -84,9 +84,11 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
       });
     };
 
-    const listSessions = () => {
-      navigation.navigate('OnlineMatching', {});
+    const listSessions = async () => {
+      const userName = await getUserName();
+      navigation.navigate('OnlineMatching', { localPlayerId: userName });
     };
+
     return (
       <TouchableOpacity
         onPress={() => handleSelectMode(GAME_TYPE.RANDOM)}
@@ -138,6 +140,10 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
     );
   }
   function FriendsGameCard() {
+    const playWithFriends = async () => {
+      const userName = await getUserName();
+      navigation.navigate('PlayFriend', { localPlayerId: userName });
+    };
     return (
       <TouchableOpacity
         onPress={() => handleSelectMode(GAME_TYPE.FRIENDLIST)}
@@ -175,7 +181,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
-                onPress={() => console.log('Start Game')}
+                onPress={() => playWithFriends()}
               />
             </>
           )}

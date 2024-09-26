@@ -8,9 +8,46 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const getFriends = /* GraphQL */ `query GetFriends($id: ID!) {
+  getFriends(id: $id) {
+    createdAt
+    id
+    isConfirmed
+    updatedAt
+    userIdOne
+    userIdTwo
+    userOne {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    userTwo {
+      createdAt
+      id
+      name
+      updatedAt
+      __typename
+    }
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetFriendsQueryVariables,
+  APITypes.GetFriendsQuery
+>;
 export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
   getPlayer(id: $id) {
     createdAt
+    friendsAsOne {
+      nextToken
+      __typename
+    }
+    friendsAsTwo {
+      nextToken
+      __typename
+    }
     id
     name
     sessionsAsPlayerOne {
@@ -33,6 +70,7 @@ export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
 export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
   getSession(id: $id) {
     createdAt
+    gameType
     id
     playerOne {
       createdAt
@@ -72,6 +110,7 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
     }
     game {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID
@@ -100,6 +139,29 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
   }
 }
 ` as GeneratedQuery<APITypes.GetTurnsQueryVariables, APITypes.GetTurnsQuery>;
+export const listFriends = /* GraphQL */ `query ListFriends(
+  $filter: ModelFriendsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listFriends(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      createdAt
+      id
+      isConfirmed
+      updatedAt
+      userIdOne
+      userIdTwo
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListFriendsQueryVariables,
+  APITypes.ListFriendsQuery
+>;
 export const listPlayers = /* GraphQL */ `query ListPlayers(
   $filter: ModelPlayerFilterInput
   $limit: Int
@@ -129,6 +191,7 @@ export const listSessions = /* GraphQL */ `query ListSessions(
   listSessions(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       createdAt
+      gameType
       id
       playerOneID
       playerTwoID

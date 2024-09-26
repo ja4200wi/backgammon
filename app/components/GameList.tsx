@@ -12,13 +12,20 @@ import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { GAME_TYPE } from '../utils/constants';
+import { getPlayerName } from '../service/profileService';
 
 const client = generateClient<Schema>();
 
 const selectionSet = ['id', 'playerOneID'] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 
-export default function GameListScreen({ navigation }: { navigation: any }) {
+export default function GameListScreen({
+  navigation,
+  localPlayerId,
+}: {
+  navigation: any;
+  localPlayerId: string;
+}) {
   const [games, setGames] = useState<Session[]>();
 
   const joinGame = async (gameId: string) => {
@@ -27,7 +34,6 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
       gameId,
       userId,
     });
-    console.log('joinGame:', userId);
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
@@ -35,8 +41,12 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
     });
   };
 
+  const fetchPlayerName = async (playerId: string): Promise<String> => {
+    return await getPlayerName(playerId);
+  };
+
   useEffect(() => {
-    const sub = client.models.Session.observeQuery().subscribe({
+    const sub = client.models.Session.observeQuery({}).subscribe({
       next: ({ items, isSynced }) => {
         setGames([...items]);
       },
@@ -44,10 +54,39 @@ export default function GameListScreen({ navigation }: { navigation: any }) {
     return () => sub.unsubscribe();
   }, []);
 
+  const PlayerNameText = ({
+    playerId,
+  }: {
+    playerId: string | null | undefined;
+  }) => {
+    const [playerName, setPlayerName] = useState<String>('');
+
+    useEffect(() => {
+      const fetchName = async () => {
+        if (playerId === null || playerId === undefined) {
+          setPlayerName('');
+        } else {
+          const name = await fetchPlayerName(playerId);
+          setPlayerName(name);
+        }
+      };
+
+      fetchName();
+    }, [playerId]);
+
+    return (
+      <Text style={styles.gameText}>
+        Play against{' '}
+        <Text style={{ fontWeight: 'bold' }}>{playerName || ''}</Text>
+      </Text>
+    );
+  };
+
   const renderItem = ({ item }: { item: Session }) => (
     <View style={styles.gameItem}>
-      <Text style={styles.gameText}>Player One ID: {item.playerOneID}</Text>
-      <Text style={styles.gameText}>Game ID: {item.id}</Text>
+      <Text style={styles.gameText}>
+        <PlayerNameText playerId={item.playerOneID} />
+      </Text>
       {/* Join button */}
       <Button
         title='Join Game'
@@ -80,7 +119,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   gameItem: {
-    padding: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     marginBottom: 8,
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -109,7 +153,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   startButton: {
-    marginTop: 10,
     backgroundColor: '#6B9C41',
     borderRadius: 5,
   },

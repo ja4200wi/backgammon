@@ -36,11 +36,13 @@ const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
 const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
-  const [winnerOfflineAlertVisible, setWinnerOfflineAlertVisible] = useState(false);
-  const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] = useState(false);
+  const [winnerOfflineAlertVisible, setWinnerOfflineAlertVisible] =
+    useState(false);
+  const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] =
+    useState(false);
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
-  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false)
+  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false);
   const { gameId, localPlayerId, gameMode } = route.params;
   const {
     game,
@@ -70,7 +72,13 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     gameOver,
     double,
     onlineTurns,
-  } = useGameLogic(gameId,localPlayerId,setDoubleAlertVisible,isWaitingForDouble,setIsWaitingForDouble);
+  } = useGameLogic(
+    gameId,
+    localPlayerId,
+    setDoubleAlertVisible,
+    isWaitingForDouble,
+    setIsWaitingForDouble
+  );
 
   const { pointsToWin } = route.params;
 
@@ -87,46 +95,60 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       return () => sub.unsubscribe();
     }
   }, []); */
-  const [startedGame,setStartedGame] = useState<boolean>(false)
+  const [startedGame, setStartedGame] = useState<boolean>(false);
   useEffect(() => {
-    if(!startedGame && (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)) {
-      console.log('starting offline game')
-      setStartedGame(true)
+    if (
+      !startedGame &&
+      (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)
+    ) {
+      setStartedGame(true);
       startGame(gameMode);
-    } else if(!startedGame && gameMode === GAME_TYPE.RANDOM && onlineTurns && onlineTurns.length > 0) {
-      console.log('starting online game')
-      setStartedGame(true)
-      startGame(gameMode,onlineTurns)
+    } else if (
+      !startedGame &&
+      gameMode === GAME_TYPE.RANDOM &&
+      onlineTurns &&
+      onlineTurns.length > 0
+    ) {
+      setStartedGame(true);
+      startGame(gameMode, onlineTurns);
     }
-    
-  }, [onlineTurns,startedGame]);
+  }, [onlineTurns, startedGame]);
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
-      if(isOnlineGame() && gameOver.reason && gameOver.winner === localPlayerId) {
-        console.log(localPlayerId,'I am the winner and I will send the game state to server:',gameOver.winner,gameOver.reason)
-        sendFinalGameStateToServer(gameOver.winner,gameOver.reason)
+      if (
+        isOnlineGame() &&
+        gameOver.reason &&
+        gameOver.winner === localPlayerId
+      ) {
+        console.log(
+          localPlayerId,
+          'I am the winner and I will send the game state to server:',
+          gameOver.winner,
+          gameOver.reason
+        );
+        sendFinalGameStateToServer(gameOver.winner, gameOver.reason);
       }
-      gameMode === GAME_TYPE.RANDOM ? setWinnerOnlineAlertVisible(true) : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
+      gameMode === GAME_TYPE.RANDOM
+        ? setWinnerOnlineAlertVisible(true)
+        : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
   const handeDoubleAccept = () => {
     double();
-    if(gameMode === GAME_TYPE.RANDOM) {
-      sendTurnToServer(new Turn(),'DOUBLE')
+    if (gameMode === GAME_TYPE.RANDOM) {
+      sendTurnToServer(new Turn(), 'DOUBLE');
     }
     setDoubleAlertVisible(false);
   };
   const handleDouble = () => {
     if (gameMode === GAME_TYPE.COMPUTER) {
       double();
-    } else if(gameMode === GAME_TYPE.RANDOM) {
-      sendTurnToServer(new Turn(),'DOUBLE')
-      setIsWaitingForDouble(true)
+    } else if (gameMode === GAME_TYPE.RANDOM) {
+      sendTurnToServer(new Turn(), 'DOUBLE');
+      setIsWaitingForDouble(true);
       //set wait for double true
-    }
-    
-    else {
+    } else {
       setDoubleAlertVisible(true);
     }
   };
@@ -136,20 +158,20 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     startGame(gameMode);
     setWinnerOfflineAlertVisible(false);
   };
-  const handleGiveUp = (type?:'DOUBLE' | 'STANDARD') => {
+  const handleGiveUp = (type?: 'DOUBLE' | 'STANDARD') => {
     if (game) {
-      let looser
-      if(type === 'STANDARD') {
-        looser = game.getCurrentPlayer()
-        if(gameMode === GAME_TYPE.RANDOM) {
-          sendTurnToServer(new Turn(),'GIVE_UP')
+      let looser;
+      if (type === 'STANDARD') {
+        looser = game.getCurrentPlayer();
+        if (gameMode === GAME_TYPE.RANDOM) {
+          sendTurnToServer(new Turn(), 'GIVE_UP');
         }
       } else {
-        sendTurnToServer(new Turn(),'GIVE_UP')
+        sendTurnToServer(new Turn(), 'GIVE_UP');
         looser =
-        game.getCurrentPlayer() === PLAYER_COLORS.WHITE
-          ? PLAYER_COLORS.BLACK
-          : PLAYER_COLORS.WHITE;
+          game.getCurrentPlayer() === PLAYER_COLORS.WHITE
+            ? PLAYER_COLORS.BLACK
+            : PLAYER_COLORS.WHITE;
       }
 
       giveUp(looser);
@@ -170,10 +192,10 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     return success;
   };
   const handlePlayAgain = () => {
-    setWinnerOnlineAlertVisible(false)
+    setWinnerOnlineAlertVisible(false);
     //for now naviagate to Join Game
     navigation.navigate('OnlineMatching', {});
-  }
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
@@ -207,9 +229,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         showAcceptMoveButton={showAcceptMoveButton(game!)}
         showUndoMoveButton={showUndoMoveButton(game!)}
         onDouble={handleDouble}
-        giveUp = {handleGiveUp}
+        giveUp={handleGiveUp}
         onRestart={handleRestart}
-        allowDouble={game ? doubleDice.getLastDobule() === game.getCurrentPlayer() : false}
+        allowDouble={
+          game ? doubleDice.getLastDobule() === game.getCurrentPlayer() : false
+        }
         showRestartGame={isOfflineGame()}
         showGiveUp={onlineTurns ? onlineTurns!.length >= 5 : false}
       />
@@ -245,7 +269,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onAccept={handlePlayAgain}
         onDecline={handleGoHome}
       />
-      <LoadingPopup 
+      <LoadingPopup
         visible={isWaitingForDouble}
         message='Waiting for the response of your opponent!'
       />

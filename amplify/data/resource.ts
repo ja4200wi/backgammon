@@ -33,6 +33,7 @@ const schema = a
         playerOne: a.belongsTo('Player', 'playerOneID'),
         playerTwoID: a.id(),
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
+        gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
         turns: a.hasMany('Turns', 'gameId'),
         statisticId: a.id(),
         statistics: a.hasOne('SessionStat', 'gameId'),
@@ -62,7 +63,18 @@ const schema = a
         sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
         sessionsWon: a.hasMany('SessionStat', 'winnerId'),
+        friendsAsOne: a.hasMany('Friends', 'userIdOne'),
+        friendsAsTwo: a.hasMany('Friends', 'userIdTwo'),
         turnsMade: a.hasMany('Turns', 'playerId'),
+      })
+      .authorization((allow) => [allow.authenticated()]),
+    Friends: a
+      .model({
+        userIdOne: a.id(),
+        userOne: a.belongsTo('Player', 'userIdOne'),
+        userIdTwo: a.id(),
+        userTwo: a.belongsTo('Player', 'userIdTwo'),
+        isConfirmed: a.boolean(),
       })
       .authorization((allow) => [allow.authenticated()]),
     joinGame: a
