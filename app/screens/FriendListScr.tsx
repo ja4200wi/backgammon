@@ -139,6 +139,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                 const friendName = userNames[friendId] || 'Unknown Player';
                 return (
                   <Friend
+                    key={friend.id}
                     friendId={friend.id}
                     nickname={friendName}
                     country={COUNTRIES.UNITED_STATES}
@@ -164,6 +165,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                 if (didISendRequest) {
                   return (
                     <SentRequest
+                      key={friend.id}
                       nickname={friendName}
                       country={COUNTRIES.GERMANY}
                       extraInfo={friend.createdAt}
@@ -172,6 +174,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                 } else {
                   return (
                     <OpenRequest
+                      key={friend.id}
                       friendId={friend.id}
                       nickname={friendName}
                       country={COUNTRIES.GERMANY}
