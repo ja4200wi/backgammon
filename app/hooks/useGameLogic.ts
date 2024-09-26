@@ -514,12 +514,20 @@ export const useGameLogic = (
   const isOfflineGame = () => {
     return gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY;
   };
-  const isOnlineGame = () => {
-    return (
-      gamemode === GAME_TYPE.RANDOM ||
-      gamemode === GAME_TYPE.ELO ||
-      gamemode === GAME_TYPE.FRIENDLIST
+  const isOnlineGame = (gameMode?:GAME_TYPE) => {
+    if(gameMode) {
+      return(
+        gameMode === GAME_TYPE.RANDOM ||
+        gameMode === GAME_TYPE.ELO ||
+        gameMode === GAME_TYPE.FRIENDLIST
     );
+    } else {
+      return (
+        gamemode === GAME_TYPE.RANDOM ||
+        gamemode === GAME_TYPE.ELO ||
+        gamemode === GAME_TYPE.FRIENDLIST
+      );
+    }
   };
   const updateGameState = async () => {
     if (game) {

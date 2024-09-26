@@ -101,7 +101,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       startGame(gameMode);
     } else if (
       !startedGame &&
-      isOnlineGame() &&
+      isOnlineGame(gameMode) &&
       onlineTurns &&
       onlineTurns.length > 0
     ) {
@@ -125,14 +125,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         );
         sendFinalGameStateToServer(gameOver.winner, gameOver.reason);
       }
-      isOnlineGame()
+      isOnlineGame(gameMode)
         ? setWinnerOnlineAlertVisible(true)
         : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
   const handeDoubleAccept = () => {
     double();
-    if (isOnlineGame()) {
+    if (isOnlineGame(gameMode)) {
       sendTurnToServer(new Turn(), 'DOUBLE');
     }
     setDoubleAlertVisible(false);
@@ -140,7 +140,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handleDouble = () => {
     if (gameMode === GAME_TYPE.COMPUTER) {
       double();
-    } else if (isOnlineGame()) {
+    } else if (isOnlineGame(gameMode)) {
       sendTurnToServer(new Turn(), 'DOUBLE');
       setIsWaitingForDouble(true);
       //set wait for double true
@@ -159,7 +159,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       let looser;
       if (type === 'STANDARD') {
         looser = game.getCurrentPlayer();
-        if (isOnlineGame()) {
+        if (isOnlineGame(gameMode)) {
           sendTurnToServer(new Turn(), 'GIVE_UP');
         }
       } else {
