@@ -10,6 +10,7 @@ import NavBar from './app/components/navigation/NavBar';
 import Settings from './app/screens/SettingsScr';
 import Friends from './app/screens/FriendsScr';
 import PlayFriend from './app/screens/PlayFriendScr';
+import FriendList from './app/screens/FriendListScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './app/utils/constants';
 
@@ -39,6 +40,7 @@ function HomeTabs() {
       <Tab.Screen name='Home' component={HomeScr} />
       <Tab.Screen name='Profile' component={ProfileScr} />
       <Tab.Screen name='Settings' component={Settings} />
+      <Tab.Screen name='Friends' component={FriendList} />
     </Tab.Navigator>
   );
 }
