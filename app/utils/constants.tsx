@@ -72,21 +72,26 @@ export enum BOARD_COLORS {
 }
 export enum BOARD_TYPE {
   DEFAULT = 'default',
-  EMPTY ='empty',
-  CUSTOM ='custom',
+  EMPTY = 'empty',
+  CUSTOM = 'custom',
 }
 
 export enum GAME_TYPE {
-  ELO = 'Elo',
-  ONLINE = 'online',
-  FRIENDLIST = 'FriendList',
-  COMPUTER = 'Computer',
-  PASSPLAY = 'PassandPlay',
+  ELO = 'ELO',
+  RANDOM = 'RANDOM',
+  FRIENDLIST = 'FRIENDLIST',
+  COMPUTER = 'COMPUTER',
+  PASSPLAY = 'PASSANDPLAY',
 }
 export enum BOT_DIFFICULTY {
-  EASY = 'easy',
-  MEDIUM = 'medium',
+  RANDOM = 'random',
+  CUSTOM = 'custom',
   HARD = 'hard',
+}
+
+export enum BOT_NAMES {
+  RIANA = 'riana',
+  DEFAULT = 'default',
 }
 export const ICONS = {
   TrophyIcon: (
@@ -142,7 +147,7 @@ const boardWidth = screenWidth * 0.95;
 const boardHeight = screenHeight * 0.65;
 const spikeWidth = boardWidth / 13;
 const spikeHeight = boardHeight / 3;
-const homeWidth = 135
+const homeWidth = 135;
 
 // Define dimensions used in the application
 export const DIMENSIONS = {
@@ -170,6 +175,6 @@ export const GAME_SETTINGS = {
   checkerCount: 15,
   startDice: [1, 2],
   startHomeCheckerCount: [0, 0],
-  startingScore: [0,0],
+  startingScore: [0, 0],
   checkerAnimationDuration: 500,
 };

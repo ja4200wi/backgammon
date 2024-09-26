@@ -6,6 +6,8 @@ import {
   SafeAreaView,
   ImageBackground,
   Text,
+  Modal,
+  Pressable,
 } from 'react-native';
 import {
   APP_COLORS,
@@ -19,23 +21,21 @@ import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import { getUserJoined, getUserNickname } from '../service/profileService';
+import { getPlayerInfo, getUserName } from '../service/profileService';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+import EditProfileForm from '../components/profile/EditProfileForm';
 
-function UserProfile({ dateJoined }: { dateJoined: Date }) {
-  const formattedDate = dateJoined.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
-  const [nickname, setProfileName] = useState('');
-  const [userJoinedDate, setUserJoinedDate] = useState('');
+function UserProfile() {
+  const [player, setPlayer] = useState<PlayerInfo>();
+  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchUserData = async () => {
-    const nickname = await getUserNickname();
-    const joined = await getUserJoined();
-    setProfileName(nickname);
-    setUserJoinedDate(joined);
+    const playerInfo = await getPlayerInfo(await getUserName());
+    playerInfo && setPlayer(playerInfo);
   };
 
   fetchUserData();
@@ -51,9 +51,9 @@ function UserProfile({ dateJoined }: { dateJoined: Date }) {
             marginLeft: 16,
           }}
         >
-          <Text style={[GLOBAL_STYLES.headline]}>{nickname}</Text>
+          <Text style={[GLOBAL_STYLES.headline]}>{player?.name}</Text>
           <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-            Joined {userJoinedDate}
+            Joined {new Date(player?.createdAt!).toLocaleDateString()}
           </Text>
         </View>
         <Icon
@@ -61,8 +61,29 @@ function UserProfile({ dateJoined }: { dateJoined: Date }) {
           color={APP_COLORS.iconGrey}
           size={24}
           style={{ marginLeft: 'auto' }}
+          onPress={() => setModalVisible(true)}
         />
       </View>
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <EditProfileForm />
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -94,7 +115,7 @@ function HistoryLineItem({
     switch (GameType) {
       case GAME_TYPE.ELO:
         return ICONS.TrophyIcon;
-      case GAME_TYPE.ONLINE:
+      case GAME_TYPE.RANDOM:
         return ICONS.WifiIcon;
       case GAME_TYPE.FRIENDLIST:
         return ICONS.PeopleIcon;
@@ -197,7 +218,7 @@ function HistoryContent() {
         Win={false}
       />
       <HistoryLineItem
-        GameType={GAME_TYPE.ONLINE}
+        GameType={GAME_TYPE.RANDOM}
         Opponent='Peterpan'
         Win={true}
       />
@@ -216,14 +237,6 @@ function HistoryContent() {
 }
 
 export default function Profile({ navigation }: { navigation: any }) {
-  const [nickname, setProfileName] = useState('');
-
-  const fetchUserData = async () => {
-    const nickname = await getUserNickname();
-    setProfileName(nickname);
-  };
-
-  fetchUserData();
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
@@ -237,7 +250,7 @@ export default function Profile({ navigation }: { navigation: any }) {
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
         <ScrollView style={{ zIndex: 2 }}>
-          <UserProfile dateJoined={new Date('2018-03-11')} />
+          <UserProfile />
           <Headline headline='Statistics' />
           <ProfileContent
             GamesPlayed='243'
@@ -284,5 +297,47 @@ const styles = StyleSheet.create({
   divider: {
     backgroundColor: 'gray',
     marginVertical: 4,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 5,
+    width: '90%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });

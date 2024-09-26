@@ -44,7 +44,7 @@ export default function OnlineMatching({
             navigation.navigate('Game', {
               gameId,
               localPlayerId: localPlayerId,
-              gameMode: GAME_TYPE.ONLINE,
+              gameMode: GAME_TYPE.RANDOM,
               whoAmI: whoAmI,
             });
           }
@@ -57,7 +57,10 @@ export default function OnlineMatching({
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle='light-content' />
-      <HeaderSecondary navigation={navigation} headline='Play with a Friend' />
+      <HeaderSecondary
+        navigation={navigation}
+        headline='Play with a Stranger'
+      />
       {/* Body with Background Image */}
       <ImageBackground
         source={require('../images/backgroundDiceImage.png')}
@@ -80,7 +83,10 @@ export default function OnlineMatching({
             <Text>Waiting for opponent...</Text>
           </View>
         ) : (
-          <GameListScreen navigation={navigation} />
+          <GameListScreen
+            navigation={navigation}
+            localPlayerId={localPlayerId}
+          />
         )}
       </ImageBackground>
     </SafeAreaView>

@@ -38,13 +38,20 @@ const initialSpikesSetup = [...initialSpikes];
 distributeCheckersGame(initialSpikesSetup);
 
 const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
-  const [winnerOfflineAlertVisible, setWinnerOfflineAlertVisible] = useState(false);
-  const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] = useState(false);
+  const [winnerOfflineAlertVisible, setWinnerOfflineAlertVisible] =
+    useState(false);
+  const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] =
+    useState(false);
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
-  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false)
-  const [doCheckerAnimation,setDoCheckerAnimation] = useState<boolean>(false)
-  const [animatedCheckerValues,setAnimatedCheckerValues] = useState<{sx:number,sy:number,ex:number,ey:number}>({sx:0,sy:0,ex:0,ey:0})
+  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false);
+  const [doCheckerAnimation, setDoCheckerAnimation] = useState<boolean>(false);
+  const [animatedCheckerValues, setAnimatedCheckerValues] = useState<{
+    sx: number;
+    sy: number;
+    ex: number;
+    ey: number;
+  }>({ sx: 0, sy: 0, ex: 0, ey: 0 });
   const { gameId, localPlayerId, gameMode } = route.params;
   const {
     game,
@@ -53,10 +60,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     pipCount,
     homeCheckers,
     boardRef,
+    opponentPlayerId,
     onMoveChecker,
     startGame,
     showAcceptMoveButton,
     updateMoveIsOver,
+    isOnlineGame,
     showUndoMoveButton,
     isOfflineGame,
     undoMove,
@@ -66,49 +75,76 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setGameOver,
     resetGame,
     sendTurnToServer,
+    sendFinalGameStateToServer,
     doubleDice,
     isStartingPhase,
     firstRoll,
     gameOver,
     double,
     onlineTurns,
-  } = useGameLogic(gameId,localPlayerId,setDoubleAlertVisible,isWaitingForDouble,setIsWaitingForDouble);
+  } = useGameLogic(
+    gameId,
+    localPlayerId,
+    setDoubleAlertVisible,
+    isWaitingForDouble,
+    setIsWaitingForDouble
+  );
 
   const { pointsToWin } = route.params;
-  const [startedGame,setStartedGame] = useState<boolean>(false)
+  const [startedGame, setStartedGame] = useState<boolean>(false);
   useEffect(() => {
-    if(!startedGame && (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)) {
-      setStartedGame(true)
+    if (
+      !startedGame &&
+      (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)
+    ) {
+      setStartedGame(true);
       startGame(gameMode);
-    } else if(!startedGame && gameMode === GAME_TYPE.ONLINE && onlineTurns && onlineTurns.length > 0) {
-      setStartedGame(true)
-      startGame(gameMode,onlineTurns)
+    } else if (
+      !startedGame &&
+      gameMode === GAME_TYPE.RANDOM &&
+      onlineTurns &&
+      onlineTurns.length > 0
+    ) {
+      setStartedGame(true);
+      startGame(gameMode, onlineTurns);
     }
-    
-  }, [onlineTurns,startedGame]);
+  }, [onlineTurns, startedGame]);
   useEffect(() => {
     if (gameOver.gameover) {
       setWinner(gameOver.winner);
-      gameMode === GAME_TYPE.ONLINE ? setWinnerOnlineAlertVisible(true) : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
+      if (
+        isOnlineGame() &&
+        gameOver.reason &&
+        gameOver.winner === localPlayerId
+      ) {
+        console.log(
+          localPlayerId,
+          'I am the winner and I will send the game state to server:',
+          gameOver.winner,
+          gameOver.reason
+        );
+        sendFinalGameStateToServer(gameOver.winner, gameOver.reason);
+      }
+      gameMode === GAME_TYPE.RANDOM
+        ? setWinnerOnlineAlertVisible(true)
+        : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
     }
   }, [gameOver]);
   const handeDoubleAccept = () => {
     double();
-    if(gameMode === GAME_TYPE.ONLINE) {
-      sendTurnToServer(new Turn(),'DOUBLE')
+    if (gameMode === GAME_TYPE.RANDOM) {
+      sendTurnToServer(new Turn(), 'DOUBLE');
     }
     setDoubleAlertVisible(false);
   };
   const handleDouble = () => {
     if (gameMode === GAME_TYPE.COMPUTER) {
       double();
-    } else if(gameMode === GAME_TYPE.ONLINE) {
-      sendTurnToServer(new Turn(),'DOUBLE')
-      setIsWaitingForDouble(true)
+    } else if (gameMode === GAME_TYPE.RANDOM) {
+      sendTurnToServer(new Turn(), 'DOUBLE');
+      setIsWaitingForDouble(true);
       //set wait for double true
-    }
-    
-    else {
+    } else {
       setDoubleAlertVisible(true);
     }
   };
@@ -118,20 +154,20 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     startGame(gameMode);
     setWinnerOfflineAlertVisible(false);
   };
-  const handleGiveUp = (type?:'DOUBLE' | 'STANDARD') => {
+  const handleGiveUp = (type?: 'DOUBLE' | 'STANDARD') => {
     if (game) {
-      let looser
-      if(type === 'STANDARD') {
-        looser = game.getCurrentPlayer()
-        if(gameMode === GAME_TYPE.ONLINE) {
-          sendTurnToServer(new Turn(),'GIVE_UP')
+      let looser;
+      if (type === 'STANDARD') {
+        looser = game.getCurrentPlayer();
+        if (gameMode === GAME_TYPE.RANDOM) {
+          sendTurnToServer(new Turn(), 'GIVE_UP');
         }
       } else {
-        sendTurnToServer(new Turn(),'GIVE_UP')
+        sendTurnToServer(new Turn(), 'GIVE_UP');
         looser =
-        game.getCurrentPlayer() === PLAYER_COLORS.WHITE
-          ? PLAYER_COLORS.BLACK
-          : PLAYER_COLORS.WHITE;
+          game.getCurrentPlayer() === PLAYER_COLORS.WHITE
+            ? PLAYER_COLORS.BLACK
+            : PLAYER_COLORS.WHITE;
       }
 
       giveUp(looser);
@@ -152,24 +188,29 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     return success;
   };
   const handlePlayAgain = () => {
-    setWinnerOnlineAlertVisible(false)
+    setWinnerOnlineAlertVisible(false);
     //for now naviagate to Join Game
     navigation.navigate('OnlineMatching', {});
-  }
-  const handleAnimation = async (startX:number,startY:number,endX:number,endY:number) => {
-    setAnimatedCheckerValues({sx:startX,sy:startY,ex:endX,ey:endY})
-    setDoCheckerAnimation(true)
+  };
+  const handleAnimation = async (
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number
+  ) => {
+    setAnimatedCheckerValues({ sx: startX, sy: startY, ex: endX, ey: endY });
+    setDoCheckerAnimation(true);
     setTimeout(() => {
-      setDoCheckerAnimation(false)
+      setDoCheckerAnimation(false);
     }, GAME_SETTINGS.checkerAnimationDuration);
-  }
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
       {/* Container for AnimatedChecker to ensure it is on top */}
       <View style={styles.animatedCheckerContainer}>
         {doCheckerAnimation && (
-          <AnimatedChecker 
+          <AnimatedChecker
             color={game ? game.getCurrentPlayer() : PLAYER_COLORS.WHITE}
             width={DIMENSIONS.spikeWidth}
             height={DIMENSIONS.spikeWidth}
@@ -212,10 +253,13 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         showAcceptMoveButton={showAcceptMoveButton(game!)}
         showUndoMoveButton={showUndoMoveButton(game!)}
         onDouble={handleDouble}
-        giveUp = {handleGiveUp}
+        giveUp={handleGiveUp}
         onRestart={handleRestart}
-        allowDouble={game ? doubleDice.getLastDobule() === game.getCurrentPlayer() : false}
+        allowDouble={
+          game ? doubleDice.getLastDobule() === game.getCurrentPlayer() : false
+        }
         showRestartGame={isOfflineGame()}
+        showGiveUp={onlineTurns ? onlineTurns!.length >= 5 : false}
       />
 
       {/* Custom Modal for Winner Announcement */}
@@ -249,7 +293,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onAccept={handlePlayAgain}
         onDecline={handleGoHome}
       />
-      <LoadingPopup 
+      <LoadingPopup
         visible={isWaitingForDouble}
         message='Waiting for the response of your opponent!'
       />

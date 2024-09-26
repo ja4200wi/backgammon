@@ -2,7 +2,6 @@ import { Amplify } from 'aws-amplify';
 import { generateClient } from 'aws-amplify/data';
 import { Schema } from '../../data/resource';
 import { env } from '$amplify/env/joinGame'; // replace with your function name
-import { listSessions } from './graphql/queries';
 import { updateSession } from './graphql/mutations';
 
 Amplify.configure(

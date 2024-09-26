@@ -1,5 +1,6 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { GAME_TYPE } from '../utils/constants';
 
 type SendableTurn = {
   gameId: string;
@@ -8,6 +9,7 @@ type SendableTurn = {
   type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
 };
 type Dice = Schema['Dice']['type'];
+
 const client = generateClient<Schema>();
 
 export async function initGame(gameId: string, userId: string): Promise<void> {
@@ -23,6 +25,32 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
       console.error('Error from makeTurn call in initGame: ', err);
       return 'Failed to init game';
     });
+}
+
+export async function saveGameStats(
+  gameId: string,
+  winnerId: string,
+  gameType: GAME_TYPE,
+  duration: number,
+  numTurns: number,
+  bet: number,
+  scores: { white: number; black: number },
+  doubleDiceValue: number,
+  reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
+): Promise<void> {
+  let gameTypeConversion: 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER';
+  gameTypeConversion = gameType as 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER';
+  const response = client.models.SessionStat.create({
+    gameId,
+    gameType: gameTypeConversion,
+    winnerId,
+    scores,
+    doubleDiceValue,
+    duration,
+    reason,
+    numTurns,
+    bet,
+  });
 }
 
 export async function sendTurn(

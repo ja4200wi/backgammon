@@ -38,11 +38,13 @@ const client = generateClient<Schema>({
 });
 
 export const handler: PostConfirmationTriggerHandler = async (event) => {
+  console.log('event', event.request.userAttributes);
   await client.graphql({
     query: createPlayer,
     variables: {
       input: {
         id: event.userName,
+        name: event.request.userAttributes.nickname,
       },
     },
   });
