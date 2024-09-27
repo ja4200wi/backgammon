@@ -99,7 +99,7 @@ export default function FriendGameList({
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
-      gameMode: GAME_TYPE.ONLINE,
+      gameMode: GAME_TYPE.RANDOM,
     });
   };
 
