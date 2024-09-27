@@ -4,7 +4,13 @@ import { Schema } from '../../amplify/data/resource';
 
 const client = generateClient<Schema>();
 
-const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+const selectionSet = [
+  'id',
+  'name',
+  'country',
+  'createdAt',
+  'updatedAt',
+] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 // Get Data

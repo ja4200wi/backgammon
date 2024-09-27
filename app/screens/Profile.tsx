@@ -26,7 +26,13 @@ import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import EditProfileForm from '../components/profile/EditProfileForm';
 
-const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+const selectionSet = [
+  'id',
+  'name',
+  'country',
+  'createdAt',
+  'updatedAt',
+] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 function UserProfile() {
@@ -38,12 +44,21 @@ function UserProfile() {
     playerInfo && setPlayer(playerInfo);
   };
 
+  const getEnumFromKey = (key: string | null | undefined): COUNTRIES => {
+    if (key === null || key === undefined) return COUNTRIES.GERMANY;
+    const countryEnumValue = Object.entries(COUNTRIES).find(
+      ([, value]) => value === key
+    )?.[1] as COUNTRIES;
+    console.log('countryEnumValue', countryEnumValue);
+    return countryEnumValue;
+  };
+
   fetchUserData();
 
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={COUNTRIES.JAPAN} />
+        <AvatarWithFlag country={getEnumFromKey(player?.country)} />
         <View
           style={{
             flexDirection: 'column',
