@@ -86,7 +86,11 @@ export const useGameLogic = (
       return () => sub.unsubscribe();
     }
   }, []);
-
+  useEffect(() =>{
+    if(game) {
+      console.log('THIS IS A TEST:',game.getCurrentPlayer())
+    }
+  },[game])
   useEffect(() => {
     if (
       (gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY) &&
@@ -132,6 +136,12 @@ export const useGameLogic = (
       runOnline();
     }
   }, [onlineTurns]);
+
+  useEffect(() => {
+    if(!isLoadingGame && !isStartingPhase) {
+      updatePositionHandler(0,0,'DISTRIBUTE')
+    }
+  },[isLoadingGame])
   // #endregion
 
   // #region Game Actions
@@ -160,56 +170,82 @@ export const useGameLogic = (
     setGame(newGame);
   };
   const loadGame = async () => {
-    if(game) {
+    //console.log('IN LOAD GAME');
+  
+    if (game) {
       if (isOnlineGame() && onlineTurns) {
-        setDice(getOnlineDice(onlineTurns,0));
+        const startingDice = getOnlineDice(onlineTurns, 0)
+        setDice(startingDice);
+        //console.log(onlineTurns,'STARTING DICE;',getOnlineDice(onlineTurns, 0))
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
-      }
-      let hasDoubled = false
-      let tempDoubleDice = new DoubleDice()
-      const copyOnlineTurns = onlineTurns
-      if(copyOnlineTurns) {
-        for(let i = 1; i < copyOnlineTurns.length ; i++) {
-          const tempOnlineTurn = copyOnlineTurns[i]
-          const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn!)
-          const nextMoveDice = getOnlineDice(copyOnlineTurns,i)
-          if(tempOnlineTurn.type === 'MOVE') {
-            const updatedGame = await makeTurn(tempLocalTurn,true,game)
-            if(updatedGame) {
-              updatedGame.onlineSwitchPlayer(nextMoveDice)
-              setDice(nextMoveDice)
-            }
-          } else if(tempOnlineTurn.type === 'DOUBLE') {
-            if(hasDoubled) {
-              tempDoubleDice = game.double();
-              hasDoubled = false
-            } else {
-              hasDoubled = true
-            }
-          } else if (
-            tempOnlineTurn.type === 'GIVE_UP'
-          ) {
-            setIsWaitingForDouble(false);
-            if(localPlayerId !== tempOnlineTurn.playerId) {
-              setGameOver({ gameover: true, winner: localPlayerId, reason:'GIVE_UP' });
-            } else {
-              setGameOver({ gameover: true, winner: opponentPlayerId , reason:'GIVE_UP'});
-            }
-          }
-        }
-        if(game.getCurrentPlayer() !== whoAmI) {setDisableScreen(true)}
-        else {setDisableScreen(false)}
-        setDoubleDice(tempDoubleDice)
-        setPositions(game.getCurrentPositions());
-        const distances = game.getDistances();
-        updatePipCount(distances.distBlack, distances.distWhite);
-        updateHomeCheckers(game);
-        checkForLegalMove(false, game);
-        setIsLoadingGame(false)
+  
+        const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
+        //console.log('STARTING TURN PROCESSING NOW');
+        await processTurn(copyOnlineTurns, game, iAm,startingDice);
       }
     }
-  }
+  };
+  const processTurn = async (copyOnlineTurns: OnlineTurn[], game: Game, iAm:PLAYER_COLORS, startingDice:[number, number]) => {
+    let hasDoubled = false;
+    let tempDoubleDice = new DoubleDice();
+    let currentGame:Game|undefined = game
+  
+    while (copyOnlineTurns.length > 0) {
+      const tempOnlineTurn = copyOnlineTurns.shift(); 
+  
+      if (!tempOnlineTurn) continue;
+      const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn);
+      
+      const nextMoveDice = transformOnlineDice(tempOnlineTurn.diceForNextTurn!) // Use the remaining moves for the next dice roll
+      //console.log('NEXTDICE:',nextMoveDice)
+  
+      if (tempOnlineTurn.type === 'MOVE') {
+        //console.log('TYPE WAS MOVE: UPDATING THIS MOVE');
+        currentGame = await makeTurn(tempLocalTurn, true, currentGame);
+  
+        if (currentGame) {
+          //console.log('DONE WITH TURN, NEW BOARD:', currentGame.getCurrentPositions());
+          currentGame.onlineSwitchPlayer(nextMoveDice);
+          setDice(nextMoveDice);
+        }
+      } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
+        if (hasDoubled) {
+          tempDoubleDice = currentGame.double();
+          hasDoubled = false;
+        } else {
+          hasDoubled = true;
+        }
+      } else if (tempOnlineTurn.type === 'GIVE_UP') {
+        setIsWaitingForDouble(false);
+        if (localPlayerId !== tempOnlineTurn.playerId) {
+          setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
+        } else {
+          setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
+        }
+      }
+    }
+  
+    // After all turns are processed
+    const copyOfGame = currentGame!.deepCopy()
+    setGame(copyOfGame)
+    setDoubleDice(tempDoubleDice);
+    setPositions(copyOfGame.getCurrentPositions());
+    const distances = copyOfGame.getDistances();
+    updatePipCount(distances.distBlack, distances.distWhite);
+    updateHomeCheckers(copyOfGame);
+    checkForLegalMove(false, copyOfGame);
+    setIsLoadingGame(false);
+  
+    if (copyOfGame.getCurrentPlayer() !== iAm) {
+      setDisableScreen(true);
+    } else {
+      setDisableScreen(false);
+    }
+  
+    console.log('DONE WITH UPDATING GAME STATE', copyOfGame.getCurrentPositions(),copyOfGame.getCurrentPlayer())
+  };
+
   const setUpGame = async () => {
     if (game) {
       if (isOnlineGame() && onlineTurns) {
@@ -295,7 +331,7 @@ export const useGameLogic = (
   const updatePositionHandler = async (
     sourceIndex: number,
     targetIndex: number,
-    type?: 'UNDO'
+    type?: 'UNDO' | 'DISTRIBUTE'
   ) => {
     if (boardRef.current) {
       boardRef.current.updatePosition(sourceIndex, targetIndex, type);
@@ -399,16 +435,21 @@ export const useGameLogic = (
   };
   const makeTurn = async (turn: Turn, quickTurn?:boolean,game?:Game) => {
     if(quickTurn && game) {
+      //('IN MAKETURN WITH QUICKTURN')
       if(turn.hasMoves()) {
+        //console.log('MOVES LEFT; CALLING QUiCKTURN NOW')
         doQuickMove(turn,game)
       } else {
+        //console.log('RETURNING GAME')
         return game
       }
     }
     if (turn.hasMoves()) {
       setTimeout(() => doPlayerTwoMove(turn), 750);
+      return game
     } else {
       setTimeout(() => updateMoveIsOver(), 750);
+      return game
     }
   };
   const doPlayerTwoMove = async (turn: Turn) => {
@@ -419,13 +460,26 @@ export const useGameLogic = (
       await makeTurn(turn);
     }
   };
-  const doQuickMove = async (turn:Turn,game:Game) => {
+  const doQuickMove = async (turn: Turn, game: Game) => {
     const move = turn.nextMove();
-    if(move && game) {
-      game.moveStone(move.getFrom(), move.getTo())
-      makeTurn(turn,true,game)
+    //console.log('DOING QUICK MOVE WITH MOVE', move);
+  
+    if (move && game) {
+      try {
+        //console.log('in QUICKMOVE:',game.getCurrentPlayer(),game.getMovesLeft())
+        const success = game.moveStone(move.getFrom(), move.getTo());
+        if (success) { 
+          //console.log('IN QUICKMOVE: NEW POS IS', game.getCurrentPositions());
+          makeTurn(turn, true, game);
+        } else {
+          //console.log('Move was not successful',success);
+        }
+      } catch (error) {
+        console.error('Error during moveStone:', error);
+      }
     }
-  }
+  };
+  
   // #endregion
 
   // #region Online Game Logic
@@ -550,7 +604,7 @@ export const useGameLogic = (
     return new Turn();
   };
   const getOnlineDice = (turns: OnlineTurn[],getDiceAt?:number): [number, number] => {
-    const latestTurn = getDiceAt ? turns.at(getDiceAt) : turns.at(-1);
+    const latestTurn = (typeof getDiceAt === 'number') ? turns[getDiceAt] : turns.at(-1);
     if (latestTurn)
       if (latestTurn.diceForNextTurn) {
         return transformOnlineDice(latestTurn.diceForNextTurn);
