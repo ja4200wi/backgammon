@@ -43,7 +43,7 @@ export async function getEmail(): Promise<string> {
 
 export async function getCountry(playerId: string): Promise<string> {
   const country = await client.models.Player.get({ id: playerId });
-  return country.data?.country || 'Unknown';
+  return country.data?.country || 'de';
 }
 
 // Update Data

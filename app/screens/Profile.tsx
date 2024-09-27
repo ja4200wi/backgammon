@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -38,27 +38,30 @@ type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 function UserProfile() {
   const [player, setPlayer] = useState<PlayerInfo>();
   const [modalVisible, setModalVisible] = useState(false);
+  const [country, setCountry] = useState(COUNTRIES.GERMANY);
 
   const fetchUserData = async () => {
     const playerInfo = await getPlayerInfo(await getUserName());
     playerInfo && setPlayer(playerInfo);
+    playerInfo && setCountry(getEnumFromKey(playerInfo.country));
   };
 
   const getEnumFromKey = (key: string | null | undefined): COUNTRIES => {
-    if (key === null || key === undefined) return COUNTRIES.GERMANY;
+    if (key === null || key == undefined) return COUNTRIES.GERMANY;
     const countryEnumValue = Object.entries(COUNTRIES).find(
       ([, value]) => value === key
     )?.[1] as COUNTRIES;
-    console.log('countryEnumValue', countryEnumValue);
     return countryEnumValue;
   };
 
-  fetchUserData();
+  useEffect(() => {
+    fetchUserData();
+  }, [player]);
 
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={getEnumFromKey(player?.country)} />
+        <AvatarWithFlag country={country} />
         <View
           style={{
             flexDirection: 'column',
