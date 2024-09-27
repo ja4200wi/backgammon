@@ -35,10 +35,22 @@ export async function getEmail(): Promise<string> {
   return user.email || 'Unknown';
 }
 
+export async function getCountry(playerId: string): Promise<string> {
+  const country = await client.models.Player.get({ id: playerId });
+  return country.data?.country || 'Unknown';
+}
+
 // Update Data
 export async function updatePlayerName(
   playerId: string,
   newName: string
 ): Promise<void> {
   await client.models.Player.update({ id: playerId, name: newName });
+}
+
+export async function updateCountry(
+  playerId: string,
+  newCountry: string
+): Promise<void> {
+  await client.models.Player.update({ id: playerId, country: newCountry });
 }
