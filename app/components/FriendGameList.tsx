@@ -103,12 +103,14 @@ export default function FriendGameList({
             and: [
               { playerOneID: { eq: localPlayerId } },
               { gameType: { eq: 'FRIENDLIST' } },
+              { isGameOver: { eq: false } },
             ],
           },
           {
             and: [
               { playerTwoID: { eq: localPlayerId } },
               { gameType: { eq: 'FRIENDLIST' } },
+              { isGameOver: { eq: false } },
             ],
           },
         ],
@@ -116,7 +118,6 @@ export default function FriendGameList({
     }).subscribe({
       next: async ({ items, isSynced }) => {
         setGames([...items]);
-        console.log('items', items);
         await fetchLastTurns(items.map((item) => item.id));
       },
     });

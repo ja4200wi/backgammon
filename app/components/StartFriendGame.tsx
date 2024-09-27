@@ -44,8 +44,18 @@ export default function StartFriendGame({
     const { data: sessions, errors } = await client.models.Session.list({
       filter: {
         or: [
-          { playerOneID: { eq: friendId } },
-          { playerTwoID: { eq: friendId } },
+          {
+            and: [
+              { playerOneID: { eq: friendId } },
+              { isGameOver: { eq: false } },
+            ],
+          },
+          {
+            and: [
+              { playerTwoID: { eq: friendId } },
+              { isGameOver: { eq: false } },
+            ],
+          },
         ],
       },
     });
