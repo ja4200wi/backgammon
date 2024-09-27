@@ -170,21 +170,27 @@ export const useGameLogic = (
     setGame(newGame);
   };
   const loadGame = async () => {
-    //console.log('IN LOAD GAME');
+    console.log('IN LOAD GAME');
   
     if (game) {
       if (isOnlineGame() && onlineTurns) {
         const startingDice = getOnlineDice(onlineTurns, 0)
         setDice(startingDice);
-        //console.log(onlineTurns,'STARTING DICE;',getOnlineDice(onlineTurns, 0))
+        console.log(onlineTurns,'STARTING DICE;',getOnlineDice(onlineTurns, 0))
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
   
         const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
-        //console.log('STARTING TURN PROCESSING NOW');
+        console.log('STARTING TURN PROCESSING NOW');
         await processTurn(copyOnlineTurns, game, iAm,startingDice);
+        await pause(1000)
       }
     }
+  };
+  const pause = async (duration: number) => {
+    return new Promise<void>((resolve) => {
+      setTimeout(resolve, duration);
+    });
   };
   const processTurn = async (copyOnlineTurns: OnlineTurn[], game: Game, iAm:PLAYER_COLORS, startingDice:[number, number]) => {
     let hasDoubled = false;
@@ -192,22 +198,25 @@ export const useGameLogic = (
     let currentGame:Game|undefined = game
   
     while (copyOnlineTurns.length > 0) {
+      console.log('STARTING NEW LOOP; LENGTH',copyOnlineTurns.length)
       const tempOnlineTurn = copyOnlineTurns.shift(); 
   
       if (!tempOnlineTurn) continue;
       const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn);
       
       const nextMoveDice = transformOnlineDice(tempOnlineTurn.diceForNextTurn!) // Use the remaining moves for the next dice roll
-      //console.log('NEXTDICE:',nextMoveDice)
+      console.log('NEXTDICE:',nextMoveDice)
   
       if (tempOnlineTurn.type === 'MOVE') {
-        //console.log('TYPE WAS MOVE: UPDATING THIS MOVE');
+        console.log('TYPE WAS MOVE: UPDATING THIS MOVE');
+        console.log('BEFORE MAKE TURN CURRENT GAME IS',currentGame instanceof Game,'LOCAL TURN IS:',tempLocalTurn)
         currentGame = await makeTurn(tempLocalTurn, true, currentGame);
-  
+        console.log('AFTER MAKE TURN CURRENT GAME IS',currentGame instanceof Game)
         if (currentGame) {
-          //console.log('DONE WITH TURN, NEW BOARD:', currentGame.getCurrentPositions());
+          console.log('DONE WITH TURN, NEW BOARD:', currentGame.getCurrentPositions());
           currentGame.onlineSwitchPlayer(nextMoveDice);
           setDice(nextMoveDice);
+          console.log('ENDING LOOP; LENGTH',copyOnlineTurns.length)
         }
       } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
         if (hasDoubled) {
@@ -223,6 +232,7 @@ export const useGameLogic = (
         } else {
           setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
         }
+
       }
     }
   
@@ -235,7 +245,6 @@ export const useGameLogic = (
     updatePipCount(distances.distBlack, distances.distWhite);
     updateHomeCheckers(copyOfGame);
     checkForLegalMove(false, copyOfGame);
-    setIsLoadingGame(false);
   
     if (copyOfGame.getCurrentPlayer() !== iAm) {
       setDisableScreen(true);
@@ -244,6 +253,9 @@ export const useGameLogic = (
     }
   
     console.log('DONE WITH UPDATING GAME STATE', copyOfGame.getCurrentPositions(),copyOfGame.getCurrentPlayer())
+    setTimeout(() => {
+      setIsLoadingGame(false);
+    }, 1000);
   };
 
   const setUpGame = async () => {
@@ -259,9 +271,6 @@ export const useGameLogic = (
       doStartingPhase();
     }
   };
-  const setUpLoadingGame = () => {
-    
-  }
   const doStartingPhase = async () => {
     if (game && isOfflineGame()) {
       if (game.getDice()[0] > game.getDice()[1]) {
@@ -433,46 +442,49 @@ export const useGameLogic = (
       setDoubleDice(newDoubleDice);
     }
   };
-  const makeTurn = async (turn: Turn, quickTurn?:boolean,game?:Game) => {
+  const makeTurn = async (turn: Turn, quickTurn?:boolean,game?:Game): Promise<Game | undefined> => {
+    console.log('IN MAKE TURN')
     if(quickTurn && game) {
-      //('IN MAKETURN WITH QUICKTURN')
+      ('IN MAKETURN WITH QUICKTURN')
       if(turn.hasMoves()) {
-        //console.log('MOVES LEFT; CALLING QUiCKTURN NOW')
-        doQuickMove(turn,game)
+        console.log('MOVES LEFT; CALLING QUiCKTURN NOW')
+        await doQuickMove(turn,game)
       } else {
-        //console.log('RETURNING GAME')
+        console.log('RETURNING GAME', game instanceof Game)
         return game
       }
     }
-    if (turn.hasMoves()) {
+    else if (turn.hasMoves()) {
+      console.log('DOING PLAYER TWO MOVE',turn)
       setTimeout(() => doPlayerTwoMove(turn), 750);
       return game
     } else {
       setTimeout(() => updateMoveIsOver(), 750);
       return game
     }
+    return game
   };
   const doPlayerTwoMove = async (turn: Turn) => {
     const move = turn.nextMove();
     if (move) {
-      await onMoveChecker(move.getFrom(), move.getTo())
       await updatePositionHandler(move.getFrom(), move.getTo());
-      await makeTurn(turn);
+      await onMoveChecker(move.getFrom(), move.getTo())
+      makeTurn(turn);
     }
   };
   const doQuickMove = async (turn: Turn, game: Game) => {
     const move = turn.nextMove();
-    //console.log('DOING QUICK MOVE WITH MOVE', move);
+    console.log('DOING QUICK MOVE WITH MOVE', move);
   
     if (move && game) {
       try {
-        //console.log('in QUICKMOVE:',game.getCurrentPlayer(),game.getMovesLeft())
+        console.log('in QUICKMOVE:',game.getCurrentPlayer(),game.getMovesLeft())
         const success = game.moveStone(move.getFrom(), move.getTo());
         if (success) { 
-          //console.log('IN QUICKMOVE: NEW POS IS', game.getCurrentPositions());
-          makeTurn(turn, true, game);
+          console.log('IN QUICKMOVE: NEW POS IS', game.getCurrentPositions());
+          await makeTurn(turn, true, game);
         } else {
-          //console.log('Move was not successful',success);
+          console.log('Move was not successful',success);
         }
       } catch (error) {
         console.error('Error during moveStone:', error);
