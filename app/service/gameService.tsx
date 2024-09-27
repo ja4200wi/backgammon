@@ -88,6 +88,7 @@ export async function createSession(
     playerTwoID: playerTwoId || 'EMPTY',
     gameType: gameType || 'COMPUTER',
     isGameOver: false,
+    isGameStarted: false,
   });
   if (response.data === null) {
     console.error('Failed to create session:', response);
@@ -107,6 +108,10 @@ export async function joinSession(
   gameId: string,
   playerId: string
 ): Promise<String> {
+  await client.models.Session.update({
+    id: gameId,
+    isGameStarted: true,
+  });
   const response = await client.mutations
     .joinGame({
       gameId,
