@@ -61,7 +61,6 @@ export default function FriendGameList({
       },
     }).subscribe({
       next: async ({ items, isSynced }) => {
-        console.log('FriendGameList: ', items);
         setGames([...items]);
       },
     });
