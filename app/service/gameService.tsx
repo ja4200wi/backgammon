@@ -78,10 +78,15 @@ export async function sendTurn(
   return response.data;
 }
 
-export async function createSession(playerOneId: string): Promise<string> {
+export async function createSession(
+  playerOneId: string,
+  gameType: 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER',
+  playerTwoId?: string
+): Promise<string> {
   const response = await client.models.Session.create({
     playerOneID: playerOneId,
-    playerTwoID: 'EMPTY',
+    playerTwoID: playerTwoId || 'EMPTY',
+    gameType: gameType || 'COMPUTER',
     isGameOver: false,
   });
   if (response.data === null) {

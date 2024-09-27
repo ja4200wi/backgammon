@@ -91,18 +91,6 @@ export default function FriendGameList({
     setLastTurns((prevState) => ({ ...prevState, ...gameMapping }));
   };
 
-  const joinGame = async (gameId: string) => {
-    const { userId } = await getCurrentUser();
-    if (lastTurns[gameId]?.numTurns === 0) {
-      initGame(gameId, userId);
-    }
-    navigation.navigate('Game', {
-      gameId,
-      localPlayerId: userId,
-      gameMode: GAME_TYPE.RANDOM,
-    });
-  };
-
   const fetchPlayerName = async (playerId: string): Promise<String> => {
     return await getPlayerName(playerId);
   };
@@ -128,39 +116,12 @@ export default function FriendGameList({
     }).subscribe({
       next: async ({ items, isSynced }) => {
         setGames([...items]);
+        console.log('items', items);
         await fetchLastTurns(items.map((item) => item.id));
       },
     });
     return () => sub.unsubscribe();
   }, []);
-
-  const PlayerNameText = ({
-    playerId,
-  }: {
-    playerId: string | null | undefined;
-  }) => {
-    const [playerName, setPlayerName] = useState<String>('');
-
-    useEffect(() => {
-      const fetchName = async () => {
-        if (playerId === null || playerId === undefined) {
-          setPlayerName('');
-        } else {
-          const name = await fetchPlayerName(playerId);
-          setPlayerName(name);
-        }
-      };
-
-      fetchName();
-    }, [playerId]);
-
-    return (
-      <Text style={styles.gameText}>
-        Play against{' '}
-        <Text style={{ fontWeight: 'bold' }}>{playerName || ''}</Text>
-      </Text>
-    );
-  };
 
   const openRequests =
     games?.filter(

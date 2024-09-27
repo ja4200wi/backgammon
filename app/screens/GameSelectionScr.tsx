@@ -77,7 +77,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 
     const handleCreateSession = async () => {
       const userName = await getUserName();
-      const gameId = await createSession(userName);
+      const gameId = await createSession(userName, GAME_TYPE.RANDOM);
       navigation.navigate('OnlineMatching', {
         gameId,
         localPlayerId: userName,
