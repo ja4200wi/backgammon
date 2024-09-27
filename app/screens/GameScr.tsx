@@ -117,12 +117,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         gameOver.reason &&
         gameOver.winner === localPlayerId
       ) {
-        console.log(
-          localPlayerId,
-          'I am the winner and I will send the game state to server:',
-          gameOver.winner,
-          gameOver.reason
-        );
         sendFinalGameStateToServer(gameOver.winner, gameOver.reason);
       }
       gameMode === GAME_TYPE.RANDOM

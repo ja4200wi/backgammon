@@ -405,7 +405,7 @@ export const useGameLogic = (
       localPlayerId !== latestTurn?.playerId
     ) {
       setIsWaitingForDouble(false);
-      setGameOver({ gameover: true, winner: localPlayerId });
+      setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
     }
   };
   // #endregion
