@@ -67,6 +67,7 @@ export const useGameLogic = (
   const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
+  const [isLoadingGame,setIsLoadingGame] = useState<boolean>(false)
   const bot = new Bot(BOT_DIFFICULTY.CUSTOM, BOT_NAMES.RIANA);
   const boardRef = useRef<any>(null); // Define a ref for the Board component
   // #endregion
@@ -103,14 +104,31 @@ export const useGameLogic = (
       game &&
       onlineTurns &&
       onlineTurns.length > 0 &&
+      onlineTurns.length < 2 &&
       !gameIsRunning
     ) {
       setGameIsRunning(true);
       setUpGame();
     }
   }, [gamemode, game, onlineTurns]);
+  //Case game just needs to load:
   useEffect(() => {
-    if (onlineTurns && onlineTurns.length > 0) {
+    if (
+      isOnlineGame() &&
+      game &&
+      onlineTurns &&
+      onlineTurns.length > 1 &&
+      !gameIsRunning
+    ) {
+      setGameIsRunning(true);
+      setIsLoadingGame(true);
+      setStartingPhase(false);
+      setFirstRoll(false);
+      loadGame();
+    }
+  }, [gamemode, game, onlineTurns]);
+  useEffect(() => {
+    if (onlineTurns && onlineTurns.length > 0 && !isLoadingGame) {
       runOnline();
     }
   }, [onlineTurns]);
@@ -141,6 +159,26 @@ export const useGameLogic = (
     const newGame = new Game();
     setGame(newGame);
   };
+  const loadGame = async () => {
+    if(game) {
+      if (isOnlineGame() && onlineTurns) {
+        setDice(getOnlineDice(onlineTurns));
+        const iAm = await getWhoAmI();
+        setWhoAmI(iAm);
+      }
+      const copyOnlineTurns = onlineTurns
+      if(copyOnlineTurns) {
+        for(let i = 0; i < copyOnlineTurns?.length ; i++) {
+          const tempOnlineTurn = copyOnlineTurns[i]
+          const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn!)
+          if(tempOnlineTurn.type === 'MOVE') {
+            await makeTurn(tempLocalTurn,true)
+          }
+        }
+        
+      }
+    }
+  }
   const setUpGame = async () => {
     if (game) {
       if (isOnlineGame() && onlineTurns) {
@@ -154,6 +192,9 @@ export const useGameLogic = (
       doStartingPhase();
     }
   };
+  const setUpLoadingGame = () => {
+    
+  }
   const doStartingPhase = async () => {
     if (game && isOfflineGame()) {
       if (game.getDice()[0] > game.getDice()[1]) {
@@ -325,7 +366,12 @@ export const useGameLogic = (
       setDoubleDice(newDoubleDice);
     }
   };
-  const makeTurn = async (turn: Turn) => {
+  const makeTurn = async (turn: Turn, quickTurn?:boolean) => {
+    if(quickTurn) {
+      if(turn.hasMoves()) {
+        doQuickMove(turn)
+      }
+    }
     if (turn.hasMoves()) {
       setTimeout(() => doPlayerTwoMove(turn), 750);
     } else {
@@ -335,10 +381,18 @@ export const useGameLogic = (
   const doPlayerTwoMove = async (turn: Turn) => {
     const move = turn.nextMove();
     if (move) {
+      await onMoveChecker(move.getFrom(), move.getTo())
       await updatePositionHandler(move.getFrom(), move.getTo());
       await makeTurn(turn);
     }
   };
+  const doQuickMove = async (turn:Turn) => {
+    const move = turn.nextMove();
+    if(move && game) {
+      game.moveStone(move.getFrom(), move.getTo())
+      makeTurn(turn,true)
+    }
+  }
   // #endregion
 
   // #region Online Game Logic
