@@ -146,7 +146,7 @@ export const useGameLogic = (
     }
   };
   const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
-    const onlineDice = getOnlineDice(newOnlineTurns!);
+    const onlineDice = getOnlineDice(newOnlineTurns!,0);
     setDice(onlineDice);
     setGameMode(gamemode);
     const startPlayer =
@@ -162,27 +162,58 @@ export const useGameLogic = (
   const loadGame = async () => {
     if(game) {
       if (isOnlineGame() && onlineTurns) {
-        setDice(getOnlineDice(onlineTurns));
+        setDice(getOnlineDice(onlineTurns,0));
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
       }
+      let hasDoubled = false
+      let tempDoubleDice = new DoubleDice()
       const copyOnlineTurns = onlineTurns
       if(copyOnlineTurns) {
-        for(let i = 0; i < copyOnlineTurns?.length ; i++) {
+        for(let i = 1; i < copyOnlineTurns.length ; i++) {
           const tempOnlineTurn = copyOnlineTurns[i]
           const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn!)
+          const nextMoveDice = getOnlineDice(copyOnlineTurns,i)
           if(tempOnlineTurn.type === 'MOVE') {
-            await makeTurn(tempLocalTurn,true)
+            const updatedGame = await makeTurn(tempLocalTurn,true,game)
+            if(updatedGame) {
+              updatedGame.onlineSwitchPlayer(nextMoveDice)
+              setDice(nextMoveDice)
+            }
+          } else if(tempOnlineTurn.type === 'DOUBLE') {
+            if(hasDoubled) {
+              tempDoubleDice = game.double();
+              hasDoubled = false
+            } else {
+              hasDoubled = true
+            }
+          } else if (
+            tempOnlineTurn.type === 'GIVE_UP'
+          ) {
+            setIsWaitingForDouble(false);
+            if(localPlayerId !== tempOnlineTurn.playerId) {
+              setGameOver({ gameover: true, winner: localPlayerId, reason:'GIVE_UP' });
+            } else {
+              setGameOver({ gameover: true, winner: opponentPlayerId , reason:'GIVE_UP'});
+            }
           }
         }
-        
+        if(game.getCurrentPlayer() !== whoAmI) {setDisableScreen(true)}
+        else {setDisableScreen(false)}
+        setDoubleDice(tempDoubleDice)
+        setPositions(game.getCurrentPositions());
+        const distances = game.getDistances();
+        updatePipCount(distances.distBlack, distances.distWhite);
+        updateHomeCheckers(game);
+        checkForLegalMove(false, game);
+        setIsLoadingGame(false)
       }
     }
   }
   const setUpGame = async () => {
     if (game) {
       if (isOnlineGame() && onlineTurns) {
-        setDice(getOnlineDice(onlineTurns));
+        setDice(getOnlineDice(onlineTurns,0));
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
       }
@@ -366,10 +397,12 @@ export const useGameLogic = (
       setDoubleDice(newDoubleDice);
     }
   };
-  const makeTurn = async (turn: Turn, quickTurn?:boolean) => {
-    if(quickTurn) {
+  const makeTurn = async (turn: Turn, quickTurn?:boolean,game?:Game) => {
+    if(quickTurn && game) {
       if(turn.hasMoves()) {
-        doQuickMove(turn)
+        doQuickMove(turn,game)
+      } else {
+        return game
       }
     }
     if (turn.hasMoves()) {
@@ -386,11 +419,11 @@ export const useGameLogic = (
       await makeTurn(turn);
     }
   };
-  const doQuickMove = async (turn:Turn) => {
+  const doQuickMove = async (turn:Turn,game:Game) => {
     const move = turn.nextMove();
     if(move && game) {
       game.moveStone(move.getFrom(), move.getTo())
-      makeTurn(turn,true)
+      makeTurn(turn,true,game)
     }
   }
   // #endregion
@@ -516,8 +549,8 @@ export const useGameLogic = (
     // Return a default Turn if the input is null or undefined
     return new Turn();
   };
-  const getOnlineDice = (turns: OnlineTurn[]): [number, number] => {
-    const latestTurn = turns.at(-1);
+  const getOnlineDice = (turns: OnlineTurn[],getDiceAt?:number): [number, number] => {
+    const latestTurn = getDiceAt ? turns.at(getDiceAt) : turns.at(-1);
     if (latestTurn)
       if (latestTurn.diceForNextTurn) {
         return transformOnlineDice(latestTurn.diceForNextTurn);
