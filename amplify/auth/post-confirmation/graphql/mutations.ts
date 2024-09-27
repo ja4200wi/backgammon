@@ -20,16 +20,22 @@ export const createFriends = /* GraphQL */ `mutation CreateFriends(
     userIdOne
     userIdTwo
     userOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     userTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -45,7 +51,9 @@ export const createPlayer = /* GraphQL */ `mutation CreatePlayer(
   $input: CreatePlayerInput!
 ) {
   createPlayer(condition: $condition, input: $input) {
+    country
     createdAt
+    emoji
     friendsAsOne {
       nextToken
       __typename
@@ -56,11 +64,16 @@ export const createPlayer = /* GraphQL */ `mutation CreatePlayer(
     }
     id
     name
+    profilePicColor
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    sessionsWon {
       nextToken
       __typename
     }
@@ -84,22 +97,44 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
     createdAt
     gameType
     id
+    isGameOver
     playerOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerOneID
     playerTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerTwoID
+    statisticId
+    statistics {
+      bet
+      createdAt
+      doubleDiceValue
+      duration
+      gameId
+      gameType
+      id
+      numTurns
+      reason
+      updatedAt
+      winnerId
+      __typename
+    }
     turns {
       nextToken
       __typename
@@ -111,6 +146,55 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
 ` as GeneratedMutation<
   APITypes.CreateSessionMutationVariables,
   APITypes.CreateSessionMutation
+>;
+export const createSessionStat = /* GraphQL */ `mutation CreateSessionStat(
+  $condition: ModelSessionStatConditionInput
+  $input: CreateSessionStatInput!
+) {
+  createSessionStat(condition: $condition, input: $input) {
+    bet
+    createdAt
+    doubleDiceValue
+    duration
+    game {
+      createdAt
+      gameType
+      id
+      isGameOver
+      playerOneID
+      playerTwoID
+      statisticId
+      updatedAt
+      __typename
+    }
+    gameId
+    gameType
+    id
+    numTurns
+    reason
+    scores {
+      black
+      white
+      __typename
+    }
+    updatedAt
+    winner {
+      country
+      createdAt
+      emoji
+      id
+      name
+      profilePicColor
+      updatedAt
+      __typename
+    }
+    winnerId
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateSessionStatMutationVariables,
+  APITypes.CreateSessionStatMutation
 >;
 export const createTurns = /* GraphQL */ `mutation CreateTurns(
   $condition: ModelTurnsConditionInput
@@ -127,8 +211,10 @@ export const createTurns = /* GraphQL */ `mutation CreateTurns(
       createdAt
       gameType
       id
+      isGameOver
       playerOneID
       playerTwoID
+      statisticId
       updatedAt
       __typename
     }
@@ -139,9 +225,12 @@ export const createTurns = /* GraphQL */ `mutation CreateTurns(
       __typename
     }
     player {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -169,16 +258,22 @@ export const deleteFriends = /* GraphQL */ `mutation DeleteFriends(
     userIdOne
     userIdTwo
     userOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     userTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -194,7 +289,9 @@ export const deletePlayer = /* GraphQL */ `mutation DeletePlayer(
   $input: DeletePlayerInput!
 ) {
   deletePlayer(condition: $condition, input: $input) {
+    country
     createdAt
+    emoji
     friendsAsOne {
       nextToken
       __typename
@@ -205,11 +302,16 @@ export const deletePlayer = /* GraphQL */ `mutation DeletePlayer(
     }
     id
     name
+    profilePicColor
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    sessionsWon {
       nextToken
       __typename
     }
@@ -233,22 +335,44 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
     createdAt
     gameType
     id
+    isGameOver
     playerOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerOneID
     playerTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerTwoID
+    statisticId
+    statistics {
+      bet
+      createdAt
+      doubleDiceValue
+      duration
+      gameId
+      gameType
+      id
+      numTurns
+      reason
+      updatedAt
+      winnerId
+      __typename
+    }
     turns {
       nextToken
       __typename
@@ -260,6 +384,55 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
 ` as GeneratedMutation<
   APITypes.DeleteSessionMutationVariables,
   APITypes.DeleteSessionMutation
+>;
+export const deleteSessionStat = /* GraphQL */ `mutation DeleteSessionStat(
+  $condition: ModelSessionStatConditionInput
+  $input: DeleteSessionStatInput!
+) {
+  deleteSessionStat(condition: $condition, input: $input) {
+    bet
+    createdAt
+    doubleDiceValue
+    duration
+    game {
+      createdAt
+      gameType
+      id
+      isGameOver
+      playerOneID
+      playerTwoID
+      statisticId
+      updatedAt
+      __typename
+    }
+    gameId
+    gameType
+    id
+    numTurns
+    reason
+    scores {
+      black
+      white
+      __typename
+    }
+    updatedAt
+    winner {
+      country
+      createdAt
+      emoji
+      id
+      name
+      profilePicColor
+      updatedAt
+      __typename
+    }
+    winnerId
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteSessionStatMutationVariables,
+  APITypes.DeleteSessionStatMutation
 >;
 export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
   $condition: ModelTurnsConditionInput
@@ -276,8 +449,10 @@ export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
       createdAt
       gameType
       id
+      isGameOver
       playerOneID
       playerTwoID
+      statisticId
       updatedAt
       __typename
     }
@@ -288,9 +463,12 @@ export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
       __typename
     }
     player {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -341,16 +519,22 @@ export const updateFriends = /* GraphQL */ `mutation UpdateFriends(
     userIdOne
     userIdTwo
     userOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     userTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -366,7 +550,9 @@ export const updatePlayer = /* GraphQL */ `mutation UpdatePlayer(
   $input: UpdatePlayerInput!
 ) {
   updatePlayer(condition: $condition, input: $input) {
+    country
     createdAt
+    emoji
     friendsAsOne {
       nextToken
       __typename
@@ -377,11 +563,16 @@ export const updatePlayer = /* GraphQL */ `mutation UpdatePlayer(
     }
     id
     name
+    profilePicColor
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    sessionsWon {
       nextToken
       __typename
     }
@@ -405,22 +596,44 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
     createdAt
     gameType
     id
+    isGameOver
     playerOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerOneID
     playerTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerTwoID
+    statisticId
+    statistics {
+      bet
+      createdAt
+      doubleDiceValue
+      duration
+      gameId
+      gameType
+      id
+      numTurns
+      reason
+      updatedAt
+      winnerId
+      __typename
+    }
     turns {
       nextToken
       __typename
@@ -432,6 +645,55 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
 ` as GeneratedMutation<
   APITypes.UpdateSessionMutationVariables,
   APITypes.UpdateSessionMutation
+>;
+export const updateSessionStat = /* GraphQL */ `mutation UpdateSessionStat(
+  $condition: ModelSessionStatConditionInput
+  $input: UpdateSessionStatInput!
+) {
+  updateSessionStat(condition: $condition, input: $input) {
+    bet
+    createdAt
+    doubleDiceValue
+    duration
+    game {
+      createdAt
+      gameType
+      id
+      isGameOver
+      playerOneID
+      playerTwoID
+      statisticId
+      updatedAt
+      __typename
+    }
+    gameId
+    gameType
+    id
+    numTurns
+    reason
+    scores {
+      black
+      white
+      __typename
+    }
+    updatedAt
+    winner {
+      country
+      createdAt
+      emoji
+      id
+      name
+      profilePicColor
+      updatedAt
+      __typename
+    }
+    winnerId
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateSessionStatMutationVariables,
+  APITypes.UpdateSessionStatMutation
 >;
 export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
   $condition: ModelTurnsConditionInput
@@ -448,8 +710,10 @@ export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
       createdAt
       gameType
       id
+      isGameOver
       playerOneID
       playerTwoID
+      statisticId
       updatedAt
       __typename
     }
@@ -460,9 +724,12 @@ export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
       __typename
     }
     player {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }

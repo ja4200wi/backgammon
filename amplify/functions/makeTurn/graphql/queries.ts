@@ -17,16 +17,22 @@ export const getFriends = /* GraphQL */ `query GetFriends($id: ID!) {
     userIdOne
     userIdTwo
     userOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     userTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -39,7 +45,9 @@ export const getFriends = /* GraphQL */ `query GetFriends($id: ID!) {
 >;
 export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
   getPlayer(id: $id) {
+    country
     createdAt
+    emoji
     friendsAsOne {
       nextToken
       __typename
@@ -50,11 +58,16 @@ export const getPlayer = /* GraphQL */ `query GetPlayer($id: ID!) {
     }
     id
     name
+    profilePicColor
     sessionsAsPlayerOne {
       nextToken
       __typename
     }
     sessionsAsPlayerTwo {
+      nextToken
+      __typename
+    }
+    sessionsWon {
       nextToken
       __typename
     }
@@ -72,22 +85,44 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
     createdAt
     gameType
     id
+    isGameOver
     playerOne {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerOneID
     playerTwo {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
     playerTwoID
+    statisticId
+    statistics {
+      bet
+      createdAt
+      doubleDiceValue
+      duration
+      gameId
+      gameType
+      id
+      numTurns
+      reason
+      updatedAt
+      winnerId
+      __typename
+    }
     turns {
       nextToken
       __typename
@@ -99,6 +134,52 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
 ` as GeneratedQuery<
   APITypes.GetSessionQueryVariables,
   APITypes.GetSessionQuery
+>;
+export const getSessionStat = /* GraphQL */ `query GetSessionStat($id: ID!) {
+  getSessionStat(id: $id) {
+    bet
+    createdAt
+    doubleDiceValue
+    duration
+    game {
+      createdAt
+      gameType
+      id
+      isGameOver
+      playerOneID
+      playerTwoID
+      statisticId
+      updatedAt
+      __typename
+    }
+    gameId
+    gameType
+    id
+    numTurns
+    reason
+    scores {
+      black
+      white
+      __typename
+    }
+    updatedAt
+    winner {
+      country
+      createdAt
+      emoji
+      id
+      name
+      profilePicColor
+      updatedAt
+      __typename
+    }
+    winnerId
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetSessionStatQueryVariables,
+  APITypes.GetSessionStatQuery
 >;
 export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber: Int!) {
   getTurns(gameId: $gameId, turnNumber: $turnNumber) {
@@ -112,8 +193,10 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
       createdAt
       gameType
       id
+      isGameOver
       playerOneID
       playerTwoID
+      statisticId
       updatedAt
       __typename
     }
@@ -124,9 +207,12 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
       __typename
     }
     player {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -169,9 +255,12 @@ export const listPlayers = /* GraphQL */ `query ListPlayers(
 ) {
   listPlayers(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
+      country
       createdAt
+      emoji
       id
       name
+      profilePicColor
       updatedAt
       __typename
     }
@@ -183,6 +272,34 @@ export const listPlayers = /* GraphQL */ `query ListPlayers(
   APITypes.ListPlayersQueryVariables,
   APITypes.ListPlayersQuery
 >;
+export const listSessionStats = /* GraphQL */ `query ListSessionStats(
+  $filter: ModelSessionStatFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listSessionStats(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      bet
+      createdAt
+      doubleDiceValue
+      duration
+      gameId
+      gameType
+      id
+      numTurns
+      reason
+      updatedAt
+      winnerId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListSessionStatsQueryVariables,
+  APITypes.ListSessionStatsQuery
+>;
 export const listSessions = /* GraphQL */ `query ListSessions(
   $filter: ModelSessionFilterInput
   $limit: Int
@@ -193,8 +310,10 @@ export const listSessions = /* GraphQL */ `query ListSessions(
       createdAt
       gameType
       id
+      isGameOver
       playerOneID
       playerTwoID
+      statisticId
       updatedAt
       __typename
     }

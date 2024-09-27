@@ -34,6 +34,7 @@ const schema = a
         playerTwoID: a.id(),
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
         gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
+        isGameOver: a.boolean().required(),
         turns: a.hasMany('Turns', 'gameId'),
         statisticId: a.id(),
         statistics: a.hasOne('SessionStat', 'gameId'),
@@ -60,6 +61,9 @@ const schema = a
     Player: a
       .model({
         name: a.string(),
+        country: a.string(),
+        emoji: a.string(),
+        profilePicColor: a.string(),
         sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
         sessionsWon: a.hasMany('SessionStat', 'winnerId'),

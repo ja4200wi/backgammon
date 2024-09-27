@@ -82,12 +82,20 @@ export async function createSession(playerOneId: string): Promise<string> {
   const response = await client.models.Session.create({
     playerOneID: playerOneId,
     playerTwoID: 'EMPTY',
+    isGameOver: false,
   });
   if (response.data === null) {
     console.error('Failed to create session:', response);
     return 'Fail';
   }
   return response.data.id;
+}
+
+export default function endGame(gameId: string): void {
+  client.models.Session.update({
+    id: gameId,
+    isGameOver: true,
+  });
 }
 
 export async function joinSession(

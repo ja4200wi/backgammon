@@ -13,7 +13,7 @@ import { DoubleDice } from '../gameLogic/doubleDice';
 import { Move } from '../gameLogic/move';
 import { del, generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
-import { sendTurn, saveGameStats } from '../service/gameService';
+import endGame, { sendTurn, saveGameStats } from '../service/gameService';
 import { on } from 'events';
 
 const client = generateClient<Schema>();
@@ -363,18 +363,10 @@ export const useGameLogic = (
     reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
   ) => {
     if (game) {
+      console.log('sending final game state to server and ending game');
       const distWhite = game.getDistances().distWhite;
       const distBlack = game.getDistances().distBlack;
       const doubleDiceValue = doubleDice.getMultiplicator();
-      console.log(
-        whoAmI,
-        'safing game stats:',
-        distWhite,
-        distBlack,
-        doubleDiceValue,
-        reason,
-        winnerId
-      );
       saveGameStats(
         gameId,
         winnerId,
@@ -386,6 +378,7 @@ export const useGameLogic = (
         doubleDiceValue,
         reason
       );
+      endGame(gameId);
     }
   };
 
