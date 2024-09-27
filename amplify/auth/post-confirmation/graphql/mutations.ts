@@ -98,6 +98,7 @@ export const createSession = /* GraphQL */ `mutation CreateSession(
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -161,6 +162,7 @@ export const createSessionStat = /* GraphQL */ `mutation CreateSessionStat(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -212,6 +214,7 @@ export const createTurns = /* GraphQL */ `mutation CreateTurns(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -336,6 +339,7 @@ export const deleteSession = /* GraphQL */ `mutation DeleteSession(
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -399,6 +403,7 @@ export const deleteSessionStat = /* GraphQL */ `mutation DeleteSessionStat(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -450,6 +455,7 @@ export const deleteTurns = /* GraphQL */ `mutation DeleteTurns(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -597,6 +603,7 @@ export const updateSession = /* GraphQL */ `mutation UpdateSession(
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -660,6 +667,7 @@ export const updateSessionStat = /* GraphQL */ `mutation UpdateSessionStat(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -711,6 +719,7 @@ export const updateTurns = /* GraphQL */ `mutation UpdateTurns(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId

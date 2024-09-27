@@ -20,14 +20,14 @@ import GameListItem from './GameListItem';
 
 const client = generateClient<Schema>();
 
-const selectionSet = ['id', 'playerOneID', 'playerTwoID', 'gameType'] as const;
+const selectionSet = [
+  'id',
+  'playerOneID',
+  'playerTwoID',
+  'gameType',
+  'isGameStarted',
+] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
-
-interface TurnInfo {
-  player: string;
-  date: string;
-  numTurns: number;
-}
 
 export default function FriendGameList({
   navigation,
@@ -36,64 +36,8 @@ export default function FriendGameList({
   navigation: any;
   localPlayerId: string;
 }) {
-  const [games, setGames] = useState<Session[]>();
+  const [games, setGames] = useState<Session[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const [lastTurns, setLastTurns] = useState<{ [key: string]: TurnInfo }>({});
-
-  const fetchLastTurns = async (sessionIds: (string | null | undefined)[]) => {
-    // Filter out null or undefined values
-    const validGameIds = sessionIds.filter(
-      (id): id is string => id !== null && id !== undefined
-    );
-
-    const gameMapping: { [key: string]: TurnInfo } = {};
-    for (const gameId of validGameIds) {
-      const { data: allTurns, errors: allErrors } =
-        await client.models.Turns.list({ filter: { gameId: { eq: gameId } } });
-      if (allErrors) {
-        console.error(allErrors);
-      }
-      const numTurns = allTurns?.length ?? 0;
-      if (numTurns === 0) {
-        gameMapping[gameId] = {
-          player: 'Unknown Player',
-          date: 'Unknown Date',
-          numTurns: 0,
-        };
-        continue;
-      }
-      if (numTurns === 1) {
-        gameMapping[gameId] = {
-          player: 'Game started',
-          date: allTurns[0].createdAt,
-          numTurns: 1,
-        };
-        continue;
-      }
-      const { data: turn, errors } = await client.models.Turns.get({
-        gameId: gameId,
-        turnNumber: numTurns - 1,
-      });
-      if (errors) {
-        console.error(errors);
-      } else if (turn) {
-        // Ensure player.name is a string, use a fallback if it's null or undefined
-        gameMapping[gameId] = {
-          player:
-            ((await fetchPlayerName(turn.playerId!)) as string) ??
-            'Unknown Player',
-          date: turn.createdAt,
-          numTurns: numTurns,
-        };
-      }
-    }
-    setLastTurns((prevState) => ({ ...prevState, ...gameMapping }));
-  };
-
-  const fetchPlayerName = async (playerId: string): Promise<String> => {
-    return await getPlayerName(playerId);
-  };
 
   useEffect(() => {
     const sub = client.models.Session.observeQuery({
@@ -117,27 +61,12 @@ export default function FriendGameList({
       },
     }).subscribe({
       next: async ({ items, isSynced }) => {
+        console.log('FriendGameList: ', items);
         setGames([...items]);
-        await fetchLastTurns(items.map((item) => item.id));
       },
     });
     return () => sub.unsubscribe();
   }, []);
-
-  const openRequests =
-    games?.filter(
-      (game) =>
-        game.playerTwoID === localPlayerId && lastTurns[game.id]?.numTurns === 0
-    ) || [];
-
-  const sentRequests =
-    games?.filter(
-      (game) =>
-        game.playerOneID === localPlayerId && lastTurns[game.id]?.numTurns === 0
-    ) || [];
-
-  const currentGames =
-    games?.filter((game) => lastTurns[game.id]?.numTurns > 0) || [];
 
   const renderGameList = (gameList: Session[], title: string) => (
     <View style={{ marginBottom: 20 }}>
@@ -166,9 +95,14 @@ export default function FriendGameList({
 
   return (
     <View style={styles.container}>
-      {renderGameList(openRequests, 'Open Requests')}
-      {renderGameList(currentGames, 'Current Games')}
-      {renderGameList(sentRequests, 'Sent Requests')}
+      {renderGameList(
+        games.filter((game) => game.isGameStarted),
+        'Current Games'
+      )}
+      {renderGameList(
+        games.filter((game) => !game.isGameStarted),
+        'Open requests '
+      )}
       <Button
         title={'Start New Game'}
         buttonStyle={styles.startNewButton}
