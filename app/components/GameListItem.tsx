@@ -24,7 +24,13 @@ const timeAgo = new TimeAgo('en-US');
 
 const client = generateClient<Schema>();
 
-const selectionSet = ['id', 'playerOneID', 'playerTwoID', 'gameType'] as const;
+const selectionSet = [
+  'id',
+  'playerOneID',
+  'playerTwoID',
+  'gameType',
+  'isGameStarted',
+] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 const turnsSelectionSet = [
   'gameId',
@@ -33,12 +39,6 @@ const turnsSelectionSet = [
   'createdAt',
 ] as const;
 type Turns = SelectionSet<Schema['Turns']['type'], typeof turnsSelectionSet>;
-
-interface TurnInfo {
-  player: string;
-  date: string;
-  numTurns: number;
-}
 
 export default function GameListItem({
   navigation,
