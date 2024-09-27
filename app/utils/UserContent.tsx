@@ -6,14 +6,26 @@ import React, {
   ReactNode,
   useContext,
 } from 'react';
-import { getUserName } from '../service/profileService';
+import { getPlayerInfo, getUserName } from '../service/profileService';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+
+const selectionSet = [
+  'id',
+  'name',
+  'country',
+  'emoji',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 interface UserContextType {
-  user: string | null;
+  userInfo: PlayerInfo | null;
   loading: boolean;
 }
 
-// Define the props for the UserProvider component
 interface UserProviderProps {
   children: ReactNode;
 }
@@ -22,27 +34,27 @@ interface UserProviderProps {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [user, setUser] = useState<string>('');
+  const [userInfo, setUserInfo] = useState<PlayerInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const fetchUserData = async () => {
+    try {
+      const userId = await getUserName();
+      const userInfo = await getPlayerInfo(userId);
+      userInfo && setUserInfo(userInfo);
+    } catch (error) {
+      console.error('Failed to load user data', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userInfo = await getUserName();
-        setUser(userInfo);
-      } catch (error) {
-        console.error('Failed to load user data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUserData();
   }, []);
 
   // Provide user data and loading state to the context
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider value={{ userInfo, loading }}>
       {children}
     </UserContext.Provider>
   );

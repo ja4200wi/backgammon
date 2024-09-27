@@ -54,7 +54,7 @@ export function UserProfile({
           backgroundColor: APP_COLORS.backgroundColor,
         }}
       >
-        <AvatarWithFlag country={country} />
+        <AvatarWithFlag country={country} emoji='🦊' />
         <View
           style={{
             flexDirection: 'column',
@@ -93,7 +93,7 @@ export function OpenRequest({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag country={country} emoji='🦊' />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -157,7 +157,7 @@ export function Friend({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag country={country} emoji='🦊' />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -199,7 +199,7 @@ export function SentRequest({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag country={country} emoji='🦊' />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>

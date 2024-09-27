@@ -34,9 +34,8 @@ type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
 const client = generateClient<Schema>();
 
 export default function FriendList({ navigation }: { navigation: any }) {
-  const { user: localPlayerId } = useUser();
-  const [hasOpenRequest, setHasOpenRequest] = useState<boolean>(true);
-  const [hasSentRequest, setHasSentRequest] = useState<boolean>(true);
+  const { userInfo } = useUser();
+  const localPlayerId = userInfo?.name;
 
   const [friends, setFriends] = useState<Friends[]>([]);
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
@@ -60,24 +59,6 @@ export default function FriendList({ navigation }: { navigation: any }) {
       }
     }
     setUserNames((prevState) => ({ ...prevState, ...nameMapping }));
-  };
-
-  const confirmFriend = async (friendId: string) => {
-    // only let second player (the one who was invited) confirm the friendship
-    if (
-      friends.find((friend) => friend.id === friendId)?.userIdTwo !==
-      localPlayerId
-    ) {
-      return;
-    }
-    await client.models.Friends.update({
-      id: friendId,
-      isConfirmed: true,
-    });
-  };
-
-  const removeFriend = async (friendId: string) => {
-    await client.models.Friends.delete({ id: friendId });
   };
 
   useEffect(() => {

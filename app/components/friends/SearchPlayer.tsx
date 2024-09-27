@@ -15,7 +15,8 @@ type Player = SelectionSet<Schema['Player']['type'], typeof selectionSetPlayer>;
 const client = generateClient<Schema>();
 
 export default function SearchPlayer() {
-  const { user: localPlayerId } = useUser();
+  const { userInfo } = useUser();
+  const localPlayerId = userInfo?.name;
   const [searchResults, setSearchResults] = useState<Player[]>([]);
   const [search, setSearch] = useState('');
 

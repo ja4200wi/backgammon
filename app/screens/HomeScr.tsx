@@ -41,7 +41,7 @@ function UserCard({
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={COUNTRIES.JAPAN} />
+        <AvatarWithFlag country={COUNTRIES.JAPAN} emoji='🦊' />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
           {profile?.name}
         </Text>

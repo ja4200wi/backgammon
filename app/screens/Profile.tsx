@@ -61,7 +61,7 @@ function UserProfile() {
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={country} />
+        <AvatarWithFlag country={country} emoji='🦊' />
         <View
           style={{
             flexDirection: 'column',

@@ -8,6 +8,8 @@ const selectionSet = [
   'id',
   'name',
   'country',
+  'emoji',
+  'profilePicColor',
   'createdAt',
   'updatedAt',
 ] as const;

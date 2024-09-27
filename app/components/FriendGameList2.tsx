@@ -39,7 +39,8 @@ type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 const client = generateClient<Schema>();
 
 export default function FriendList2({ navigation }: { navigation: any }) {
-  const { user: localPlayerId } = useUser();
+  const { userInfo } = useUser();
+  const localPlayerId = userInfo?.name;
   const [games, setGames] = useState<Session[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 

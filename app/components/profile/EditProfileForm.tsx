@@ -15,8 +15,7 @@ import { COUNTRIES } from '../../utils/constants';
 import { useUser } from '../../utils/UserContent';
 
 export default function EditProfileForm() {
-  //useUSer
-  const { user: userId } = useUser();
+  const userId = useUser().userInfo?.name;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
