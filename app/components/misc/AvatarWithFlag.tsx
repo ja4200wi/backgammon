@@ -10,7 +10,7 @@ const AvatarWithFlag = ({
   emoji,
 }: {
   country: COUNTRIES;
-  emoji: string;
+  emoji: string | undefined | null;
 }) => {
   return (
     <View style={styles.container}>

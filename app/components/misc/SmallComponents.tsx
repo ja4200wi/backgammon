@@ -14,6 +14,8 @@ import LetterIcon from '../../images/letter.svg';
 import { confirmFriend, removeFriend } from '../../service/friendService';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
+import { useUser } from '../../utils/UserContent';
+import { getEnumFromKey } from '../../service/profileService';
 
 TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
@@ -44,6 +46,7 @@ export function UserProfile({
   extraInfo: string;
   country: COUNTRIES;
 }) {
+  const { userInfo } = useUser();
   //add online logic if necessary
   return (
     <View style={{ padding: 16 }}>
@@ -54,7 +57,10 @@ export function UserProfile({
           backgroundColor: APP_COLORS.backgroundColor,
         }}
       >
-        <AvatarWithFlag country={country} emoji='🦊' />
+        <AvatarWithFlag
+          country={getEnumFromKey(userInfo?.country)}
+          emoji={userInfo?.emoji}
+        />
         <View
           style={{
             flexDirection: 'column',
@@ -88,12 +94,16 @@ export function OpenRequest({
   extraInfo: string;
   country: COUNTRIES;
 }) {
+  const { userInfo } = useUser();
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} emoji='🦊' />
+          <AvatarWithFlag
+            country={getEnumFromKey(userInfo?.country)}
+            emoji={userInfo?.emoji}
+          />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -132,6 +142,7 @@ export function Friend({
   country: COUNTRIES;
   extraInfo?: string;
 }) {
+  const { userInfo } = useUser();
   // confirm remove friend modal
   const confirmRemoveFriend = () => {
     Alert.alert(
@@ -157,7 +168,10 @@ export function Friend({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} emoji='🦊' />
+          <AvatarWithFlag
+            country={getEnumFromKey(userInfo?.country)}
+            emoji={userInfo?.emoji}
+          />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -194,12 +208,16 @@ export function SentRequest({
   country: COUNTRIES;
   extraInfo?: string;
 }) {
+  const { userInfo } = useUser();
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} emoji='🦊' />
+          <AvatarWithFlag
+            country={getEnumFromKey(userInfo?.country)}
+            emoji={userInfo?.emoji}
+          />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>

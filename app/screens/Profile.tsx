@@ -21,7 +21,11 @@ import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import { getPlayerInfo, getUserName } from '../service/profileService';
+import {
+  getEnumFromKey,
+  getPlayerInfo,
+  getUserName,
+} from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import EditProfileForm from '../components/profile/EditProfileForm';
@@ -29,6 +33,7 @@ import EditProfileForm from '../components/profile/EditProfileForm';
 const selectionSet = [
   'id',
   'name',
+  'emoji',
   'country',
   'createdAt',
   'updatedAt',
@@ -46,14 +51,6 @@ function UserProfile() {
     playerInfo && setCountry(getEnumFromKey(playerInfo.country));
   };
 
-  const getEnumFromKey = (key: string | null | undefined): COUNTRIES => {
-    if (key === null || key == undefined) return COUNTRIES.GERMANY;
-    const countryEnumValue = Object.entries(COUNTRIES).find(
-      ([, value]) => value === key
-    )?.[1] as COUNTRIES;
-    return countryEnumValue;
-  };
-
   useEffect(() => {
     fetchUserData();
   }, [player]);
@@ -61,7 +58,7 @@ function UserProfile() {
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={country} emoji='🦊' />
+        <AvatarWithFlag country={country} emoji={player?.emoji} />
         <View
           style={{
             flexDirection: 'column',

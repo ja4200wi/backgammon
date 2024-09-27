@@ -13,11 +13,22 @@ import AvatarWithPuzzle from '../components/misc/AvatarWithPuzzle';
 import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
 import Header from '../components/navigation/Header';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
-import { getPlayerInfo, getUserName } from '../service/profileService';
+import {
+  getEnumFromKey,
+  getPlayerInfo,
+  getUserName,
+} from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 
-const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+const selectionSet = [
+  'id',
+  'name',
+  'country',
+  'emoji',
+  'createdAt',
+  'updatedAt',
+] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 function UserCard({
@@ -41,7 +52,10 @@ function UserCard({
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={COUNTRIES.JAPAN} emoji='🦊' />
+        <AvatarWithFlag
+          country={getEnumFromKey(profile?.country)}
+          emoji={profile?.emoji}
+        />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
           {profile?.name}
         </Text>

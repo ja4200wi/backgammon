@@ -1,6 +1,7 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 import { Schema } from '../../amplify/data/resource';
+import { COUNTRIES } from '../utils/constants';
 
 const client = generateClient<Schema>();
 
@@ -14,6 +15,14 @@ const selectionSet = [
   'updatedAt',
 ] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
+
+export const getEnumFromKey = (key: string | null | undefined): COUNTRIES => {
+  if (key === null || key == undefined) return COUNTRIES.GERMANY;
+  const countryEnumValue = Object.entries(COUNTRIES).find(
+    ([, value]) => value === key
+  )?.[1] as COUNTRIES;
+  return countryEnumValue;
+};
 
 // Get Data
 export async function getUserName(): Promise<string> {
