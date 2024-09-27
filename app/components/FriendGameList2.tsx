@@ -73,7 +73,7 @@ export default function FriendList2({ navigation }: { navigation: any }) {
   }, []);
 
   const renderGameList = (gameList: Session[]) => (
-    <View style={{ marginBottom: 20, zIndex: 3 }}>
+    <View style={{ zIndex: 3 }}>
       {gameList.length === 0 ? (
         <Text style={styles.noGamesText}>No games available.</Text>
       ) : (
@@ -94,56 +94,43 @@ export default function FriendList2({ navigation }: { navigation: any }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle='light-content' />
       {/* Body with Background Image */}
-      <ImageBackground
-        source={require('../images/backgroundDiceImage.png')}
-        style={styles.bodyContainer}
-        resizeMode='cover'
-      >
-        {/* Semi-transparent Square */}
-        <View style={styles.overlaySquare} />
-        <View
-          style={{ zIndex: 3, display: 'flex', justifyContent: 'flex-start' }}
-        >
-          <Headline headline='Current Games' />
-          {renderGameList(games.filter((game) => game.isGameStarted))}
-          <View style={{ backgroundColor: APP_COLORS.backgroundColor }}></View>
-          <Headline headline='Open Requests' />
-          {renderGameList(games.filter((game) => !game.isGameStarted))}
-          <View style={{ backgroundColor: APP_COLORS.backgroundColor }}></View>
+      <View>
+        <Headline headline='Current Games' />
+        {renderGameList(games.filter((game) => game.isGameStarted))}
 
-          <Button
-            title={'Start New Game'}
-            buttonStyle={styles.startNewButton}
-            onPress={() => setModalVisible(true)}
-          />
-          <Modal
-            animationType='slide'
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <View style={styles.modalHeader}>
-                  <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
-                    Pick a Friend to play
-                  </Text>
-                  <Button
-                    title={'X'}
-                    buttonStyle={styles.closeButton}
-                    onPress={() => setModalVisible(false)}
-                  />
-                </View>
-                <StartFriendGame localPlayerId={localPlayerId || ''} />
-              </View>
+        <Headline headline='Open Requests' />
+        {renderGameList(games.filter((game) => !game.isGameStarted))}
+      </View>
+      <Button
+        title={'Start New Game'}
+        buttonStyle={styles.startNewButton}
+        onPress={() => setModalVisible(true)}
+      />
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={styles.modalHeader}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+                Pick a Friend to play
+              </Text>
+              <Button
+                title={'X'}
+                buttonStyle={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              />
             </View>
-          </Modal>
+            <StartFriendGame localPlayerId={localPlayerId || ''} />
+          </View>
         </View>
-      </ImageBackground>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -151,6 +138,7 @@ export default function FriendList2({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'space-between',
     backgroundColor: '#312F2C',
     zIndex: 3,
   },
