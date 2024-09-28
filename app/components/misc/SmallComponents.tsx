@@ -57,6 +57,24 @@ export function Headline({ headline }: { headline: string }) {
   );
 }
 
+export function PlayerName({ playerId }: { playerId: string }) {
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null);
+
+  const fetchPlayerInfo = async () => {
+    const playerInfoNew = await getPlayerInfo(playerId);
+    setPlayerInfo(playerInfoNew);
+  };
+
+  useEffect(() => {
+    fetchPlayerInfo();
+  }, [playerId]);
+  return (
+    <View style={{ zIndex: 2 }}>
+      <Text style={[{ color: 'white' }]}>{playerInfo?.name}</Text>
+    </View>
+  );
+}
+
 // UserProfile Component
 export function UserProfile({
   nickname,

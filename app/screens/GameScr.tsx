@@ -13,13 +13,7 @@ import {
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
-import CustomAlert from '../components/misc/customAlert'; // Import your CustomAlert component
-import { generateClient, SelectionSet } from 'aws-amplify/api';
-import { Schema } from '../../amplify/data/resource';
-import { sendTurn } from '../service/gameService';
-import { Button } from '@rneui/themed';
-import { DiceProps } from '../components/game/Dice';
-import { on } from 'events';
+import CustomAlert from '../components/misc/customAlert';
 import { Turn } from '../gameLogic/turn';
 import LoadingPopup from '../components/misc/LoadingAlert';
 import AnimatedChecker from '../components/game/AnimatedChecker';
@@ -238,6 +232,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           legalMovesFrom={legalMovesFrom}
           doubleDice={doubleDice}
           handleAnimation={handleAnimation}
+          localPlayerId={localPlayerId}
+          opponentPlayerId={opponentPlayerId}
+          gameMode={gameMode}
         />
       </View>
       <GameNavBar

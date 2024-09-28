@@ -40,7 +40,7 @@ const client = generateClient<Schema>();
 
 export default function FriendList2({ navigation }: { navigation: any }) {
   const { userInfo } = useUser();
-  const localPlayerId = userInfo?.name;
+  const localPlayerId = userInfo?.id;
   const [games, setGames] = useState<Session[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 

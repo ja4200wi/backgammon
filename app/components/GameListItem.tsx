@@ -81,7 +81,7 @@ export default function GameListItem({
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
-      gameMode: GAME_TYPE.RANDOM,
+      gameMode: GAME_TYPE.FRIENDLIST,
     });
   };
 

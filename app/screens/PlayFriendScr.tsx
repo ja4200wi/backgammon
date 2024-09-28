@@ -9,7 +9,6 @@ import {
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
-import FriendGameList from '../components/FriendGameList.tsx';
 import FriendGameList2 from '../components/FriendGameList2.tsx';
 
 export default function PlayFriend({

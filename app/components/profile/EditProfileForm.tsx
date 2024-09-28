@@ -20,8 +20,7 @@ import { useUser } from '../../utils/UserContent';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export default function EditProfileForm() {
-  const userId = useUser().userInfo?.id;
-  const { refetchUserData } = useUser();
+  const { userInfo, refetchUserData } = useUser();
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('');
   const [color, setColor] = useState('');
@@ -80,28 +79,23 @@ export default function EditProfileForm() {
   };
 
   const getUserData = async () => {
-    const info = await getPlayerInfo(userId!);
     const email = await getEmail();
-    const fetchCountry = await getCountry(userId!);
-    const fetchEmoji = await getEmoji(userId!);
-    const fetchColor = await getColor(userId!);
-    setName(info?.name || '');
+    setName(userInfo?.name || '');
     setEmail(email);
-    setEmoji(fetchEmoji);
-    setCountry(fetchCountry);
-    setColor(fetchColor);
+    setEmoji(userInfo?.emoji || '');
+    setCountry(userInfo?.country || 'de');
+    setColor(userInfo?.profilePicColor || '#000000');
   };
 
   const handleSubmit = async () => {
     if (emoji.length > 2) {
-      console.log(emoji, emoji.length);
       Alert.alert('Please enter a single emoji or up to two characters');
       return;
     }
-    await updatePlayerName(userId!, name);
-    country && (await updateCountry(userId!, country));
-    emoji && (await updateEmoji(userId!, emoji));
-    colors && (await updateColor(userId!, color));
+    await updatePlayerName(userInfo?.id!, name);
+    country && (await updateCountry(userInfo?.id!, country));
+    emoji && (await updateEmoji(userInfo?.id!, emoji));
+    colors && (await updateColor(userInfo?.id!, color));
     console.log('Profile updated', name, country, emoji, color);
     refetchUserData();
   };
