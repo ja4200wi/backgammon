@@ -19,7 +19,7 @@ import { initGame } from '../service/gameService';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
-TimeAgo.addDefaultLocale(en);
+TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
 
 const client = generateClient<Schema>();
@@ -81,7 +81,7 @@ export default function GameListItem({
     navigation.navigate('Game', {
       gameId,
       localPlayerId: userId,
-      gameMode: GAME_TYPE.ONLINE,
+      gameMode: GAME_TYPE.RANDOM,
     });
   };
 
