@@ -94,9 +94,11 @@ const Board = forwardRef<any, BoardProps>(({
       setSelectedSource(null);
     }
   };
-  const updatePosition = async (sourceIndex:number,targetIndex:number, type?: 'UNDO') => {
+  const updatePosition = async (sourceIndex:number,targetIndex:number, type?: 'UNDO' | 'DISTRIBUTE') => {
     if(type === 'UNDO') {
       undoPosition()
+    } else if(type === 'DISTRIBUTE') {
+      distributeCheckers()
     } else {
     const newSpikes = [...spikes];
     const checker = getChecker(sourceIndex,newSpikes)

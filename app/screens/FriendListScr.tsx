@@ -16,11 +16,13 @@ import {
   OpenRequest,
   Friend,
   SentRequest,
+  AddFriend,
 } from '../components/misc/SmallComponents';
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
 import SearchPlayer from '../components/friends/SearchPlayer';
+import { Divider } from '@rneui/base';
 
 const selectionSet = [
   'id',
@@ -121,10 +123,10 @@ export default function FriendList({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <ScrollView style={{ zIndex: 2 }}>
+        <ScrollView contentContainerStyle={{flexGrow:1,paddingBottom: 16,}} style={{ zIndex: 2,flex:1}} alwaysBounceVertical={false} >
           <InviteFriend />
-          <SearchPlayer />
           <Headline headline='Friends' />
+          <SearchPlayer />
           <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
             {friends
               .filter((friend) => friend.isConfirmed)

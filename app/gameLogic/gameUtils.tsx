@@ -6,7 +6,6 @@ import {
   GAME_SETTINGS,
   PLAYER_COLORS,
 } from '../utils/constants';
-import { Game } from './backgammon';
 
 export const initializeSpikes = (): ReactElement[][] => {
   return new Array(26).fill(null).map(() => []);
@@ -47,25 +46,6 @@ const whiteCheckers = initializeCheckers(PLAYER_COLORS.WHITE);
 const blackCheckers = initializeCheckers(PLAYER_COLORS.BLACK);
 
 //functions
-
-export const startGame = (
-  setGame: React.Dispatch<React.SetStateAction<Game | null>>,
-  setPositions: React.Dispatch<
-    React.SetStateAction<
-      {
-        index: number;
-        color: PLAYER_COLORS;
-        count: number;
-      }[]
-    >
-  >,
-  runGame: (game: Game) => Promise<void>
-) => {
-  const newGame = new Game();
-  setGame(newGame);
-  setPositions(newGame.getCurrentPositions());
-  runGame(newGame);
-};
 
 export const initialSpikes = (
   spikeHeight: number,
