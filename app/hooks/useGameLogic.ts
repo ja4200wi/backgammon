@@ -68,7 +68,7 @@ export const useGameLogic = (
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
   const [isLoadingGame,setIsLoadingGame] = useState<boolean>(true)
-  const bot = new Bot(BOT_NAMES.RIANA);
+  const [bot,setBot] = useState<Bot>(new Bot(BOT_NAMES.RIANA))
   const boardRef = useRef<any>(null); // Define a ref for the Board component
   // #endregion
 
@@ -144,12 +144,15 @@ export const useGameLogic = (
   // #region Game Actions
   const startGame = async (
     gamemode: GAME_TYPE,
-    newOnlineTurns?: OnlineTurn[]
+    newOnlineTurns?: OnlineTurn[],
+    botType?:BOT_NAMES
   ) => {
     if (newOnlineTurns) {
       startOnline(gamemode, newOnlineTurns);
     } else {
-      startOffline(gamemode);
+      if(botType) startOffline(gamemode,botType);
+      else startOffline(gamemode)
+
     }
   };
   const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
@@ -161,8 +164,9 @@ export const useGameLogic = (
     const newGame = new Game(startPlayer, onlineDice);
     setGame(newGame);
   };
-  const startOffline = (gamemode: GAME_TYPE) => {
+  const startOffline = (gamemode: GAME_TYPE, botTpye?:BOT_NAMES) => {
     setGameMode(gamemode);
+    if(botTpye) setBot(new Bot(botTpye))
     const newGame = new Game();
     setGame(newGame);
   };

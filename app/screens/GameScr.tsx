@@ -99,7 +99,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     ) {
       setStartedGame(true);
       console.log('BOTTYPE',botType)
-      startGame(gameMode);
+      startGame(gameMode,undefined,botType);
     }
     else if (
       !startedGame &&
@@ -175,6 +175,19 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setWinnerOfflineAlertVisible(false); // Hide the modal
     setWinnerOnlineAlertVisible(false);
   };
+  const getHeadline = ():string => {
+    if(botType) {
+      return `Play vs ${botType}`
+    }
+    switch (gameMode) {
+      case GAME_TYPE.FRIENDLIST:
+        return 'Play vs Friend';
+      case GAME_TYPE.PASSPLAY:
+        return 'Local Game'
+      default:
+        return 'Backgammon';
+    }
+  }
 
   const handleMoveChecker = async (
     sourceIndex: number,
@@ -217,7 +230,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           />
         )}
       </View>
-      <HeaderSecondary navigation={navigation} headline={gameMode} />
+      <HeaderSecondary navigation={navigation} headline={getHeadline()} />
       <View style={styles.boardContainer}>
         <Board
           ref={boardRef}
