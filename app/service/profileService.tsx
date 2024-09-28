@@ -16,6 +16,14 @@ const selectionSet = [
 ] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
+export async function createPlayer(): Promise<void> {
+  const user = await fetchUserAttributes();
+  await client.models.Player.create({
+    id: user.username,
+    name: user.nickname,
+  });
+}
+
 export const getEnumFromKey = (key: string | null | undefined): COUNTRIES => {
   if (key === null || key == undefined) return COUNTRIES.GERMANY;
   const countryEnumValue = Object.entries(COUNTRIES).find(
