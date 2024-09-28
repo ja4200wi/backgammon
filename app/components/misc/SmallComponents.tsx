@@ -60,6 +60,7 @@ export function UserProfile({
         <AvatarWithFlag
           country={getEnumFromKey(userInfo?.country)}
           emoji={userInfo?.emoji}
+          color={userInfo?.profilePicColor}
         />
         <View
           style={{
@@ -103,6 +104,7 @@ export function OpenRequest({
           <AvatarWithFlag
             country={getEnumFromKey(userInfo?.country)}
             emoji={userInfo?.emoji}
+            color={userInfo?.profilePicColor}
           />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
@@ -136,11 +138,15 @@ export function Friend({
   nickname,
   country,
   extraInfo,
+  profilePicColor,
+  emoji,
 }: {
   friendId: string;
   nickname: string;
   country: COUNTRIES;
   extraInfo?: string;
+  profilePicColor: string;
+  emoji: string;
 }) {
   const { userInfo } = useUser();
   // confirm remove friend modal
@@ -169,8 +175,9 @@ export function Friend({
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           <AvatarWithFlag
-            country={getEnumFromKey(userInfo?.country)}
-            emoji={userInfo?.emoji}
+            country={getEnumFromKey(country)}
+            emoji={emoji}
+            color={profilePicColor}
           />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
@@ -203,20 +210,24 @@ export function SentRequest({
   nickname,
   country,
   extraInfo,
+  emoji,
+  profilePicColor,
 }: {
   nickname: string;
   country: COUNTRIES;
   extraInfo?: string;
+  emoji: string;
+  profilePicColor: string;
 }) {
-  const { userInfo } = useUser();
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           <AvatarWithFlag
-            country={getEnumFromKey(userInfo?.country)}
-            emoji={userInfo?.emoji}
+            country={getEnumFromKey(country)}
+            emoji={emoji}
+            color={profilePicColor}
           />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>

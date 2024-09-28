@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -20,12 +20,14 @@ import {
 } from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { useUser } from '../utils/UserContent';
 
 const selectionSet = [
   'id',
   'name',
   'country',
   'emoji',
+  'profilePicColor',
   'createdAt',
   'updatedAt',
 ] as const;
@@ -40,24 +42,18 @@ function UserCard({
   Coins: number;
   GlobalRank: number;
 }) {
-  const [profile, setProfile] = useState<PlayerInfo>();
+  const { userInfo } = useUser();
 
-  const fetchUserData = async () => {
-    const username = await getUserName();
-    const userInfo = await getPlayerInfo(username);
-    userInfo && setProfile(userInfo);
-  };
-
-  fetchUserData();
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
         <AvatarWithFlag
-          country={getEnumFromKey(profile?.country)}
-          emoji={profile?.emoji}
+          country={getEnumFromKey(userInfo?.country)}
+          emoji={userInfo?.emoji}
+          color={userInfo?.profilePicColor}
         />
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
-          {profile?.name}
+          {userInfo?.name}
         </Text>
       </View>
       <View style={styles.statsRow}>

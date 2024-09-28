@@ -1,27 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import CountryFlag from 'react-native-country-flag'; // Ensure this is installed and set up
 import Profile from '../../images/profile.svg'; // Ensure your SVG import is correct
 import { APP_COLORS, COUNTRIES } from '../../utils/constants';
+import { color } from '@rneui/base';
 
 const AvatarWithFlag = ({
   country,
   emoji,
+  color,
 }: {
   country: COUNTRIES;
   emoji: string | undefined | null;
+  color: string | undefined | null;
 }) => {
+  color = color || APP_COLORS.iconGrey;
   return (
     <View style={styles.container}>
       <Avatar
         size={64}
         rounded
-        containerStyle={styles.avatar}
-        title='JW'
+        containerStyle={{ backgroundColor: color, ...styles.avatar }}
       ></Avatar>
       <View style={styles.profileContainer}>
-        <Text style={{ fontSize: 40 }}>{emoji}</Text>
+        <Text
+          style={{
+            fontSize: 40,
+            color: color === '#000000' ? 'white' : 'black',
+          }}
+        >
+          {emoji}
+        </Text>
       </View>
       <View style={styles.flagContainer}>
         <CountryFlag isoCode={country} size={14} />
@@ -39,7 +49,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    backgroundColor: APP_COLORS.standardGrey,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -24,6 +24,7 @@ type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 interface UserContextType {
   userInfo: PlayerInfo | null;
   loading: boolean;
+  refetchUserData: () => Promise<void>; // Add refetchUserData function to the context type
 }
 
 interface UserProviderProps {
@@ -39,6 +40,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 
   const fetchUserData = async () => {
     try {
+      setLoading(true);
       const userId = await getUserName();
       const userInfo = await getPlayerInfo(userId);
       userInfo && setUserInfo(userInfo);
@@ -48,13 +50,16 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchUserData();
   }, []);
 
-  // Provide user data and loading state to the context
+  // Provide user data, loading state, and the refetch method to the context
   return (
-    <UserContext.Provider value={{ userInfo, loading }}>
+    <UserContext.Provider
+      value={{ userInfo, loading, refetchUserData: fetchUserData }}
+    >
       {children}
     </UserContext.Provider>
   );

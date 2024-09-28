@@ -1,7 +1,7 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 import { Schema } from '../../amplify/data/resource';
-import { COUNTRIES } from '../utils/constants';
+import { APP_COLORS, COUNTRIES } from '../utils/constants';
 
 const client = generateClient<Schema>();
 
@@ -57,6 +57,16 @@ export async function getCountry(playerId: string): Promise<string> {
   return country.data?.country || 'de';
 }
 
+export async function getEmoji(playerId: string): Promise<string> {
+  const emoji = await client.models.Player.get({ id: playerId });
+  return emoji.data?.emoji || '👤';
+}
+
+export async function getColor(playerId: string): Promise<string> {
+  const color = await client.models.Player.get({ id: playerId });
+  return color.data?.profilePicColor || APP_COLORS.appGreen;
+}
+
 // Update Data
 export async function updatePlayerName(
   playerId: string,
@@ -69,5 +79,28 @@ export async function updateCountry(
   playerId: string,
   newCountry: string
 ): Promise<void> {
+  console.log('Updating country', playerId, newCountry);
   await client.models.Player.update({ id: playerId, country: newCountry });
+}
+
+export async function updateEmoji(
+  playerId: string,
+  newEmoji: string
+): Promise<void> {
+  const response = await client.models.Player.update({
+    id: playerId,
+    emoji: newEmoji,
+  });
+  console.log(response);
+}
+
+export async function updateColor(
+  playerId: string,
+  newColor: string
+): Promise<void> {
+  console.log('Updating color', playerId, newColor);
+  await client.models.Player.update({
+    id: playerId,
+    profilePicColor: newColor,
+  });
 }
