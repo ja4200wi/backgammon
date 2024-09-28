@@ -69,6 +69,16 @@ export default function EditProfileForm() {
     { key: '#000000', value: 'black' },
   ];
 
+  const SignOutButton = () => {
+    const { signOut } = useAuthenticator();
+
+    return (
+      <View style={{ zIndex: 2 }}>
+        <Button title='Sign Out' onPress={signOut} />
+      </View>
+    );
+  };
+
   const getUserData = async () => {
     const info = await getPlayerInfo(userId!);
     const email = await getEmail();
@@ -102,6 +112,7 @@ export default function EditProfileForm() {
 
   return (
     <View style={styles.container}>
+      <SignOutButton />
       <Input
         label='Name'
         value={name}
