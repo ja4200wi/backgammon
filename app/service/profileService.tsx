@@ -38,12 +38,14 @@ export async function getPlayerName(playerId: string): Promise<string> {
 export async function getPlayerInfo(
   playerId: string
 ): Promise<PlayerInfo | null> {
+  console.log('Getting player info', playerId);
   const player = await client.models.Player.get(
     { id: playerId },
     {
       selectionSet,
     }
   );
+  console.log(player);
   return player.data;
 }
 

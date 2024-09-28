@@ -35,31 +35,9 @@ const client = generateClient<Schema>();
 
 export default function FriendList({ navigation }: { navigation: any }) {
   const { userInfo } = useUser();
-  const localPlayerId = userInfo?.name;
+  const localPlayerId = userInfo?.id;
 
   const [friends, setFriends] = useState<Friends[]>([]);
-  const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
-
-  const fetchUserNames = async (userIds: (string | null | undefined)[]) => {
-    // Filter out null or undefined values
-    const validUserIds = userIds.filter(
-      (id): id is string => id !== null && id !== undefined
-    );
-
-    const nameMapping: { [key: string]: string } = {};
-    for (const userId of validUserIds) {
-      const { data: player, errors } = await client.models.Player.get({
-        id: userId,
-      });
-      if (errors) {
-        console.error(errors);
-      } else if (player) {
-        // Ensure player.name is a string, use a fallback if it's null or undefined
-        nameMapping[userId] = player.name ?? 'Unknown Player';
-      }
-    }
-    setUserNames((prevState) => ({ ...prevState, ...nameMapping }));
-  };
 
   useEffect(() => {
     if (!localPlayerId) return;
@@ -77,18 +55,10 @@ export default function FriendList({ navigation }: { navigation: any }) {
     }).subscribe({
       next: async ({ items, isSynced }) => {
         setFriends([...items]);
-        // Fetch user names for all the friends
-        const userIds = items
-          .flatMap((item) => [item.userIdOne, item.userIdTwo])
-          .filter((id) => id !== localPlayerId);
-
-        // Remove duplicates
-        const uniqueUserIds = Array.from(new Set(userIds));
-        await fetchUserNames(uniqueUserIds);
       },
     });
     return () => sub.unsubscribe();
-  }, [localPlayerId]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -117,13 +87,11 @@ export default function FriendList({ navigation }: { navigation: any }) {
                 if (!friendId) {
                   return null;
                 }
-                const friendName = userNames[friendId] || 'Unknown Player';
                 return (
                   <Friend
                     key={friend.id}
-                    friendId={friend.id}
-                    nickname={friendName}
-                    country={COUNTRIES.UNITED_STATES}
+                    friendId={friendId}
+                    friendshipId={friend.id}
                     extraInfo={friend.createdAt}
                   />
                 );
@@ -142,13 +110,11 @@ export default function FriendList({ navigation }: { navigation: any }) {
                   return null;
                 }
                 const didISendRequest = friend.userIdOne === localPlayerId;
-                const friendName = userNames[friendId] || 'Unknown Player';
                 if (didISendRequest) {
                   return (
                     <SentRequest
                       key={friend.id}
-                      nickname={friendName}
-                      country={COUNTRIES.GERMANY}
+                      friendId={friendId}
                       extraInfo={friend.createdAt}
                     />
                   );
@@ -156,9 +122,8 @@ export default function FriendList({ navigation }: { navigation: any }) {
                   return (
                     <OpenRequest
                       key={friend.id}
-                      friendId={friend.id}
-                      nickname={friendName}
-                      country={COUNTRIES.GERMANY}
+                      friendId={friendId}
+                      friendshipId={friend.id}
                       extraInfo={friend.createdAt}
                     />
                   );

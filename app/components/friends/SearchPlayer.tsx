@@ -16,7 +16,7 @@ const client = generateClient<Schema>();
 
 export default function SearchPlayer() {
   const { userInfo } = useUser();
-  const localPlayerId = userInfo?.name;
+  const localPlayerId = userInfo?.id;
   const [searchResults, setSearchResults] = useState<Player[]>([]);
   const [search, setSearch] = useState('');
 
