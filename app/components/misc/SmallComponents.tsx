@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  GestureResponderEvent,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AvatarWithFlag from './AvatarWithFlag'; // Assuming this is a separate component you already have
 import {
@@ -232,24 +239,34 @@ export function Friend({
 
 export function AddFriend({
   friendId,
-  nickname,
-  country,
   addFriend,
 }: {
   friendId: string;
-  nickname: string;
-  country: COUNTRIES;
-  addFriend: (() => void)
+  addFriend: () => void;
 }) {
+  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
+
+  const updatePlayer = async () => {
+    const friendInfoNew = await getPlayerInfo(friendId);
+    setFriendInfo(friendInfoNew);
+  };
+
+  useEffect(() => {
+    updatePlayer();
+  }, [friendId]);
 
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag
+            country={getEnumFromKey(friendInfo?.country)}
+            emoji={friendInfo?.emoji}
+            color={friendInfo?.profilePicColor}
+          />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
+            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
           </View>
         </View>
 

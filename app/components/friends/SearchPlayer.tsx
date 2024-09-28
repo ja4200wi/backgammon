@@ -47,6 +47,15 @@ export default function SearchPlayer() {
     }
   };
 
+  const handleInviteFriend = async (
+    localPlayerId: string,
+    playerId: string
+  ) => {
+    await inviteFriend(localPlayerId!, playerId);
+    setSearch('');
+    setSearchResults([]);
+  };
+
   return (
     <View style={styles.container}>
       <SearchBar
@@ -59,19 +68,25 @@ export default function SearchPlayer() {
       />
       {searchResults.length > 0 && (
         <ScrollView
-          style={{maxHeight: DIMENSIONS.screenHeight * 2.5/9}}
+          style={{ maxHeight: (DIMENSIONS.screenHeight * 2.5) / 9 }}
           showsHorizontalScrollIndicator={false}
         >
           {searchResults.map((player) => {
             return (
               <View>
-                <AddFriend key={player.id} friendId={player.id} nickname={player.name!} country={COUNTRIES.SWEDEN} addFriend={() => inviteFriend(localPlayerId!, player.id)} />
+                <AddFriend
+                  key={player.id}
+                  friendId={player.id}
+                  addFriend={() =>
+                    handleInviteFriend(localPlayerId!, player.id)
+                  }
+                />
               </View>
             );
           })}
         </ScrollView>
       )}
-      {(searchResults.length > 0) && <Divider color={APP_COLORS.standardGrey} />}
+      {searchResults.length > 0 && <Divider color={APP_COLORS.standardGrey} />}
     </View>
   );
 }
@@ -82,7 +97,7 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     backgroundColor: APP_COLORS.backgroundColor,
-    borderTopWidth: 0,  
+    borderTopWidth: 0,
     borderBottomWidth: 0,
   },
   inputContainerStyle: {
@@ -91,12 +106,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRadius: 10,
     borderWidth: 1,
-    marginHorizontal:8
+    marginHorizontal: 8,
   },
   inputStyle: { color: 'white' },
   scrollStyle: {
-    paddingHorizontal: 8,  // Ensures the items aren't cut off
-    paddingVertical: 16,   // Padding for better spacing vertically
+    paddingHorizontal: 8, // Ensures the items aren't cut off
+    paddingVertical: 16, // Padding for better spacing vertically
   },
   gameItem: {
     alignItems: 'center', // Center content (avatar + text) horizontally
