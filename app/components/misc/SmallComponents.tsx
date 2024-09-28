@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Alert,
   GestureResponderEvent,
+  ActionSheetIOS,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AvatarWithFlag from './AvatarWithFlag'; // Assuming this is a separate component you already have
@@ -26,6 +27,7 @@ import { getEnumFromKey, getPlayerInfo } from '../../service/profileService';
 import { useEffect, useState } from 'react';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../../amplify/data/resource';
+import { createGameWithFriend } from '../StartFriendGame';
 
 TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
@@ -201,22 +203,28 @@ export function Friend({
     updatePlayer();
   }, [friendId]);
 
+  
   const confirmRemoveFriend = () => {
-    Alert.alert(
+    const options = [
+      'Cancel',
+      'Challange Friend',
       'Remove Friend',
-      `Are you sure you want to remove ${friendInfo?.name} as a friend?`,
-      [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {
-          text: 'Confirm',
-          onPress: () => removeFriend(friendshipId),
-        },
-      ],
-      { cancelable: true }
+    ];
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex: 0,
+        userInterfaceStyle: 'dark',
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 1) {
+          console.log('THIS IS MISSING')
+          //createGameWithFriend(userIdOne,friendId)
+        } else if (buttonIndex === 2) {
+          removeFriend(friendshipId)
+        } 
+          
+        }
     );
   };
 
