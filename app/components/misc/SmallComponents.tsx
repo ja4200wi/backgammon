@@ -60,11 +60,15 @@ export function Headline({ headline }: { headline: string }) {
 }
 
 export function PlayerName({ playerId }: { playerId: string }) {
-  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null);
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfo>();
 
   const fetchPlayerInfo = async () => {
     const playerInfoNew = await getPlayerInfo(playerId);
-    setPlayerInfo(playerInfoNew);
+    if (playerInfoNew) {
+      setPlayerInfo(playerInfoNew);
+    } else {
+      setPlayerInfo(undefined); // Or handle this case as needed
+    }
   };
 
   useEffect(() => {
@@ -73,7 +77,7 @@ export function PlayerName({ playerId }: { playerId: string }) {
   return (
     <View style={{ zIndex: 2 }}>
       <Text style={[{ color: 'white', fontWeight: 700 }]}>
-        {playerInfo?.name}
+        {playerInfo && playerInfo.name}
       </Text>
     </View>
   );

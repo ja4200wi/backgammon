@@ -594,22 +594,24 @@ const Board = forwardRef<any, BoardProps>(
         {disableScreen && <View style={styles.overlay} />}
         <View style={styles.row}>
           <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-          {gameMode === GAME_TYPE.FRIENDLIST && (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <AvatarWithFlag
-                size={32}
-                flagSize={8}
-                playerId={opponentPlayerId!}
-              />
-              <PlayerName playerId={opponentPlayerId!} />
-            </View>
-          )}
+          {gameMode === GAME_TYPE.FRIENDLIST &&
+            opponentPlayerId !== null &&
+            opponentPlayerId !== undefined && (
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <AvatarWithFlag
+                  size={32}
+                  flagSize={8}
+                  playerId={opponentPlayerId}
+                />
+                <PlayerName playerId={opponentPlayerId} />
+              </View>
+            )}
           <Home
             onPress={handleHomePress}
             count={homeCount[1]}
@@ -704,22 +706,24 @@ const Board = forwardRef<any, BoardProps>(
 
         <View style={styles.row}>
           <PipCount color={PLAYER_COLORS.WHITE} count={pipCount[0]} />
-          {gameMode === GAME_TYPE.FRIENDLIST && (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <AvatarWithFlag
-                size={32}
-                flagSize={8}
-                playerId={localPlayerId!}
-              />
-              <PlayerName playerId={localPlayerId!} />
-            </View>
-          )}
+          {gameMode === GAME_TYPE.FRIENDLIST &&
+            localPlayerId !== null &&
+            localPlayerId !== undefined && (
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <AvatarWithFlag
+                  size={32}
+                  flagSize={8}
+                  playerId={localPlayerId}
+                />
+                <PlayerName playerId={localPlayerId} />
+              </View>
+            )}
           <Home
             onPress={handleHomePress}
             count={homeCount[0]}

@@ -35,12 +35,12 @@ const AvatarWithFlag = ({
 }) => {
   size = size || 64;
   flagSize = flagSize || 14;
-  fontSize = fontSize || 16;
+  fontSize = fontSize || 40;
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
 
   function filterPlayerInfo(item: Record<string, any>) {
     return selectionSet.reduce((filteredItem, key) => {
-      if (item.hasOwnProperty(key)) {
+      if (item !== null && item !== undefined && item.hasOwnProperty(key)) {
         filteredItem[key] = item[key];
       }
       return filteredItem;
