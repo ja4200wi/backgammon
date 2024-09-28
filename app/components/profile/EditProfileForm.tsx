@@ -66,6 +66,19 @@ export default function EditProfileForm() {
   const colors = [
     { key: '#FFFFFF', value: 'white' },
     { key: '#000000', value: 'black' },
+    { key: '#3498DB', value: 'sky blue' },
+    { key: '#E74C3C', value: 'crimson red' },
+    { key: '#2ECC71', value: 'emerald green' },
+    { key: '#9B59B6', value: 'purple' },
+    { key: '#F39C12', value: 'orange' },
+    { key: '#1ABC9C', value: 'turquoise' },
+    { key: '#34495E', value: 'midnight blue' },
+    { key: '#95A5A6', value: 'gray' },
+    { key: '#FFC300', value: 'sun yellow' },
+    { key: '#D35400', value: 'carrot orange' },
+    { key: '#7D3C98', value: 'amethyst' },
+    { key: '#2C3E50', value: 'dark slate' },
+    { key: '#16A085', value: 'teal' },
   ];
 
   const SignOutButton = () => {

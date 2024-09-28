@@ -70,7 +70,9 @@ export function PlayerName({ playerId }: { playerId: string }) {
   }, [playerId]);
   return (
     <View style={{ zIndex: 2 }}>
-      <Text style={[{ color: 'white' }]}>{playerInfo?.name}</Text>
+      <Text style={[{ color: 'white', fontWeight: 700 }]}>
+        {playerInfo?.name}
+      </Text>
     </View>
   );
 }

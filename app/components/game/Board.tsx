@@ -98,10 +98,6 @@ const Board = forwardRef<any, BoardProps>(
       onPress: handleSpikePress,
     }));
 
-    useEffect(() => {
-      console.log(gameMode);
-    }, [gameMode]);
-
     const [spikes, setSpikes] = useState(initialSpikes);
     const [spikePositions, setSpikePositions] = useState<
       { index: number; x: number; y: number }[]

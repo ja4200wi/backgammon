@@ -17,6 +17,7 @@ import CustomAlert from '../components/misc/customAlert';
 import { Turn } from '../gameLogic/turn';
 import LoadingPopup from '../components/misc/LoadingAlert';
 import AnimatedChecker from '../components/game/AnimatedChecker';
+import GameOverModal from '../components/game/GameOverModal';
 
 interface GameScrProps {
   navigation: any;
@@ -276,12 +277,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
 
       {/* Custom Modal for Winner Announcement */}
       {/* Offline Winner Modal */}
-      <CustomAlert
-        visible={winnerOfflineAlertVisible}
-        headline={`${winner} wins the Game`}
-        bodyText='What would you like to do?'
-        acceptButtonText='Restart'
-        declineButtonText='Go to Home'
+      <GameOverModal
+        visible={winnerOnlineAlertVisible}
+        winner={winner}
         onAccept={handleRestart}
         onDecline={handleGoHome}
       />
@@ -296,12 +294,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onDecline={handleGiveUp}
       />
       {/* Online Winner Modal */}
-      <CustomAlert
+      <GameOverModal
         visible={winnerOnlineAlertVisible}
-        headline={`${winner} wins the Game`}
-        bodyText='What would you like to do?'
-        acceptButtonText='Play Again'
-        declineButtonText='Go to Home'
+        winner={winner}
         onAccept={handlePlayAgain}
         onDecline={handleGoHome}
       />
