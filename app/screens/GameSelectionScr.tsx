@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   View,
@@ -9,7 +10,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Card, Button } from '@rneui/themed';
-import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
+import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE, BOARD_TYPE, BOT_NAMES } from '../utils/constants';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { getCurrentUser } from 'aws-amplify/auth';
@@ -17,11 +18,14 @@ import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { createSession } from '../service/gameService';
 import { getUserName } from '../service/profileService';
+import AvatarWithPuzzle from '../components/misc/AvatarWithPuzzle';
+import { DifficultyDisplay } from '../components/misc/SmallComponents';
 
 const client = generateClient<Schema>();
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
-  const [selectedMode, setSelectedMode] = useState<GAME_TYPE>(GAME_TYPE.ELO); // Default selection
+  const [selectedMode, setSelectedMode] = useState<GAME_TYPE>(GAME_TYPE.FRIENDLIST); // Default selection
+  const [selectedBot,setSelectedBot] = useState<BOT_NAMES>(BOT_NAMES.RIANA)
   const handleSelectMode = (mode: GAME_TYPE) => {
     if (selectedMode !== mode) {
       setSelectedMode(mode);
@@ -77,7 +81,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 
     const handleCreateSession = async () => {
       const userName = await getUserName();
-      const gameId = await createSession(userName, GAME_TYPE.RANDOM);
+      const gameId = await createSession(userName);
       navigation.navigate('OnlineMatching', {
         gameId,
         localPlayerId: userName,
@@ -219,14 +223,27 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
           </View>
           {selectedMode === GAME_TYPE.COMPUTER && (
             <>
-              <View style={styles.cardDetailContainer}>
-                <Text style={GLOBAL_STYLES.lineItems}>Challenge the AI!</Text>
+              <View style={{flexDirection:'column'}}>
+              <TouchableOpacity style={styles.robotContainer}>
+                <Text style={{fontSize: 32}}>{'🧠'}</Text>
+                <Text style={[GLOBAL_STYLES.headline, styles.name]}>Riana</Text>
+                <View style={styles.difficultyContainer}>
+                  <DifficultyDisplay level={3} />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.robotContainer}>
+              <Text style={{fontSize: 32}}>{'🤖'}</Text>
+                <Text style={[GLOBAL_STYLES.headline, styles.name]}>Larry</Text>
+                <View style={styles.difficultyContainer}>
+                  <DifficultyDisplay level={1} />
+                </View>
+              </TouchableOpacity>
               </View>
               <Button
                 title='Start Game'
                 buttonStyle={styles.startButton}
                 onPress={() =>
-                  navigation.navigate('Game', { gameMode: GAME_TYPE.COMPUTER })
+                  navigation.navigate('Game', { gameMode: GAME_TYPE.COMPUTER, botType: selectedBot })
                 }
               />
             </>
@@ -297,8 +314,6 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
         <View style={styles.overlaySquare} />
         {/* Body */}
         <View style={styles.bodyContent}>
-          <EloGameCard Elo={1342} League='Gold League' />
-          <OnlineGameCard navigation={navigation} />
           <FriendsGameCard />
           <ComputerGameCard />
           <PassAndPlayGameCard />
@@ -343,7 +358,7 @@ const styles = StyleSheet.create({
   bodyContent: {
     padding: 16,
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     zIndex: 2, // Ensure body content and cards are above overlay
   },
   bodyContainer: {
@@ -385,4 +400,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#6B9C41',
     borderRadius: 5,
   },
+  robotContainer: {
+    flexDirection: 'row',         
+    alignItems: 'center', 
+    width: '100%',     
+    marginTop:8,          
+  },
+  name: {
+    marginLeft: 16,
+    flexShrink: 1,               
+  },
+  difficultyContainer: {
+    marginLeft: 'auto', 
+  },
 });
+
