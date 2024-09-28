@@ -102,7 +102,6 @@ export default function HomeScr({ navigation }: { navigation: any }) {
       >
         <View style={styles.overlaySquare} />
         <UserCard ELO={1354} Coins={394} GlobalRank={39459} />
-        <PuzzleCard />
         <PlayButton navigation={navigation} />
       </ImageBackground>
     </SafeAreaView>

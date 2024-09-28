@@ -13,19 +13,19 @@ export default function NavBar({ navigation, selectedScreen }: NavBarProps) {
   return (
     <View style={styles.footerContainer}>
       <View style={styles.bottomNav}>
+        <TouchableOpacity onPress={() => navigation.navigate('Friends')}>
+          <Icon
+            name='people'
+            type='material'
+            color={selectedScreen === 'Friends' ? '#6B9C41' : APP_COLORS.iconGrey}
+            size={36}
+          />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Icon
             name='home'
             type='material'
             color={selectedScreen === 'Home' ? '#6B9C41' : APP_COLORS.iconGrey}
-            size={36}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log('Study')}>
-          <Icon
-            name='school'
-            type='material'
-            color={selectedScreen === 'Study' ? '#6B9C41' : APP_COLORS.iconGrey}
             size={36}
           />
         </TouchableOpacity>
