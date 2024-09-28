@@ -68,7 +68,7 @@ export default function SearchPlayer() {
       />
       {searchResults.length > 0 && (
         <ScrollView
-          style={{ maxHeight: (DIMENSIONS.screenHeight * 2.5) / 9 }}
+          style={{ maxHeight: (DIMENSIONS.screenHeight)* 5 / 9 }}
           showsHorizontalScrollIndicator={false}
         >
           {searchResults.map((player) => {
