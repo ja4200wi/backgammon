@@ -100,11 +100,7 @@ export function UserProfile({
           backgroundColor: APP_COLORS.backgroundColor,
         }}
       >
-        <AvatarWithFlag
-          country={getEnumFromKey(userInfo?.country)}
-          emoji={userInfo?.emoji}
-          color={userInfo?.profilePicColor}
-        />
+        <AvatarWithFlag playerId={userInfo?.id!} />
         <View
           style={{
             flexDirection: 'column',
@@ -151,11 +147,7 @@ export function OpenRequest({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag
-            country={getEnumFromKey(friendInfo?.country)}
-            emoji={friendInfo?.emoji}
-            color={friendInfo?.profilePicColor}
-          />
+          <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -203,13 +195,8 @@ export function Friend({
     updatePlayer();
   }, [friendId]);
 
-  
   const confirmRemoveFriend = () => {
-    const options = [
-      'Cancel',
-      'Challange Friend',
-      'Remove Friend',
-    ];
+    const options = ['Cancel', 'Challange Friend', 'Remove Friend'];
     ActionSheetIOS.showActionSheetWithOptions(
       {
         options,
@@ -218,13 +205,12 @@ export function Friend({
       },
       (buttonIndex) => {
         if (buttonIndex === 1) {
-          console.log('THIS IS MISSING')
+          console.log('THIS IS MISSING');
           //createGameWithFriend(userIdOne,friendId)
         } else if (buttonIndex === 2) {
-          removeFriend(friendshipId)
-        } 
-          
+          removeFriend(friendshipId);
         }
+      }
     );
   };
 
@@ -233,11 +219,7 @@ export function Friend({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag
-            country={getEnumFromKey(friendInfo?.country)}
-            emoji={friendInfo?.emoji}
-            color={friendInfo?.profilePicColor}
-          />
+          <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -288,11 +270,7 @@ export function AddFriend({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag
-            country={getEnumFromKey(friendInfo?.country)}
-            emoji={friendInfo?.emoji}
-            color={friendInfo?.profilePicColor}
-          />
+          <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
           </View>
@@ -350,11 +328,7 @@ export function SentRequest({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag
-            country={getEnumFromKey(friendInfo?.country)}
-            emoji={friendInfo?.emoji}
-            color={friendInfo?.profilePicColor}
-          />
+          <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
             <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
@@ -539,14 +513,14 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   levelCcontainer: {
-    flexDirection: 'row',      
+    flexDirection: 'row',
   },
   box: {
     width: 16,
     height: 16,
-    marginRight: 3,          
+    marginRight: 3,
     borderWidth: 1,
-    borderColor: 'black',   
-    borderRadius:3   
+    borderColor: 'black',
+    borderRadius: 3,
   },
 });

@@ -49,11 +49,7 @@ function UserProfile() {
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag
-          country={getEnumFromKey(userInfo?.country)}
-          emoji={userInfo?.emoji}
-          color={userInfo?.profilePicColor}
-        />
+        <AvatarWithFlag playerId={userInfo?.id!} />
         <View
           style={{
             flexDirection: 'column',
@@ -255,7 +251,11 @@ export default function Profile({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <ScrollView contentContainerStyle={{flexGrow:1,paddingBottom: 16,}} style={{ zIndex: 2,flex:1}} alwaysBounceVertical={false}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+          style={{ zIndex: 2, flex: 1 }}
+          alwaysBounceVertical={false}
+        >
           <UserProfile />
           <Headline headline='Statistics' />
           <ProfileContent

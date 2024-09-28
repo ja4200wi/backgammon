@@ -144,7 +144,9 @@ export default function GameListItem({
 
     return (
       <Text style={styles.gameText}>
-        <Text style={{ fontWeight: 'bold', fontSize:20 }}>{playerName || ''}</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>
+          {playerName || ''}
+        </Text>
       </Text>
     );
   };
@@ -169,13 +171,7 @@ export default function GameListItem({
       fetchPlayerInfo();
     }, [playerId]);
 
-    return (
-      <AvatarWithFlag
-        country={getEnumFromKey(playerInfo?.country)}
-        emoji={playerInfo?.emoji}
-        color={playerInfo?.profilePicColor}
-      />
-    );
+    return <AvatarWithFlag playerId={playerId || ''} />;
   };
 
   return (
@@ -191,11 +187,11 @@ export default function GameListItem({
                 alignItems: 'center',
               }}
             >
-              <AvatarWithFlagCustom playerId={item.playerTwoID} />
+              <AvatarWithFlag playerId={item.playerTwoID!} />
             </View>
           ) : (
             <View>
-              <AvatarWithFlagCustom playerId={item.playerOneID} />
+              <AvatarWithFlag playerId={item.playerOneID!} />
             </View>
           )}
           <View style={{ marginLeft: 16 }}>

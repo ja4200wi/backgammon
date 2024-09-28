@@ -12,7 +12,10 @@ const selectionSet = ['id', 'userIdOne', 'userIdTwo', 'isConfirmed'] as const;
 type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
 
 const client = generateClient<Schema>();
-export async function createGameWithFriend(userIdOne: string, friendId: string) {
+export async function createGameWithFriend(
+  userIdOne: string,
+  friendId: string
+) {
   // look if games with this player already exist
   const { data: sessions, errors } = await client.models.Session.list({
     filter: {
@@ -47,7 +50,7 @@ export default function StartFriendGame({
   closeModal,
 }: {
   localPlayerId: string;
-  closeModal: () => void
+  closeModal: () => void;
 }) {
   const [friends, setFriends] = useState<Friends[]>([]);
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
@@ -124,15 +127,23 @@ export default function StartFriendGame({
 
         return (
           <View key={friend.id} style={styles.gameItem}>
-            <IngameAvatarWithFlag flagSize={12} playerId={friend.id} size={48} />
+            <AvatarWithFlag
+              flagSize={12}
+              playerId={friendId}
+              size={48}
+              fontSize={16}
+            />
             <Text style={styles.gameText}>{friendName}</Text>
             <Button
               title={'Play'}
               buttonStyle={styles.confirmButton}
-              titleStyle={{fontWeight:'700'}}
-              style={{alignContent:'flex-end'}}
+              titleStyle={{ fontWeight: '700' }}
+              style={{ alignContent: 'flex-end' }}
               onPress={async () => {
-                const success = await createGameWithFriend(localPlayerId, friendId);
+                const success = await createGameWithFriend(
+                  localPlayerId,
+                  friendId
+                );
                 if (success === true) {
                   closeModal();
                 }
