@@ -696,6 +696,7 @@ export const useGameLogic = (
     if (gamemode === GAME_TYPE.COMPUTER) {
       return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
     } else if (isOnlineGame()) {
+      if(disableScreen) return true
       return whoAmI !== currentGame.getCurrentPlayer();
     }
     return false;
@@ -753,6 +754,9 @@ export const useGameLogic = (
       ]);
     }
   };
+  const handleDisableScreen = (bool:boolean) => {
+    setDisableScreen(bool)
+  }
   const undoMove = async () => {
     if (game) {
       game.undoMove();
@@ -817,5 +821,6 @@ export const useGameLogic = (
     sendFinalGameStateToServer,
     opponentPlayerId,
     isOnlineGame,
+    handleDisableScreen,
   };
 };

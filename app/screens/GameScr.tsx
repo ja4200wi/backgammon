@@ -64,6 +64,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     showUndoMoveButton,
     isOfflineGame,
     undoMove,
+    handleDisableScreen,
     giveUp,
     legalMovesFrom,
     disabledScreen,
@@ -214,6 +215,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       setDoCheckerAnimation(false);
     }, GAME_SETTINGS.checkerAnimationDuration);
   };
+  const handleCloseDouble = () => {
+    handleDisableScreen(true)
+    setIsWaitingForDouble(false)
+  }
+  const handleGoPlayFriends = () => {
+    setIsWaitingForDouble(false)
+    navigation.navigate('PlayFriend', { localPlayerId: localPlayerId });
+  }
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
@@ -300,9 +309,15 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onAccept={handlePlayAgain}
         onDecline={handleGoHome}
       />
-      <LoadingPopup
+      {/* Waiting for Double Modal */}
+      <CustomAlert
         visible={isWaitingForDouble}
-        message='Waiting for the response of your opponent!'
+        headline={`You just Doubled!`}
+        bodyText='We are waiting for the response of your opponent. Come back later!'
+        acceptButtonText='Next Match'
+        declineButtonText={`Got it!`}
+        onAccept={handleGoPlayFriends}
+        onDecline={handleCloseDouble}
       />
     </SafeAreaView>
   );
