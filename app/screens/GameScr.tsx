@@ -13,16 +13,11 @@ import {
 import { distributeCheckersGame } from '../gameLogic/gameUtils';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import GameNavBar from '../components/navigation/GameNavBar';
-import CustomAlert from '../components/misc/customAlert'; // Import your CustomAlert component
-import { generateClient, SelectionSet } from 'aws-amplify/api';
-import { Schema } from '../../amplify/data/resource';
-import { sendTurn } from '../service/gameService';
-import { Button } from '@rneui/themed';
-import { DiceProps } from '../components/game/Dice';
-import { on } from 'events';
+import CustomAlert from '../components/misc/customAlert';
 import { Turn } from '../gameLogic/turn';
 import LoadingPopup from '../components/misc/LoadingAlert';
 import AnimatedChecker from '../components/game/AnimatedChecker';
+import GameOverModal from '../components/game/GameOverModal';
 
 interface GameScrProps {
   navigation: any;
@@ -52,7 +47,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     ex: number;
     ey: number;
   }>({ sx: 0, sy: 0, ex: 0, ey: 0 });
-  const { gameId, localPlayerId, gameMode } = route.params;
+  const { gameId, localPlayerId, gameMode, botType } = route.params;
   const {
     game,
     dice,
@@ -95,11 +90,19 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (
       !startedGame &&
-      (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)
+      gameMode === GAME_TYPE.PASSPLAY
     ) {
       setStartedGame(true);
       startGame(gameMode);
-    } else if (
+    } else if(
+      !startedGame &&
+      gameMode === GAME_TYPE.COMPUTER
+    ) {
+      setStartedGame(true);
+      console.log('BOTTYPE',botType)
+      startGame(gameMode,undefined,botType);
+    }
+    else if (
       !startedGame &&
       isOnlineGame(gameMode) &&
       onlineTurns &&
@@ -117,12 +120,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         gameOver.reason &&
         gameOver.winner === localPlayerId
       ) {
-        console.log(
-          localPlayerId,
-          'I am the winner and I will send the game state to server:',
-          gameOver.winner,
-          gameOver.reason
-        );
         sendFinalGameStateToServer(gameOver.winner, gameOver.reason);
       }
       isOnlineGame(gameMode)
@@ -179,6 +176,19 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setWinnerOfflineAlertVisible(false); // Hide the modal
     setWinnerOnlineAlertVisible(false);
   };
+  const getHeadline = ():string => {
+    if(botType) {
+      return `Play vs ${botType}`
+    }
+    switch (gameMode) {
+      case GAME_TYPE.FRIENDLIST:
+        return 'Play vs Friend';
+      case GAME_TYPE.PASSPLAY:
+        return 'Local Game'
+      default:
+        return 'Backgammon';
+    }
+  }
 
   const handleMoveChecker = async (
     sourceIndex: number,
@@ -221,7 +231,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           />
         )}
       </View>
-      <HeaderSecondary navigation={navigation} headline={gameMode} />
+      <HeaderSecondary navigation={navigation} headline={getHeadline()} />
       <View style={styles.boardContainer}>
         <Board
           ref={boardRef}
@@ -244,6 +254,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           legalMovesFrom={legalMovesFrom}
           doubleDice={doubleDice}
           handleAnimation={handleAnimation}
+          localPlayerId={localPlayerId}
+          opponentPlayerId={opponentPlayerId}
+          gameMode={gameMode}
         />
       </View>
       <GameNavBar
@@ -264,12 +277,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
 
       {/* Custom Modal for Winner Announcement */}
       {/* Offline Winner Modal */}
-      <CustomAlert
-        visible={winnerOfflineAlertVisible}
-        headline={`${winner} wins the Game`}
-        bodyText='What would you like to do?'
-        acceptButtonText='Restart'
-        declineButtonText='Go to Home'
+      <GameOverModal
+        visible={winnerOnlineAlertVisible}
+        winner={winner}
         onAccept={handleRestart}
         onDecline={handleGoHome}
       />
@@ -284,12 +294,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onDecline={handleGiveUp}
       />
       {/* Online Winner Modal */}
-      <CustomAlert
+      <GameOverModal
         visible={winnerOnlineAlertVisible}
-        headline={`${winner} wins the Game`}
-        bodyText='What would you like to do?'
-        acceptButtonText='Play Again'
-        declineButtonText='Go to Home'
+        winner={winner}
         onAccept={handlePlayAgain}
         onDecline={handleGoHome}
       />

@@ -16,13 +16,17 @@ export type Friends = {
 
 export type Player = {
   __typename: "Player",
+  country?: string | null,
   createdAt: string,
+  emoji?: string | null,
   friendsAsOne?: ModelFriendsConnection | null,
   friendsAsTwo?: ModelFriendsConnection | null,
   id: string,
   name?: string | null,
+  profilePicColor?: string | null,
   sessionsAsPlayerOne?: ModelSessionConnection | null,
   sessionsAsPlayerTwo?: ModelSessionConnection | null,
+  sessionsWon?: ModelSessionStatConnection | null,
   turnsMade?: ModelTurnsConnection | null,
   updatedAt: string,
 };
@@ -44,10 +48,14 @@ export type Session = {
   createdAt: string,
   gameType?: SessionGameType | null,
   id: string,
+  isGameOver: boolean,
+  isGameStarted: boolean,
   playerOne?: Player | null,
   playerOneID?: string | null,
   playerTwo?: Player | null,
   playerTwoID?: string | null,
+  statisticId?: string | null,
+  statistics?: SessionStat | null,
   turns?: ModelTurnsConnection | null,
   updatedAt: string,
 };
@@ -59,6 +67,46 @@ export enum SessionGameType {
   RANDOM = "RANDOM",
 }
 
+
+export type SessionStat = {
+  __typename: "SessionStat",
+  bet?: number | null,
+  createdAt: string,
+  doubleDiceValue?: number | null,
+  duration?: number | null,
+  game?: Session | null,
+  gameId: string,
+  gameType?: SessionStatGameType | null,
+  id: string,
+  numTurns?: number | null,
+  reason?: SessionStatReason | null,
+  scores?: SessionStatScores | null,
+  updatedAt: string,
+  winner?: Player | null,
+  winnerId?: string | null,
+};
+
+export enum SessionStatGameType {
+  COMPUTER = "COMPUTER",
+  ELO = "ELO",
+  FRIENDLIST = "FRIENDLIST",
+  RANDOM = "RANDOM",
+}
+
+
+export enum SessionStatReason {
+  DOUBLE = "DOUBLE",
+  GAME_OVER = "GAME_OVER",
+  GIVE_UP = "GIVE_UP",
+  TIMEOUT = "TIMEOUT",
+}
+
+
+export type SessionStatScores = {
+  __typename: "SessionStatScores",
+  black?: number | null,
+  white?: number | null,
+};
 
 export type ModelTurnsConnection = {
   __typename: "ModelTurnsConnection",
@@ -101,11 +149,18 @@ export enum TurnsPlayerColor {
 
 export enum TurnsType {
   DOUBLE = "DOUBLE",
+  GAME_OVER = "GAME_OVER",
   GIVE_UP = "GIVE_UP",
   INIT = "INIT",
   MOVE = "MOVE",
 }
 
+
+export type ModelSessionStatConnection = {
+  __typename: "ModelSessionStatConnection",
+  items:  Array<SessionStat | null >,
+  nextToken?: string | null,
+};
 
 export type ModelFriendsFilterInput = {
   and?: Array< ModelFriendsFilterInput | null > | null,
@@ -184,11 +239,14 @@ export type ModelBooleanInput = {
 
 export type ModelPlayerFilterInput = {
   and?: Array< ModelPlayerFilterInput | null > | null,
+  country?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
+  emoji?: ModelStringInput | null,
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
   not?: ModelPlayerFilterInput | null,
   or?: Array< ModelPlayerFilterInput | null > | null,
+  profilePicColor?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
@@ -198,15 +256,57 @@ export type ModelPlayerConnection = {
   nextToken?: string | null,
 };
 
+export type ModelSessionStatFilterInput = {
+  and?: Array< ModelSessionStatFilterInput | null > | null,
+  bet?: ModelIntInput | null,
+  createdAt?: ModelStringInput | null,
+  doubleDiceValue?: ModelIntInput | null,
+  duration?: ModelIntInput | null,
+  gameId?: ModelIDInput | null,
+  gameType?: ModelSessionStatGameTypeInput | null,
+  id?: ModelIDInput | null,
+  not?: ModelSessionStatFilterInput | null,
+  numTurns?: ModelIntInput | null,
+  or?: Array< ModelSessionStatFilterInput | null > | null,
+  reason?: ModelSessionStatReasonInput | null,
+  updatedAt?: ModelStringInput | null,
+  winnerId?: ModelIDInput | null,
+};
+
+export type ModelIntInput = {
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  between?: Array< number | null > | null,
+  eq?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ne?: number | null,
+};
+
+export type ModelSessionStatGameTypeInput = {
+  eq?: SessionStatGameType | null,
+  ne?: SessionStatGameType | null,
+};
+
+export type ModelSessionStatReasonInput = {
+  eq?: SessionStatReason | null,
+  ne?: SessionStatReason | null,
+};
+
 export type ModelSessionFilterInput = {
   and?: Array< ModelSessionFilterInput | null > | null,
   createdAt?: ModelStringInput | null,
   gameType?: ModelSessionGameTypeInput | null,
   id?: ModelIDInput | null,
+  isGameOver?: ModelBooleanInput | null,
+  isGameStarted?: ModelBooleanInput | null,
   not?: ModelSessionFilterInput | null,
   or?: Array< ModelSessionFilterInput | null > | null,
   playerOneID?: ModelIDInput | null,
   playerTwoID?: ModelIDInput | null,
+  statisticId?: ModelIDInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
@@ -232,18 +332,6 @@ export type ModelTurnsFilterInput = {
 export type ModelTurnsPlayerColorInput = {
   eq?: TurnsPlayerColor | null,
   ne?: TurnsPlayerColor | null,
-};
-
-export type ModelIntInput = {
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-  between?: Array< number | null > | null,
-  eq?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ne?: number | null,
 };
 
 export type ModelTurnsTypeInput = {
@@ -286,34 +374,80 @@ export type CreateFriendsInput = {
 
 export type ModelPlayerConditionInput = {
   and?: Array< ModelPlayerConditionInput | null > | null,
+  country?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
+  emoji?: ModelStringInput | null,
   name?: ModelStringInput | null,
   not?: ModelPlayerConditionInput | null,
   or?: Array< ModelPlayerConditionInput | null > | null,
+  profilePicColor?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
 export type CreatePlayerInput = {
+  country?: string | null,
+  emoji?: string | null,
   id?: string | null,
   name?: string | null,
+  profilePicColor?: string | null,
 };
 
 export type ModelSessionConditionInput = {
   and?: Array< ModelSessionConditionInput | null > | null,
   createdAt?: ModelStringInput | null,
   gameType?: ModelSessionGameTypeInput | null,
+  isGameOver?: ModelBooleanInput | null,
+  isGameStarted?: ModelBooleanInput | null,
   not?: ModelSessionConditionInput | null,
   or?: Array< ModelSessionConditionInput | null > | null,
   playerOneID?: ModelIDInput | null,
   playerTwoID?: ModelIDInput | null,
+  statisticId?: ModelIDInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
 export type CreateSessionInput = {
   gameType?: SessionGameType | null,
   id?: string | null,
+  isGameOver: boolean,
+  isGameStarted: boolean,
   playerOneID?: string | null,
   playerTwoID?: string | null,
+  statisticId?: string | null,
+};
+
+export type ModelSessionStatConditionInput = {
+  and?: Array< ModelSessionStatConditionInput | null > | null,
+  bet?: ModelIntInput | null,
+  createdAt?: ModelStringInput | null,
+  doubleDiceValue?: ModelIntInput | null,
+  duration?: ModelIntInput | null,
+  gameId?: ModelIDInput | null,
+  gameType?: ModelSessionStatGameTypeInput | null,
+  not?: ModelSessionStatConditionInput | null,
+  numTurns?: ModelIntInput | null,
+  or?: Array< ModelSessionStatConditionInput | null > | null,
+  reason?: ModelSessionStatReasonInput | null,
+  updatedAt?: ModelStringInput | null,
+  winnerId?: ModelIDInput | null,
+};
+
+export type CreateSessionStatInput = {
+  bet?: number | null,
+  doubleDiceValue?: number | null,
+  duration?: number | null,
+  gameId: string,
+  gameType?: SessionStatGameType | null,
+  id?: string | null,
+  numTurns?: number | null,
+  reason?: SessionStatReason | null,
+  scores?: SessionStatScoresInput | null,
+  winnerId?: string | null,
+};
+
+export type SessionStatScoresInput = {
+  black?: number | null,
+  white?: number | null,
 };
 
 export type ModelTurnsConditionInput = {
@@ -359,6 +493,10 @@ export type DeleteSessionInput = {
   id: string,
 };
 
+export type DeleteSessionStatInput = {
+  id: string,
+};
+
 export type DeleteTurnsInput = {
   gameId: string,
   turnNumber: number,
@@ -366,6 +504,7 @@ export type DeleteTurnsInput = {
 
 export enum MakeTurnType {
   DOUBLE = "DOUBLE",
+  GAME_OVER = "GAME_OVER",
   GIVE_UP = "GIVE_UP",
   INIT = "INIT",
   MOVE = "MOVE",
@@ -380,15 +519,34 @@ export type UpdateFriendsInput = {
 };
 
 export type UpdatePlayerInput = {
+  country?: string | null,
+  emoji?: string | null,
   id: string,
   name?: string | null,
+  profilePicColor?: string | null,
 };
 
 export type UpdateSessionInput = {
   gameType?: SessionGameType | null,
   id: string,
+  isGameOver?: boolean | null,
+  isGameStarted?: boolean | null,
   playerOneID?: string | null,
   playerTwoID?: string | null,
+  statisticId?: string | null,
+};
+
+export type UpdateSessionStatInput = {
+  bet?: number | null,
+  doubleDiceValue?: number | null,
+  duration?: number | null,
+  gameId?: string | null,
+  gameType?: SessionStatGameType | null,
+  id: string,
+  numTurns?: number | null,
+  reason?: SessionStatReason | null,
+  scores?: SessionStatScoresInput | null,
+  winnerId?: string | null,
 };
 
 export type UpdateTurnsInput = {
@@ -449,10 +607,13 @@ export type ModelSubscriptionBooleanInput = {
 
 export type ModelSubscriptionPlayerFilterInput = {
   and?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  country?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
+  emoji?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
   or?: Array< ModelSubscriptionPlayerFilterInput | null > | null,
+  profilePicColor?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
 };
 
@@ -461,10 +622,41 @@ export type ModelSubscriptionSessionFilterInput = {
   createdAt?: ModelSubscriptionStringInput | null,
   gameType?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
+  isGameOver?: ModelSubscriptionBooleanInput | null,
+  isGameStarted?: ModelSubscriptionBooleanInput | null,
   or?: Array< ModelSubscriptionSessionFilterInput | null > | null,
   playerOneID?: ModelSubscriptionIDInput | null,
   playerTwoID?: ModelSubscriptionIDInput | null,
+  statisticId?: ModelSubscriptionIDInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
+};
+
+export type ModelSubscriptionSessionStatFilterInput = {
+  and?: Array< ModelSubscriptionSessionStatFilterInput | null > | null,
+  bet?: ModelSubscriptionIntInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  doubleDiceValue?: ModelSubscriptionIntInput | null,
+  duration?: ModelSubscriptionIntInput | null,
+  gameId?: ModelSubscriptionIDInput | null,
+  gameType?: ModelSubscriptionStringInput | null,
+  id?: ModelSubscriptionIDInput | null,
+  numTurns?: ModelSubscriptionIntInput | null,
+  or?: Array< ModelSubscriptionSessionStatFilterInput | null > | null,
+  reason?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  winnerId?: ModelSubscriptionIDInput | null,
+};
+
+export type ModelSubscriptionIntInput = {
+  between?: Array< number | null > | null,
+  eq?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  in?: Array< number | null > | null,
+  le?: number | null,
+  lt?: number | null,
+  ne?: number | null,
+  notIn?: Array< number | null > | null,
 };
 
 export type ModelSubscriptionTurnsFilterInput = {
@@ -478,18 +670,6 @@ export type ModelSubscriptionTurnsFilterInput = {
   turnNumber?: ModelSubscriptionIntInput | null,
   type?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
-};
-
-export type ModelSubscriptionIntInput = {
-  between?: Array< number | null > | null,
-  eq?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  in?: Array< number | null > | null,
-  le?: number | null,
-  lt?: number | null,
-  ne?: number | null,
-  notIn?: Array< number | null > | null,
 };
 
 export type GetFriendsQueryVariables = {
@@ -507,16 +687,22 @@ export type GetFriendsQuery = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -529,7 +715,9 @@ export type GetPlayerQueryVariables = {
 export type GetPlayerQuery = {
   getPlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -540,12 +728,17 @@ export type GetPlayerQuery = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -566,27 +759,98 @@ export type GetSessionQuery = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type GetSessionStatQueryVariables = {
+  id: string,
+};
+
+export type GetSessionStatQuery = {
+  getSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -609,8 +873,11 @@ export type GetTurnsQuery = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -621,9 +888,12 @@ export type GetTurnsQuery = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -667,10 +937,40 @@ export type ListPlayersQuery = {
     __typename: "ModelPlayerConnection",
     items:  Array< {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type ListSessionStatsQueryVariables = {
+  filter?: ModelSessionStatFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListSessionStatsQuery = {
+  listSessionStats?:  {
+    __typename: "ModelSessionStatConnection",
+    items:  Array< {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -690,8 +990,11 @@ export type ListSessionsQuery = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null >,
     nextToken?: string | null,
@@ -740,16 +1043,22 @@ export type CreateFriendsMutation = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -763,7 +1072,9 @@ export type CreatePlayerMutationVariables = {
 export type CreatePlayerMutation = {
   createPlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -774,12 +1085,17 @@ export type CreatePlayerMutation = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -801,27 +1117,99 @@ export type CreateSessionMutation = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type CreateSessionStatMutationVariables = {
+  condition?: ModelSessionStatConditionInput | null,
+  input: CreateSessionStatInput,
+};
+
+export type CreateSessionStatMutation = {
+  createSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -844,8 +1232,11 @@ export type CreateTurnsMutation = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -856,9 +1247,12 @@ export type CreateTurnsMutation = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -885,16 +1279,22 @@ export type DeleteFriendsMutation = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -908,7 +1308,9 @@ export type DeletePlayerMutationVariables = {
 export type DeletePlayerMutation = {
   deletePlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -919,12 +1321,17 @@ export type DeletePlayerMutation = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -946,27 +1353,99 @@ export type DeleteSessionMutation = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type DeleteSessionStatMutationVariables = {
+  condition?: ModelSessionStatConditionInput | null,
+  input: DeleteSessionStatInput,
+};
+
+export type DeleteSessionStatMutation = {
+  deleteSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -989,8 +1468,11 @@ export type DeleteTurnsMutation = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -1001,9 +1483,12 @@ export type DeleteTurnsMutation = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -1054,16 +1539,22 @@ export type UpdateFriendsMutation = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -1077,7 +1568,9 @@ export type UpdatePlayerMutationVariables = {
 export type UpdatePlayerMutation = {
   updatePlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -1088,12 +1581,17 @@ export type UpdatePlayerMutation = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -1115,27 +1613,99 @@ export type UpdateSessionMutation = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type UpdateSessionStatMutationVariables = {
+  condition?: ModelSessionStatConditionInput | null,
+  input: UpdateSessionStatInput,
+};
+
+export type UpdateSessionStatMutation = {
+  updateSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -1158,8 +1728,11 @@ export type UpdateTurnsMutation = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -1170,9 +1743,12 @@ export type UpdateTurnsMutation = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -1198,16 +1774,22 @@ export type OnCreateFriendsSubscription = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -1220,7 +1802,9 @@ export type OnCreatePlayerSubscriptionVariables = {
 export type OnCreatePlayerSubscription = {
   onCreatePlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -1231,12 +1815,17 @@ export type OnCreatePlayerSubscription = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -1257,27 +1846,98 @@ export type OnCreateSessionSubscription = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type OnCreateSessionStatSubscriptionVariables = {
+  filter?: ModelSubscriptionSessionStatFilterInput | null,
+};
+
+export type OnCreateSessionStatSubscription = {
+  onCreateSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -1299,8 +1959,11 @@ export type OnCreateTurnsSubscription = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -1311,9 +1974,12 @@ export type OnCreateTurnsSubscription = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -1339,16 +2005,22 @@ export type OnDeleteFriendsSubscription = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -1361,7 +2033,9 @@ export type OnDeletePlayerSubscriptionVariables = {
 export type OnDeletePlayerSubscription = {
   onDeletePlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -1372,12 +2046,17 @@ export type OnDeletePlayerSubscription = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -1398,27 +2077,98 @@ export type OnDeleteSessionSubscription = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteSessionStatSubscriptionVariables = {
+  filter?: ModelSubscriptionSessionStatFilterInput | null,
+};
+
+export type OnDeleteSessionStatSubscription = {
+  onDeleteSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -1440,8 +2190,11 @@ export type OnDeleteTurnsSubscription = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -1452,9 +2205,12 @@ export type OnDeleteTurnsSubscription = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,
@@ -1480,16 +2236,22 @@ export type OnUpdateFriendsSubscription = {
     userIdTwo?: string | null,
     userOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     userTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
   } | null,
@@ -1502,7 +2264,9 @@ export type OnUpdatePlayerSubscriptionVariables = {
 export type OnUpdatePlayerSubscription = {
   onUpdatePlayer?:  {
     __typename: "Player",
+    country?: string | null,
     createdAt: string,
+    emoji?: string | null,
     friendsAsOne?:  {
       __typename: "ModelFriendsConnection",
       nextToken?: string | null,
@@ -1513,12 +2277,17 @@ export type OnUpdatePlayerSubscription = {
     } | null,
     id: string,
     name?: string | null,
+    profilePicColor?: string | null,
     sessionsAsPlayerOne?:  {
       __typename: "ModelSessionConnection",
       nextToken?: string | null,
     } | null,
     sessionsAsPlayerTwo?:  {
       __typename: "ModelSessionConnection",
+      nextToken?: string | null,
+    } | null,
+    sessionsWon?:  {
+      __typename: "ModelSessionStatConnection",
       nextToken?: string | null,
     } | null,
     turnsMade?:  {
@@ -1539,27 +2308,98 @@ export type OnUpdateSessionSubscription = {
     createdAt: string,
     gameType?: SessionGameType | null,
     id: string,
+    isGameOver: boolean,
+    isGameStarted: boolean,
     playerOne?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerOneID?: string | null,
     playerTwo?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerTwoID?: string | null,
+    statisticId?: string | null,
+    statistics?:  {
+      __typename: "SessionStat",
+      bet?: number | null,
+      createdAt: string,
+      doubleDiceValue?: number | null,
+      duration?: number | null,
+      gameId: string,
+      gameType?: SessionStatGameType | null,
+      id: string,
+      numTurns?: number | null,
+      reason?: SessionStatReason | null,
+      updatedAt: string,
+      winnerId?: string | null,
+    } | null,
     turns?:  {
       __typename: "ModelTurnsConnection",
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateSessionStatSubscriptionVariables = {
+  filter?: ModelSubscriptionSessionStatFilterInput | null,
+};
+
+export type OnUpdateSessionStatSubscription = {
+  onUpdateSessionStat?:  {
+    __typename: "SessionStat",
+    bet?: number | null,
+    createdAt: string,
+    doubleDiceValue?: number | null,
+    duration?: number | null,
+    game?:  {
+      __typename: "Session",
+      createdAt: string,
+      gameType?: SessionGameType | null,
+      id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
+      playerOneID?: string | null,
+      playerTwoID?: string | null,
+      statisticId?: string | null,
+      updatedAt: string,
+    } | null,
+    gameId: string,
+    gameType?: SessionStatGameType | null,
+    id: string,
+    numTurns?: number | null,
+    reason?: SessionStatReason | null,
+    scores?:  {
+      __typename: "SessionStatScores",
+      black?: number | null,
+      white?: number | null,
+    } | null,
+    updatedAt: string,
+    winner?:  {
+      __typename: "Player",
+      country?: string | null,
+      createdAt: string,
+      emoji?: string | null,
+      id: string,
+      name?: string | null,
+      profilePicColor?: string | null,
+      updatedAt: string,
+    } | null,
+    winnerId?: string | null,
   } | null,
 };
 
@@ -1581,8 +2421,11 @@ export type OnUpdateTurnsSubscription = {
       createdAt: string,
       gameType?: SessionGameType | null,
       id: string,
+      isGameOver: boolean,
+      isGameStarted: boolean,
       playerOneID?: string | null,
       playerTwoID?: string | null,
+      statisticId?: string | null,
       updatedAt: string,
     } | null,
     gameId: string,
@@ -1593,9 +2436,12 @@ export type OnUpdateTurnsSubscription = {
     } | null > | null,
     player?:  {
       __typename: "Player",
+      country?: string | null,
       createdAt: string,
+      emoji?: string | null,
       id: string,
       name?: string | null,
+      profilePicColor?: string | null,
       updatedAt: string,
     } | null,
     playerColor?: TurnsPlayerColor | null,

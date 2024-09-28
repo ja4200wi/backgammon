@@ -5,12 +5,10 @@ import { Move } from "./move";
 import { Riana } from "./rianaBot";
 import { Turn } from "./turn";
 export class Bot {
-    private difficulty: BOT_DIFFICULTY
     private lastTurn: Turn
     private botType: BOT_NAMES // set DEFAULT if difficulty is not custom
 
-    constructor(difficulty: BOT_DIFFICULTY,botType: BOT_NAMES) {
-        this.difficulty = difficulty
+    constructor(botType: BOT_NAMES) {
         this.botType = botType
         this.lastTurn = new Turn()
     }
@@ -19,25 +17,16 @@ export class Bot {
     }
 
     public makeMove(game:Game): (Turn|null) {
-        switch(this.difficulty) {
-            case BOT_DIFFICULTY.RANDOM:
-                return (this.makeMoveEasyBot(game))
-                break
-            case BOT_DIFFICULTY.CUSTOM:
-                return (this.makeMoveMediumBot(game))
-                break
-            case BOT_DIFFICULTY.HARD:
-                return (this.makeMoveHardBot(game))
-                break
-            default:
-                return null
+       return this.makeBotMove(game)
+    }
+    
+    private makeBotMove(game: Game): (Turn | null) {
+        if(this.botType === BOT_NAMES.LARRY) {
+            console.log('returning larry move')
+            return this.tempTurnEasyBot(game)
         }
-    }
-    private makeMoveEasyBot(game:Game): (Turn | null) {
-        return this.tempTurnEasyBot(game)
-    }
-    private makeMoveMediumBot(game: Game): (Turn | null) {
         let bestTurn = this.getMediumScore(game, [],this.botType);
+        console.log('returning riana move')
         return bestTurn.turn;
     }    
     private makeMoveHardBot(game:Game): (Turn | null) {

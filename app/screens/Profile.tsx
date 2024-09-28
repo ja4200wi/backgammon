@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,29 +21,39 @@ import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
-import { getPlayerInfo, getUserName } from '../service/profileService';
+import {
+  getEnumFromKey,
+  getPlayerInfo,
+  getUserName,
+} from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import EditProfileForm from '../components/profile/EditProfileForm';
+import { useUser } from '../utils/UserContent';
 
-const selectionSet = ['id', 'name', 'createdAt', 'updatedAt'] as const;
+const selectionSet = [
+  'id',
+  'name',
+  'emoji',
+  'country',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 function UserProfile() {
-  const [player, setPlayer] = useState<PlayerInfo>();
+  const { userInfo } = useUser();
   const [modalVisible, setModalVisible] = useState(false);
-
-  const fetchUserData = async () => {
-    const playerInfo = await getPlayerInfo(await getUserName());
-    playerInfo && setPlayer(playerInfo);
-  };
-
-  fetchUserData();
 
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag country={COUNTRIES.JAPAN} />
+        <AvatarWithFlag
+          country={getEnumFromKey(userInfo?.country)}
+          emoji={userInfo?.emoji}
+          color={userInfo?.profilePicColor}
+        />
         <View
           style={{
             flexDirection: 'column',
@@ -51,9 +61,9 @@ function UserProfile() {
             marginLeft: 16,
           }}
         >
-          <Text style={[GLOBAL_STYLES.headline]}>{player?.name}</Text>
+          <Text style={[GLOBAL_STYLES.headline]}>{userInfo?.name}</Text>
           <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-            Joined {new Date(player?.createdAt!).toLocaleDateString()}
+            Joined {new Date(userInfo?.createdAt!).toLocaleDateString()}
           </Text>
         </View>
         <Icon
@@ -74,19 +84,15 @@ function UserProfile() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <EditProfileForm />
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
+            {/* Pass setModalVisible as a prop to close the modal */}
+            <EditProfileForm onSubmit={() => setModalVisible(false)} />
           </View>
         </View>
       </Modal>
     </View>
   );
 }
+
 function Headline({ headline }: { headline: string }) {
   return (
     <View style={{ backgroundColor: APP_COLORS.darkGrey, zIndex: 2 }}>
@@ -249,7 +255,7 @@ export default function Profile({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <ScrollView style={{ zIndex: 2 }}>
+        <ScrollView contentContainerStyle={{flexGrow:1,paddingBottom: 16,}} style={{ zIndex: 2,flex:1}} alwaysBounceVertical={false}>
           <UserProfile />
           <Headline headline='Statistics' />
           <ProfileContent

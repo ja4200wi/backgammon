@@ -13,7 +13,7 @@ import { DoubleDice } from '../gameLogic/doubleDice';
 import { Move } from '../gameLogic/move';
 import { del, generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
-import { sendTurn, saveGameStats } from '../service/gameService';
+import endGame, { sendTurn, saveGameStats } from '../service/gameService';
 import { on } from 'events';
 
 const client = generateClient<Schema>();
@@ -68,7 +68,7 @@ export const useGameLogic = (
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
   const [isLoadingGame,setIsLoadingGame] = useState<boolean>(true)
-  const bot = new Bot(BOT_DIFFICULTY.CUSTOM, BOT_NAMES.RIANA);
+  const [bot,setBot] = useState<Bot>(new Bot(BOT_NAMES.RIANA))
   const boardRef = useRef<any>(null); // Define a ref for the Board component
   // #endregion
 
@@ -144,12 +144,15 @@ export const useGameLogic = (
   // #region Game Actions
   const startGame = async (
     gamemode: GAME_TYPE,
-    newOnlineTurns?: OnlineTurn[]
+    newOnlineTurns?: OnlineTurn[],
+    botType?:BOT_NAMES
   ) => {
     if (newOnlineTurns) {
       startOnline(gamemode, newOnlineTurns);
     } else {
-      startOffline(gamemode);
+      if(botType) startOffline(gamemode,botType);
+      else startOffline(gamemode)
+
     }
   };
   const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
@@ -161,8 +164,9 @@ export const useGameLogic = (
     const newGame = new Game(startPlayer, onlineDice);
     setGame(newGame);
   };
-  const startOffline = (gamemode: GAME_TYPE) => {
+  const startOffline = (gamemode: GAME_TYPE, botTpye?:BOT_NAMES) => {
     setGameMode(gamemode);
+    if(botTpye) setBot(new Bot(botTpye))
     const newGame = new Game();
     setGame(newGame);
   };
@@ -491,6 +495,7 @@ export const useGameLogic = (
     reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
   ) => {
     if (game) {
+      console.log('sending final game state to server and ending game');
       const distWhite = game.getDistances().distWhite;
       const distBlack = game.getDistances().distBlack;
       const doubleDiceValue = doubleDice.getMultiplicator();
@@ -505,6 +510,7 @@ export const useGameLogic = (
         doubleDiceValue,
         reason
       );
+      endGame(gameId);
     }
   };
 
@@ -531,7 +537,7 @@ export const useGameLogic = (
       localPlayerId !== latestTurn?.playerId
     ) {
       setIsWaitingForDouble(false);
-      setGameOver({ gameover: true, winner: localPlayerId });
+      setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
     }
   };
   // #endregion

@@ -6,14 +6,27 @@ import React, {
   ReactNode,
   useContext,
 } from 'react';
-import { getUserName } from '../service/profileService';
+import { getPlayerInfo, getUserName } from '../service/profileService';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+
+const selectionSet = [
+  'id',
+  'name',
+  'country',
+  'emoji',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 interface UserContextType {
-  user: string | null;
+  userInfo: PlayerInfo | null;
   loading: boolean;
+  refetchUserData: () => Promise<void>; // Add refetchUserData function to the context type
 }
 
-// Define the props for the UserProvider component
 interface UserProviderProps {
   children: ReactNode;
 }
@@ -22,27 +35,31 @@ interface UserProviderProps {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [user, setUser] = useState<string>('');
+  const [userInfo, setUserInfo] = useState<PlayerInfo | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userInfo = await getUserName();
-        setUser(userInfo);
-      } catch (error) {
-        console.error('Failed to load user data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      const userId = await getUserName();
+      const userInfo = await getPlayerInfo(userId);
+      userInfo && setUserInfo(userInfo);
+    } catch (error) {
+      console.error('Failed to load user data', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchUserData();
   }, []);
 
-  // Provide user data and loading state to the context
+  // Provide user data, loading state, and the refetch method to the context
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider
+      value={{ userInfo, loading, refetchUserData: fetchUserData }}
+    >
       {children}
     </UserContext.Provider>
   );

@@ -13,7 +13,6 @@ type Dice = Schema['Dice']['type'];
 const client = generateClient<Schema>();
 
 export async function initGame(gameId: string, userId: string): Promise<void> {
-  console.log('initGame:', gameId, userId);
   const response = await client.mutations
     .makeTurn({
       gameId,
@@ -25,6 +24,10 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
       console.error('Error from makeTurn call in initGame: ', err);
       return 'Failed to init game';
     });
+  await client.models.Session.update({
+    id: gameId,
+    isGameStarted: true,
+  });
 }
 
 export async function saveGameStats(
@@ -78,10 +81,17 @@ export async function sendTurn(
   return response.data;
 }
 
-export async function createSession(playerOneId: string): Promise<string> {
+export async function createSession(
+  playerOneId: string,
+  gameType: 'ELO' | 'RANDOM' | 'FRIENDLIST' | 'COMPUTER',
+  playerTwoId?: string
+): Promise<string> {
   const response = await client.models.Session.create({
     playerOneID: playerOneId,
-    playerTwoID: 'EMPTY',
+    playerTwoID: playerTwoId || 'EMPTY',
+    gameType: gameType || 'COMPUTER',
+    isGameOver: false,
+    isGameStarted: false,
   });
   if (response.data === null) {
     console.error('Failed to create session:', response);
@@ -90,10 +100,21 @@ export async function createSession(playerOneId: string): Promise<string> {
   return response.data.id;
 }
 
+export default function endGame(gameId: string): void {
+  client.models.Session.update({
+    id: gameId,
+    isGameOver: true,
+  });
+}
+
 export async function joinSession(
   gameId: string,
   playerId: string
 ): Promise<String> {
+  await client.models.Session.update({
+    id: gameId,
+    isGameStarted: true,
+  });
   const response = await client.mutations
     .joinGame({
       gameId,

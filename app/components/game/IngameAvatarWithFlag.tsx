@@ -1,40 +1,56 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
 import CountryFlag from 'react-native-country-flag'; // Ensure this is installed and set up
 import Profile from '../../images/profile.svg'; // Ensure your SVG import is correct
 import { APP_COLORS, COUNTRIES } from '../../utils/constants';
-import { color } from '@rneui/base';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../../amplify/data/resource';
+import { getEnumFromKey, getPlayerInfo } from '../../service/profileService';
 
-const AvatarWithFlag = ({
-  country,
-  emoji,
-  color,
-}: {
-  country: COUNTRIES;
-  emoji: string | undefined | null;
-  color: string | undefined | null;
-}) => {
-  color = color || APP_COLORS.iconGrey;
+const selectionSet = [
+  'id',
+  'name',
+  'emoji',
+  'country',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
+
+const IngameAvatarWithFlag = ({ playerId }: { playerId: string }) => {
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
+  const [color, setColor] = useState<string>(APP_COLORS.iconGrey);
+
+  const updatePlayerInfo = async () => {
+    const info = await getPlayerInfo(playerId);
+    setPlayerInfo(info);
+    setColor(info!.profilePicColor!);
+  };
+
+  useEffect(() => {
+    updatePlayerInfo();
+  }, [playerId]);
   return (
     <View style={styles.container}>
       <Avatar
-        size={64}
+        size={32}
         rounded
         containerStyle={{ backgroundColor: color, ...styles.avatar }}
       ></Avatar>
       <View style={styles.profileContainer}>
         <Text
           style={{
-            fontSize: 40,
+            fontSize: 16,
             color: color === '#000000' ? 'white' : 'black',
           }}
         >
-          {emoji}
+          {playerInfo?.emoji}
         </Text>
       </View>
       <View style={styles.flagContainer}>
-        <CountryFlag isoCode={country} size={14} />
+        <CountryFlag isoCode={getEnumFromKey(playerInfo?.country)} size={8} />
       </View>
     </View>
   );
@@ -43,10 +59,11 @@ const AvatarWithFlag = ({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    width: 64,
-    height: 64,
+    width: 32,
+    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 8,
   },
   avatar: {
     justifyContent: 'center',
@@ -72,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AvatarWithFlag;
+export default IngameAvatarWithFlag;

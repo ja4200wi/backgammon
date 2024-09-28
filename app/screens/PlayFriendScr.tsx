@@ -9,7 +9,7 @@ import {
 import { DIMENSIONS } from '../utils/constants';
 import GameListScreen from '../components/GameList';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
-import FriendGameList from '../components/FriendGameList.tsx';
+import FriendGameList2 from '../components/FriendGameList2.tsx';
 
 export default function PlayFriend({
   route,
@@ -31,7 +31,7 @@ export default function PlayFriend({
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <FriendGameList navigation={navigation} localPlayerId={localPlayerId} />
+        <FriendGameList2 navigation={navigation} />
       </ImageBackground>
     </SafeAreaView>
   );
@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 16,
   },
   overlaySquare: {
     position: 'absolute',

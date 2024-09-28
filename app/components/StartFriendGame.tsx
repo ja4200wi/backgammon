@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
+import { createSession } from '../service/gameService';
 
 const selectionSet = ['id', 'userIdOne', 'userIdTwo', 'isConfirmed'] as const;
 type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
@@ -43,8 +44,18 @@ export default function StartFriendGame({
     const { data: sessions, errors } = await client.models.Session.list({
       filter: {
         or: [
-          { playerOneID: { eq: friendId } },
-          { playerTwoID: { eq: friendId } },
+          {
+            and: [
+              { playerOneID: { eq: friendId } },
+              { isGameOver: { eq: false } },
+            ],
+          },
+          {
+            and: [
+              { playerTwoID: { eq: friendId } },
+              { isGameOver: { eq: false } },
+            ],
+          },
         ],
       },
     });
@@ -53,11 +64,7 @@ export default function StartFriendGame({
       Alert.alert('Game already exists');
       return;
     }
-    client.models.Session.create({
-      playerOneID: userIdOne,
-      playerTwoID: friendId,
-      gameType: 'FRIENDLIST',
-    });
+    createSession(userIdOne, 'FRIENDLIST', friendId);
   };
 
   useEffect(() => {
