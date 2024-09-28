@@ -1,13 +1,15 @@
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Schema } from '../../../amplify/data/resource';
 import { useUser } from '../../utils/UserContent';
-import { Button, SearchBar } from '@rneui/themed';
-import { APP_COLORS, COUNTRIES } from '../../utils/constants';
+import { SearchBar } from '@rneui/themed';
+import { APP_COLORS, COUNTRIES, DIMENSIONS } from '../../utils/constants';
 import { ScrollView } from 'react-native-gesture-handler';
 import AvatarWithFlag from '../misc/AvatarWithFlag';
 import { inviteFriend } from '../../service/friendService';
+import { AddFriend } from '../misc/SmallComponents';
+import { Divider } from '@rneui/base';
 
 const selectionSetPlayer = ['id', 'name'] as const;
 type Player = SelectionSet<Schema['Player']['type'], typeof selectionSetPlayer>;
@@ -56,23 +58,19 @@ export default function SearchPlayer() {
       />
       {searchResults.length > 0 && (
         <ScrollView
-          horizontal={true}
-          contentContainerStyle={styles.scrollStyle}
+          style={{maxHeight: DIMENSIONS.screenHeight * 2.5/9}}
+          showsHorizontalScrollIndicator={false}
         >
           {searchResults.map((player) => {
             return (
-              <View key={player.id} style={styles.gameItem}>
-                <Text style={styles.gameText}>{player.name}</Text>
-                <Button
-                  title={'+'}
-                  buttonStyle={styles.inviteButton}
-                  onPress={() => inviteFriend(localPlayerId!, player.id)}
-                />
+              <View>
+                <AddFriend key={player.id} friendId={player.id} nickname={player.name!} country={COUNTRIES.SWEDEN} addFriend={() => inviteFriend(localPlayerId!, player.id)} />
               </View>
             );
           })}
         </ScrollView>
       )}
+      {(searchResults.length > 0) && <Divider color={APP_COLORS.standardGrey} />}
     </View>
   );
 }
@@ -83,36 +81,31 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     backgroundColor: APP_COLORS.backgroundColor,
+    borderTopWidth: 0,  
+    borderBottomWidth: 0,
   },
   inputContainerStyle: {
     backgroundColor: APP_COLORS.backgroundColor,
-    borderColor: 'white',
+    borderColor: APP_COLORS.standardGrey,
     borderBottomWidth: 1,
     borderRadius: 10,
     borderWidth: 1,
+    marginHorizontal:8
   },
   inputStyle: { color: 'white' },
   scrollStyle: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    height: 130,
-    paddingHorizontal: 8,
+    paddingHorizontal: 8,  // Ensures the items aren't cut off
+    paddingVertical: 16,   // Padding for better spacing vertically
   },
   gameItem: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '50%',
-    height: 50,
-    justifyContent: 'space-between',
-    padding: 8,
-    margin: 6,
-    backgroundColor: APP_COLORS.backgroundColor,
-    borderRadius: 8,
-    shadowColor: '#FFF',
-    borderColor: '#FFF',
-    borderWidth: 1,
+    alignItems: 'center', // Center content (avatar + text) horizontally
+    justifyContent: 'center',
+    margin: 10,
+    backgroundColor: 'transparent',
+    padding: 10,
+    width: 110, // Adjust to fit the size you want
+    height: 110,
+
     shadowOffset: {
       width: 0,
       height: 2,
@@ -122,12 +115,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   gameText: {
+    marginTop: 10, // Add spacing between avatar and name
     fontSize: 16,
     color: 'white',
-  },
-  inviteButton: {
-    backgroundColor: '#6B9C41',
-    borderRadius: 5,
-    padding: 5,
+    textAlign: 'center', // Ensure text is centered below avatar
   },
 });

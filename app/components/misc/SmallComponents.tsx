@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AvatarWithFlag from './AvatarWithFlag'; // Assuming this is a separate component you already have
 import {
@@ -178,6 +178,43 @@ export function Friend({
             onPress={() => confirmRemoveFriend()}
           >
             <Icon name='pending' color={APP_COLORS.iconGrey} size={32} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export function AddFriend({
+  friendId,
+  nickname,
+  country,
+  addFriend,
+}: {
+  friendId: string;
+  nickname: string;
+  country: COUNTRIES;
+  addFriend: (() => void)
+}) {
+
+  return (
+    <View style={{ padding: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {/* Profile section on the left */}
+        <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
+          <AvatarWithFlag country={country} />
+          <View style={{ marginLeft: 16 }}>
+            <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
+          </View>
+        </View>
+
+        {/* Icons (Check and Cancel) aligned to the right */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <TouchableOpacity
+            style={{ marginLeft: 8 }}
+            onPress={() => addFriend()}
+          >
+            <Icon name='add-circle' color={APP_COLORS.appGreen} size={32} />
           </TouchableOpacity>
         </View>
       </View>
