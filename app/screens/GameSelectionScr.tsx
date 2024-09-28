@@ -224,23 +224,23 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
           {selectedMode === GAME_TYPE.COMPUTER && (
             <>
               <View style={{flexDirection:'column'}}>
-              <TouchableOpacity style={styles.robotContainer}>
+              <TouchableOpacity activeOpacity={1} onPress={()=>{setSelectedBot(BOT_NAMES.RIANA)}} style={styles.robotContainer}>
                 <Text style={{fontSize: 32}}>{'🧠'}</Text>
-                <Text style={[GLOBAL_STYLES.headline, styles.name]}>Riana</Text>
+                <Text style={[styles.name,{fontWeight:700,fontSize:24,color: selectedBot === BOT_NAMES.RIANA ? APP_COLORS.appGreen : '#FFF'}]}>Riana</Text>
                 <View style={styles.difficultyContainer}>
                   <DifficultyDisplay level={3} />
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.robotContainer}>
+              <TouchableOpacity activeOpacity={1} onPress={()=>{setSelectedBot(BOT_NAMES.LARRY)}} style={styles.robotContainer}>
               <Text style={{fontSize: 32}}>{'🤖'}</Text>
-                <Text style={[GLOBAL_STYLES.headline, styles.name]}>Larry</Text>
+                <Text style={[styles.name, {fontWeight:700,fontSize:24,color: selectedBot === BOT_NAMES.LARRY ? APP_COLORS.appGreen : '#FFF'}]}>Larry</Text>
                 <View style={styles.difficultyContainer}>
                   <DifficultyDisplay level={1} />
                 </View>
               </TouchableOpacity>
               </View>
               <Button
-                title='Start Game'
+                title={`Play vs ${selectedBot}`}
                 buttonStyle={styles.startButton}
                 onPress={() =>
                   navigation.navigate('Game', { gameMode: GAME_TYPE.COMPUTER, botType: selectedBot })

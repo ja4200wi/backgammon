@@ -68,7 +68,7 @@ export const useGameLogic = (
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
   const [isLoadingGame,setIsLoadingGame] = useState<boolean>(true)
-  const bot = new Bot(BOT_DIFFICULTY.CUSTOM, BOT_NAMES.RIANA);
+  const bot = new Bot(BOT_NAMES.RIANA);
   const boardRef = useRef<any>(null); // Define a ref for the Board component
   // #endregion
 

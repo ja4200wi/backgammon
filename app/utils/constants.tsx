@@ -90,8 +90,9 @@ export enum BOT_DIFFICULTY {
 }
 
 export enum BOT_NAMES {
-  RIANA = 'riana',
-  DEFAULT = 'default',
+  RIANA = 'Riana',
+  LARRY = 'Larry',
+  DEFAULT = 'DEFAULT',
 }
 export const ICONS = {
   TrophyIcon: (

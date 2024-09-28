@@ -46,7 +46,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     ex: number;
     ey: number;
   }>({ sx: 0, sy: 0, ex: 0, ey: 0 });
-  const { gameId, localPlayerId, gameMode } = route.params;
+  const { gameId, localPlayerId, gameMode, botType } = route.params;
   const {
     game,
     dice,
@@ -89,11 +89,19 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (
       !startedGame &&
-      (gameMode === GAME_TYPE.COMPUTER || gameMode === GAME_TYPE.PASSPLAY)
+      gameMode === GAME_TYPE.PASSPLAY
     ) {
       setStartedGame(true);
       startGame(gameMode);
-    } else if (
+    } else if(
+      !startedGame &&
+      gameMode === GAME_TYPE.COMPUTER
+    ) {
+      setStartedGame(true);
+      console.log('BOTTYPE',botType)
+      startGame(gameMode);
+    }
+    else if (
       !startedGame &&
       isOnlineGame(gameMode) &&
       onlineTurns &&

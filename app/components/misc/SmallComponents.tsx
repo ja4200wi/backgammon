@@ -301,7 +301,23 @@ export function AddFriend({
     </View>
   );
 }
+export function DifficultyDisplay({ level }: { level: number }) {
+  const boxes = [];
 
+  for (let i = 0; i < 4; i++) {
+    boxes.push(
+      <View
+        key={i}
+        style={[
+          styles.box,
+          { backgroundColor: i < level ? APP_COLORS.appBlue : 'grey' },
+        ]}
+      />
+    );
+  }
+
+  return <View style={styles.levelCcontainer}>{boxes}</View>;
+}
 export function SentRequest({
   friendId,
   extraInfo,
@@ -511,5 +527,16 @@ const styles = StyleSheet.create({
   divider: {
     backgroundColor: 'gray',
     marginVertical: 4,
+  },
+  levelCcontainer: {
+    flexDirection: 'row',      
+  },
+  box: {
+    width: 16,
+    height: 16,
+    marginRight: 3,          
+    borderWidth: 1,
+    borderColor: 'black',   
+    borderRadius:3   
   },
 });
