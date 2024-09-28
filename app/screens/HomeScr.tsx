@@ -93,7 +93,7 @@ function PlayButton({ navigation }: { navigation: any }) {
         loading={false}
         loadingProps={{ size: 'small', color: 'white' }}
         buttonStyle={styles.playButton}
-        titleStyle={{ fontWeight: 'bold', fontSize: 23 }}
+        titleStyle={{ fontWeight: 'bold', fontSize: 24 }}
         onPress={() => navigation.navigate('GameSelection')}
       />
     </View>

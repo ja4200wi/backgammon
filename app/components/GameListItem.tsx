@@ -144,7 +144,7 @@ export default function GameListItem({
 
     return (
       <Text style={styles.gameText}>
-        <Text style={{ fontWeight: 'bold' }}>{playerName || ''}</Text>
+        <Text style={{ fontWeight: 'bold', fontSize:20 }}>{playerName || ''}</Text>
       </Text>
     );
   };

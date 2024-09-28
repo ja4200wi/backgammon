@@ -107,8 +107,11 @@ export default function FriendList2({ navigation }: { navigation: any }) {
         {renderGameList(games.filter((game) => !game.isGameStarted))}
       </View>
       <Button
-        title={'Start New Game'}
-        buttonStyle={styles.startNewButton}
+        title='Start New Game'
+        loading={false}
+        loadingProps={{ size: 'small', color: 'white' }}
+        buttonStyle={styles.playButton}
+        titleStyle={{ fontWeight: 'bold', fontSize: 24 }}
         onPress={() => setModalVisible(true)}
       />
       <Modal
@@ -214,11 +217,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex: 3,
   },
+  playButton: {
+    backgroundColor: APP_COLORS.appGreen,
+    borderRadius: 5,
+    height: 60,
+  },
   noGamesText: {
     textAlign: 'center',
     fontSize: 18,
     color: '#888',
-    marginTop: 20,
+    marginVertical:16
   },
   listTitle: {
     fontSize: 18,
