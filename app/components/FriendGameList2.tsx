@@ -221,6 +221,8 @@ const styles = StyleSheet.create({
     backgroundColor: APP_COLORS.appGreen,
     borderRadius: 5,
     height: 60,
+    marginHorizontal:16,
+    marginBottom:24
   },
   noGamesText: {
     textAlign: 'center',
