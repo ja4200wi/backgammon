@@ -35,6 +35,7 @@ const schema = a
         playerTwo: a.belongsTo('Player', 'playerTwoID'),
         gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
         isGameOver: a.boolean().required(),
+        isGameStarted: a.boolean().required(),
         turns: a.hasMany('Turns', 'gameId'),
         statisticId: a.id(),
         statistics: a.hasOne('SessionStat', 'gameId'),

@@ -89,6 +89,7 @@ export const onCreateSession = /* GraphQL */ `subscription OnCreateSession($filt
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -151,6 +152,7 @@ export const onCreateSessionStat = /* GraphQL */ `subscription OnCreateSessionSt
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -199,6 +201,7 @@ export const onCreateTurns = /* GraphQL */ `subscription OnCreateTurns($filter: 
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -314,6 +317,7 @@ export const onDeleteSession = /* GraphQL */ `subscription OnDeleteSession($filt
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -376,6 +380,7 @@ export const onDeleteSessionStat = /* GraphQL */ `subscription OnDeleteSessionSt
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -424,6 +429,7 @@ export const onDeleteTurns = /* GraphQL */ `subscription OnDeleteTurns($filter: 
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -539,6 +545,7 @@ export const onUpdateSession = /* GraphQL */ `subscription OnUpdateSession($filt
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -601,6 +608,7 @@ export const onUpdateSessionStat = /* GraphQL */ `subscription OnUpdateSessionSt
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -649,6 +657,7 @@ export const onUpdateTurns = /* GraphQL */ `subscription OnUpdateTurns($filter: 
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId

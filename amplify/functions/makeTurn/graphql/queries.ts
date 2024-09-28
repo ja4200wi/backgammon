@@ -86,6 +86,7 @@ export const getSession = /* GraphQL */ `query GetSession($id: ID!) {
     gameType
     id
     isGameOver
+    isGameStarted
     playerOne {
       country
       createdAt
@@ -146,6 +147,7 @@ export const getSessionStat = /* GraphQL */ `query GetSessionStat($id: ID!) {
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -194,6 +196,7 @@ export const getTurns = /* GraphQL */ `query GetTurns($gameId: ID!, $turnNumber:
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId
@@ -311,6 +314,7 @@ export const listSessions = /* GraphQL */ `query ListSessions(
       gameType
       id
       isGameOver
+      isGameStarted
       playerOneID
       playerTwoID
       statisticId

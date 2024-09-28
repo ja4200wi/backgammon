@@ -24,7 +24,13 @@ const timeAgo = new TimeAgo('en-US');
 
 const client = generateClient<Schema>();
 
-const selectionSet = ['id', 'playerOneID', 'playerTwoID', 'gameType'] as const;
+const selectionSet = [
+  'id',
+  'playerOneID',
+  'playerTwoID',
+  'gameType',
+  'isGameStarted',
+] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 const turnsSelectionSet = [
   'gameId',
@@ -33,12 +39,6 @@ const turnsSelectionSet = [
   'createdAt',
 ] as const;
 type Turns = SelectionSet<Schema['Turns']['type'], typeof turnsSelectionSet>;
-
-interface TurnInfo {
-  player: string;
-  date: string;
-  numTurns: number;
-}
 
 export default function GameListItem({
   navigation,
@@ -126,7 +126,7 @@ export default function GameListItem({
           <PlayerNameText playerId={item.playerOneID} />
         )}
       </Text>
-      <Text>
+      <Text style={styles.gameText}>
         Last Move:{' '}
         <PlayerNameText
           playerId={
@@ -136,7 +136,7 @@ export default function GameListItem({
           }
         />
       </Text>
-      <Text>
+      <Text style={styles.gameText}>
         {hasGameStarted &&
           timeAgo.format(new Date(lastTurns![lastTurns!.length - 1].createdAt))}
       </Text>
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     marginBottom: 8,
-    backgroundColor: '#fff',
+    backgroundColor: APP_COLORS.backgroundColor,
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
   gameText: {
     fontSize: 16,
-    color: '#333',
+    color: 'white',
   },
   startButton: {
     backgroundColor: APP_COLORS.appBlue,

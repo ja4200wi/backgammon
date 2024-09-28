@@ -14,9 +14,25 @@ import LetterIcon from '../../images/letter.svg';
 import { confirmFriend, removeFriend } from '../../service/friendService';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
+import { useUser } from '../../utils/UserContent';
+import { getEnumFromKey, getPlayerInfo } from '../../service/profileService';
+import { useEffect, useState } from 'react';
+import { SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../../amplify/data/resource';
 
 TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
+
+const selectionSet = [
+  'id',
+  'name',
+  'country',
+  'emoji',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
+type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 // Headline Component
 export function Headline({ headline }: { headline: string }) {
@@ -44,6 +60,7 @@ export function UserProfile({
   extraInfo: string;
   country: COUNTRIES;
 }) {
+  const { userInfo } = useUser();
   //add online logic if necessary
   return (
     <View style={{ padding: 16 }}>
@@ -54,7 +71,11 @@ export function UserProfile({
           backgroundColor: APP_COLORS.backgroundColor,
         }}
       >
-        <AvatarWithFlag country={country} />
+        <AvatarWithFlag
+          country={getEnumFromKey(userInfo?.country)}
+          emoji={userInfo?.emoji}
+          color={userInfo?.profilePicColor}
+        />
         <View
           style={{
             flexDirection: 'column',
@@ -79,23 +100,35 @@ export function UserProfile({
 }
 export function OpenRequest({
   friendId,
-  nickname,
+  friendshipId,
   extraInfo,
-  country,
 }: {
   friendId: string;
-  nickname: string;
+  friendshipId: string;
   extraInfo: string;
-  country: COUNTRIES;
 }) {
+  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
+
+  const updatePlayer = async () => {
+    const friendInfoNew = await getPlayerInfo(friendId);
+    setFriendInfo(friendInfoNew);
+  };
+
+  useEffect(() => {
+    updatePlayer();
+  }, [friendId]);
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag
+            country={getEnumFromKey(friendInfo?.country)}
+            emoji={friendInfo?.emoji}
+            color={friendInfo?.profilePicColor}
+          />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
+            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
               {timeAgo.format(new Date(extraInfo))}
             </Text>
@@ -106,13 +139,13 @@ export function OpenRequest({
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
           <TouchableOpacity
             style={{ marginLeft: 8 }}
-            onPress={() => confirmFriend(friendId)}
+            onPress={() => confirmFriend(friendshipId)}
           >
             <Icon name='check-circle' color={APP_COLORS.appGreen} size={32} />
           </TouchableOpacity>
           <TouchableOpacity
             style={{ marginLeft: 8 }}
-            onPress={() => removeFriend(friendId)}
+            onPress={() => removeFriend(friendshipId)}
           >
             <Icon name='cancel' color={APP_COLORS.appRed} size={32} />
           </TouchableOpacity>
@@ -123,20 +156,28 @@ export function OpenRequest({
 }
 export function Friend({
   friendId,
-  nickname,
-  country,
+  friendshipId,
   extraInfo,
 }: {
   friendId: string;
-  nickname: string;
-  country: COUNTRIES;
+  friendshipId: string;
   extraInfo?: string;
 }) {
-  // confirm remove friend modal
+  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
+
+  const updatePlayer = async () => {
+    const friendInfoNew = await getPlayerInfo(friendId);
+    setFriendInfo(friendInfoNew);
+  };
+
+  useEffect(() => {
+    updatePlayer();
+  }, [friendId]);
+
   const confirmRemoveFriend = () => {
     Alert.alert(
       'Remove Friend',
-      `Are you sure you want to remove ${nickname} as a friend?`,
+      `Are you sure you want to remove ${friendInfo?.name} as a friend?`,
       [
         {
           text: 'Cancel',
@@ -145,7 +186,7 @@ export function Friend({
         },
         {
           text: 'Confirm',
-          onPress: () => removeFriend(friendId),
+          onPress: () => removeFriend(friendshipId),
         },
       ],
       { cancelable: true }
@@ -157,9 +198,13 @@ export function Friend({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag
+            country={getEnumFromKey(friendInfo?.country)}
+            emoji={friendInfo?.emoji}
+            color={friendInfo?.profilePicColor}
+          />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
+            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
               {extraInfo && (
                 <>
@@ -223,22 +268,34 @@ export function AddFriend({
 }
 
 export function SentRequest({
-  nickname,
-  country,
+  friendId,
   extraInfo,
 }: {
-  nickname: string;
-  country: COUNTRIES;
+  friendId: string;
   extraInfo?: string;
 }) {
+  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
+
+  const updatePlayer = async () => {
+    const friendInfoNew = await getPlayerInfo(friendId);
+    setFriendInfo(friendInfoNew);
+  };
+
+  useEffect(() => {
+    updatePlayer();
+  }, [friendId]);
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <AvatarWithFlag country={country} />
+          <AvatarWithFlag
+            country={getEnumFromKey(friendInfo?.country)}
+            emoji={friendInfo?.emoji}
+            color={friendInfo?.profilePicColor}
+          />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{nickname}</Text>
+            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
               {extraInfo && timeAgo.format(new Date(extraInfo))}
             </Text>
