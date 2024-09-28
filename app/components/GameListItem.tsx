@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Modal,
+  TouchableOpacity,
 } from 'react-native';
 
 import { generateClient, SelectionSet } from 'aws-amplify/data';
@@ -13,11 +14,17 @@ import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { APP_COLORS, GAME_TYPE } from '../utils/constants';
-import { getPlayerName } from '../service/profileService';
+import {
+  getEnumFromKey,
+  getPlayerInfo,
+  getPlayerName,
+} from '../service/profileService';
 import StartFriendGame from './StartFriendGame';
 import { initGame } from '../service/gameService';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
+import AvatarWithFlag from './misc/AvatarWithFlag';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
 
 TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
@@ -39,6 +46,19 @@ const turnsSelectionSet = [
   'createdAt',
 ] as const;
 type Turns = SelectionSet<Schema['Turns']['type'], typeof turnsSelectionSet>;
+const playerSelectionSet = [
+  'id',
+  'name',
+  'emoji',
+  'country',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
+type PlayerInfo = SelectionSet<
+  Schema['Player']['type'],
+  typeof playerSelectionSet
+>;
 
 export default function GameListItem({
   navigation,
@@ -51,10 +71,15 @@ export default function GameListItem({
 }) {
   const [lastTurns, setLastTurns] = useState<Turns[]>();
   const [hasGameStarted, setHasGameStarted] = useState<boolean>(false);
+  const [isMyTurn, setIsMyTurn] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(false);
 
-  const buttonTitle = hasGameStarted ? 'Continue' : 'Start Game';
-  // disable button if playerOne and game has not started yet
+  // Button title, depending on whether the game has started and if it's the player's turn but make it STart Game if hasn't started
+  const buttonTitle = hasGameStarted
+    ? isMyTurn
+      ? 'Continue'
+      : 'Waiting'
+    : 'Start Game';
 
   useEffect(() => {
     const sub = client.models.Turns.observeQuery({
@@ -62,11 +87,20 @@ export default function GameListItem({
     }).subscribe({
       next: async ({ items, isSynced }) => {
         setLastTurns([...items]);
+        console.log('Last turns:', items);
         if (items.length > 0) {
           setHasGameStarted(true);
           setDisabled(false);
         } else if (item.playerOneID === localPlayerId) {
           setDisabled(true);
+        }
+        if (
+          items.length > 0 &&
+          items[items.length - 1].playerId === localPlayerId
+        ) {
+          setIsMyTurn(false);
+        } else {
+          setIsMyTurn(true);
         }
       },
     });
@@ -116,39 +150,90 @@ export default function GameListItem({
     );
   };
 
-  return (
-    <View style={styles.gameItem}>
-      <Text style={styles.gameText}>
-        {/* Display the player name */}
-        {localPlayerId === item.playerOneID ? (
-          <PlayerNameText playerId={item.playerTwoID} />
-        ) : (
-          <PlayerNameText playerId={item.playerOneID} />
-        )}
-      </Text>
-      <Text style={styles.gameText}>
-        Last Move:{' '}
-        <PlayerNameText
-          playerId={
-            hasGameStarted
-              ? lastTurns![lastTurns!.length - 1].playerId
-              : undefined
-          }
-        />
-      </Text>
-      <Text style={styles.gameText}>
-        {hasGameStarted &&
-          timeAgo.format(new Date(lastTurns![lastTurns!.length - 1].createdAt))}
-      </Text>
-      {/* Join button */}
-      <Button
-        title={buttonTitle}
-        buttonStyle={
-          hasGameStarted ? styles.continueButton : styles.startButton
-        }
-        disabled={disabled}
-        onPress={() => joinGame(item.id)}
+  const AvatarWithFlagCustom = ({
+    playerId,
+  }: {
+    playerId: string | null | undefined;
+  }) => {
+    const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null);
+
+    const fetchPlayerInfo = async () => {
+      if (playerId === null || playerId === undefined) {
+        setPlayerInfo(null);
+      } else {
+        const info = await getPlayerInfo(playerId);
+        setPlayerInfo(info);
+      }
+    };
+
+    useEffect(() => {
+      fetchPlayerInfo();
+    }, [playerId]);
+
+    return (
+      <AvatarWithFlag
+        country={getEnumFromKey(playerInfo?.country)}
+        emoji={playerInfo?.emoji}
+        color={playerInfo?.profilePicColor}
       />
+    );
+  };
+
+  return (
+    <View style={{ padding: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        {/* Profile section on the left */}
+        <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
+          {localPlayerId === item.playerOneID ? (
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <AvatarWithFlagCustom playerId={item.playerTwoID} />
+            </View>
+          ) : (
+            <View>
+              <AvatarWithFlagCustom playerId={item.playerOneID} />
+            </View>
+          )}
+          <View style={{ marginLeft: 16 }}>
+            {localPlayerId === item.playerOneID ? (
+              <PlayerNameText playerId={item.playerTwoID} />
+            ) : (
+              <PlayerNameText playerId={item.playerOneID} />
+            )}
+            {/* <Text style={styles.gameText}>
+              Last Move:{' '}
+              <PlayerNameText
+                playerId={
+                  hasGameStarted
+                    ? lastTurns![lastTurns!.length - 1].playerId
+                    : undefined
+                }
+              />
+            </Text> */}
+            <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
+              {hasGameStarted &&
+                timeAgo.format(
+                  new Date(lastTurns![lastTurns!.length - 1].createdAt)
+                )}
+            </Text>
+          </View>
+        </View>
+
+        {/* Icons (Check and Cancel) aligned to the right */}
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          <Button
+            title={buttonTitle}
+            buttonStyle={isMyTurn ? styles.continueButton : styles.startButton}
+            disabled={disabled}
+            onPress={() => joinGame(item.id)}
+          />
+        </View>
+      </View>
     </View>
   );
 }
@@ -178,7 +263,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   startButton: {
-    backgroundColor: APP_COLORS.appBlue,
+    backgroundColor: APP_COLORS.appYellow,
     borderRadius: 5,
   },
   continueButton: {

@@ -34,9 +34,7 @@ const GameOverModal = ({
   const [username, setUsername] = useState<string | null>(null);
 
   const updateUsername = async () => {
-    console.log('winner', winner);
     const info = await getPlayerInfo(winner!);
-    console.log('info', info);
     setUsername(info!.name);
   };
 

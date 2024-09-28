@@ -62,8 +62,18 @@ export const handler: Schema['makeTurn']['functionHandler'] = async (event) => {
     });
   const turnNumber = type === 'INIT' ? 0 : turns!.data.listTurns.items.length;
 
-  const color = (await getColorOfPlayer(gameId, userId)) as TurnsPlayerColor;
+  const color =
+    type === 'INIT'
+      ? (getFirstPlayerColor(
+          nextDice.dieOne,
+          nextDice.dieTwo
+        ) as TurnsPlayerColor)
+      : ((await getColorOfPlayer(gameId, userId)) as TurnsPlayerColor);
+
   console.log('color: ', color);
+
+  const newUserId =
+    type === 'INIT' ? await getPlayerIdForInit(gameId, color) : userId;
 
   const createTurnResponse = await client
     .graphql({
@@ -71,7 +81,7 @@ export const handler: Schema['makeTurn']['functionHandler'] = async (event) => {
       variables: {
         input: {
           gameId,
-          playerId: userId,
+          playerId: newUserId,
           playerColor: color,
           type: newType,
           moves: parsedMoves,
@@ -117,6 +127,49 @@ function rollFirstDice(): { dieOne: number; dieTwo: number } {
     dieOne,
     dieTwo,
   };
+}
+
+// this function gives you the player that doe snot make turn 1
+function getFirstPlayerColor(dieOne: number, dieTwo: number) {
+  return dieOne > dieTwo ? 'BLACK' : 'WHITE';
+}
+
+async function getPlayerIdForInit(
+  gameId: string,
+  color: TurnsPlayerColor
+): Promise<string> {
+  const session = await client
+    .graphql({
+      query: getSession,
+      variables: {
+        id: gameId,
+      },
+    })
+    .catch((err) => {
+      console.log('Error from getSession call in makeTurn handler: ', err);
+      return null;
+    });
+  // return 'NAP' if getSession player ids are null
+  if (
+    session?.data.getSession?.playerOneID === null ||
+    session?.data.getSession?.playerTwoID === undefined
+  ) {
+    return 'NAP';
+  }
+  // return NAP if getSession player ids are undefined
+  if (
+    session?.data.getSession?.playerOneID === undefined ||
+    session?.data.getSession?.playerTwoID === undefined
+  ) {
+    return 'NAP';
+  }
+  if (color === 'BLACK') {
+    return session.data.getSession.playerTwoID!;
+  }
+  if (color === 'WHITE') {
+    return session.data.getSession.playerOneID;
+  }
+  return 'NAP';
 }
 
 async function getColorOfPlayer(
