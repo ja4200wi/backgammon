@@ -16,7 +16,6 @@ import {
   Headline,
   InviteFriend,
   OpenRequest,
-  Friend,
   SentRequest,
 } from '../components/misc/SmallComponents';
 import { generateClient, SelectionSet } from 'aws-amplify/api';
@@ -26,6 +25,7 @@ import SearchPlayer from '../components/friends/SearchPlayer';
 import { Button } from '@rneui/themed';
 import StartFriendGame from './StartFriendGame';
 import GameListItem from './GameListItem';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const selectionSet = [
   'id',
@@ -44,6 +44,9 @@ export default function FriendList2({ navigation }: { navigation: any }) {
   const [games, setGames] = useState<Session[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   useEffect(() => {
     if (!localPlayerId) return;
     const sub = client.models.Session.observeQuery({
@@ -119,16 +122,21 @@ export default function FriendList2({ navigation }: { navigation: any }) {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.modalHeader}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color:'#FFF' }}>
                 Pick a Friend to play
               </Text>
+              <View style={{position: 'absolute',right: -10,}}>
               <Button
-                title={'X'}
-                buttonStyle={styles.closeButton}
+                title={'Close'}
+                type='clear'
+                titleStyle={{ fontWeight: '700', color:'#FFF' }}
                 onPress={() => setModalVisible(false)}
-              />
+              >
+                <Icon name='cancel' size={24} color={'#FFF'} />
+                </Button>
+              </View>
             </View>
-            <StartFriendGame localPlayerId={localPlayerId || ''} />
+            <StartFriendGame closeModal={closeModal} localPlayerId={localPlayerId || ''} />
           </View>
         </View>
       </Modal>
@@ -171,36 +179,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 120,
+    marginTop: DIMENSIONS.screenHeight * 0.15,
   },
   modalView: {
     margin: 5,
-    width: '90%',
-    backgroundColor: 'white',
+    width: '95%',
+    backgroundColor: APP_COLORS.darkGrey,
     borderRadius: 10,
-    padding: 10,
+    padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#FFF',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 0,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowRadius: 6,
     elevation: 5,
   },
   modalHeader: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // Center the title
     alignItems: 'center',
     width: '100%',
-    marginBottom: 10,
+    marginBottom: 16,
+    position: 'relative', // Required for positioning the button absolutely
   },
   closeButton: {
-    backgroundColor: 'darkred',
-    color: 'black',
-    padding: 2,
+    color: '#FFF',
   },
   startNewButton: {
     backgroundColor: APP_COLORS.appGreen,

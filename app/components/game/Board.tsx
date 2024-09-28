@@ -599,7 +599,7 @@ const Board = forwardRef<any, BoardProps>(
                 alignItems: 'center',
               }}
             >
-              <IngameAvatarWithFlag playerId={opponentPlayerId!} />
+              <IngameAvatarWithFlag  flagSize={8} size={32} playerId={opponentPlayerId!} />
               <PlayerName playerId={opponentPlayerId!} />
             </View>
           )}
@@ -701,7 +701,7 @@ const Board = forwardRef<any, BoardProps>(
                 alignItems: 'center',
               }}
             >
-              <IngameAvatarWithFlag playerId={localPlayerId!} />
+              <IngameAvatarWithFlag size={32} flagSize={8} playerId={localPlayerId!} />
               <PlayerName playerId={localPlayerId!} />
             </View>
           )}

@@ -4,16 +4,50 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { createSession } from '../service/gameService';
+import AvatarWithFlag from './misc/AvatarWithFlag';
+import { APP_COLORS, COUNTRIES } from '../utils/constants';
+import IngameAvatarWithFlag from './game/IngameAvatarWithFlag';
 
 const selectionSet = ['id', 'userIdOne', 'userIdTwo', 'isConfirmed'] as const;
 type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
 
 const client = generateClient<Schema>();
+export async function createGameWithFriend(userIdOne: string, friendId: string) {
+  // look if games with this player already exist
+  const { data: sessions, errors } = await client.models.Session.list({
+    filter: {
+      or: [
+        {
+          and: [
+            { playerOneID: { eq: friendId } },
+            { isGameOver: { eq: false } },
+          ],
+        },
+        {
+          and: [
+            { playerTwoID: { eq: friendId } },
+            { isGameOver: { eq: false } },
+          ],
+        },
+      ],
+    },
+  });
 
+  if (sessions?.length > 0) {
+    // game already exists
+    Alert.alert('Game already exists');
+    return false;
+  }
+
+  createSession(userIdOne, 'FRIENDLIST', friendId);
+  return true;
+}
 export default function StartFriendGame({
   localPlayerId,
+  closeModal,
 }: {
   localPlayerId: string;
+  closeModal: () => void
 }) {
   const [friends, setFriends] = useState<Friends[]>([]);
   const [userNames, setUserNames] = useState<{ [key: string]: string }>({});
@@ -37,34 +71,6 @@ export default function StartFriendGame({
       }
     }
     setUserNames((prevState) => ({ ...prevState, ...nameMapping }));
-  };
-
-  const createGameWithFriend = async (userIdOne: string, friendId: string) => {
-    // look if games with this player already exist
-    const { data: sessions, errors } = await client.models.Session.list({
-      filter: {
-        or: [
-          {
-            and: [
-              { playerOneID: { eq: friendId } },
-              { isGameOver: { eq: false } },
-            ],
-          },
-          {
-            and: [
-              { playerTwoID: { eq: friendId } },
-              { isGameOver: { eq: false } },
-            ],
-          },
-        ],
-      },
-    });
-    if (sessions?.length > 0) {
-      // game already exists
-      Alert.alert('Game already exists');
-      return;
-    }
-    createSession(userIdOne, 'FRIENDLIST', friendId);
   };
 
   useEffect(() => {
@@ -118,11 +124,19 @@ export default function StartFriendGame({
 
         return (
           <View key={friend.id} style={styles.gameItem}>
+            <IngameAvatarWithFlag flagSize={12} playerId={friend.id} size={48} />
             <Text style={styles.gameText}>{friendName}</Text>
             <Button
-              title={'Challenge'}
+              title={'Play'}
               buttonStyle={styles.confirmButton}
-              onPress={() => createGameWithFriend(localPlayerId, friendId)}
+              titleStyle={{fontWeight:'700'}}
+              style={{alignContent:'flex-end'}}
+              onPress={async () => {
+                const success = await createGameWithFriend(localPlayerId, friendId);
+                if (success === true) {
+                  closeModal();
+                }
+              }}
             />
           </View>
         );
@@ -130,16 +144,16 @@ export default function StartFriendGame({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   gameItem: {
     display: 'flex',
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     padding: 16,
     marginBottom: 8,
-    backgroundColor: '#fff',
+    backgroundColor: APP_COLORS.backgroundColor,
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
@@ -151,19 +165,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   gameText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  inviteButton: {
-    backgroundColor: '#6B9C41',
-    borderRadius: 5,
-  },
-  removeButton: {
-    backgroundColor: '#AA0000',
-    borderRadius: 5,
+    fontSize: 20,
+    color: '#FFF',
+    fontWeight: '700',
+    marginLeft: 16,
+    flex: 1, // This ensures the text takes up available space
   },
   confirmButton: {
-    backgroundColor: '#6B9C41',
+    backgroundColor: APP_COLORS.appGreen,
     borderRadius: 5,
+    flexShrink: 0, // Ensure the button doesn't shrink
   },
 });

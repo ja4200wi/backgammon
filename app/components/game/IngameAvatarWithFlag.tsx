@@ -19,7 +19,7 @@ const selectionSet = [
 ] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
-const IngameAvatarWithFlag = ({ playerId }: { playerId: string }) => {
+const IngameAvatarWithFlag = ({ playerId, size, flagSize }: { playerId: string, size:number, flagSize:number }) => {
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
   const [color, setColor] = useState<string>(APP_COLORS.iconGrey);
 
@@ -33,9 +33,9 @@ const IngameAvatarWithFlag = ({ playerId }: { playerId: string }) => {
     updatePlayerInfo();
   }, [playerId]);
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {width:size,height:size}]}>
       <Avatar
-        size={32}
+        size={size}
         rounded
         containerStyle={{ backgroundColor: color, ...styles.avatar }}
       ></Avatar>
@@ -50,7 +50,7 @@ const IngameAvatarWithFlag = ({ playerId }: { playerId: string }) => {
         </Text>
       </View>
       <View style={styles.flagContainer}>
-        <CountryFlag isoCode={getEnumFromKey(playerInfo?.country)} size={8} />
+        <CountryFlag isoCode={getEnumFromKey(playerInfo?.country)} size={flagSize} />
       </View>
     </View>
   );
@@ -59,8 +59,6 @@ const IngameAvatarWithFlag = ({ playerId }: { playerId: string }) => {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    width: 32,
-    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
