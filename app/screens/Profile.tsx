@@ -84,19 +84,15 @@ function UserProfile() {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <EditProfileForm />
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
+            {/* Pass setModalVisible as a prop to close the modal */}
+            <EditProfileForm onSubmit={() => setModalVisible(false)} />
           </View>
         </View>
       </Modal>
     </View>
   );
 }
+
 function Headline({ headline }: { headline: string }) {
   return (
     <View style={{ backgroundColor: APP_COLORS.darkGrey, zIndex: 2 }}>
@@ -259,7 +255,7 @@ export default function Profile({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <ScrollView style={{ zIndex: 2 }}>
+        <ScrollView contentContainerStyle={{flexGrow:1,paddingBottom: 16,}} style={{ zIndex: 2,flex:1}} alwaysBounceVertical={false}>
           <UserProfile />
           <Headline headline='Statistics' />
           <ProfileContent

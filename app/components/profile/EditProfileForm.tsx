@@ -1,7 +1,8 @@
 import { useAuthenticator } from '@aws-amplify/ui-react-native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
-import { Input } from 'react-native-elements';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Button } from '@rneui/base';
+import { Icon, Input } from 'react-native-elements';
 import {
   getColor,
   getCountry,
@@ -15,11 +16,11 @@ import {
   updatePlayerName,
 } from '../../service/profileService';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { COUNTRIES } from '../../utils/constants';
+import { APP_COLORS, COUNTRIES } from '../../utils/constants';
 import { useUser } from '../../utils/UserContent';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-export default function EditProfileForm() {
+export default function EditProfileForm({ onSubmit }: { onSubmit: () => void }) {
   const { userInfo, refetchUserData } = useUser();
   const [name, setName] = useState('');
   const [emoji, setEmoji] = useState('');
@@ -86,7 +87,7 @@ export default function EditProfileForm() {
 
     return (
       <View style={{ zIndex: 2 }}>
-        <Button title='Sign Out' onPress={signOut} />
+        <Button type='clear' title='Sign Out' onPress={signOut} />
       </View>
     );
   };
@@ -105,12 +106,23 @@ export default function EditProfileForm() {
       Alert.alert('Please enter a single emoji or up to two characters');
       return;
     }
-    await updatePlayerName(userInfo?.id!, name);
-    country && (await updateCountry(userInfo?.id!, country));
-    emoji && (await updateEmoji(userInfo?.id!, emoji));
-    colors && (await updateColor(userInfo?.id!, color));
-    console.log('Profile updated', name, country, emoji, color);
-    refetchUserData();
+    setLoading(true);
+    try {
+      await updatePlayerName(userInfo?.id!, name);
+      country && (await updateCountry(userInfo?.id!, country));
+      emoji && (await updateEmoji(userInfo?.id!, emoji));
+      color && (await updateColor(userInfo?.id!, color));
+      
+      console.log('Profile updated', name, country, emoji, color);
+      refetchUserData();
+      
+      // Close the modal after a successful submit
+      onSubmit();
+    } catch (error) {
+      setError('An error occurred while updating the profile.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -155,9 +167,19 @@ export default function EditProfileForm() {
         save='key'
         dropdownTextStyles={{ color: 'black' }}
       />
-      <Button title='Submit' onPress={handleSubmit} disabled={loading} />
+      <View style={{flexDirection:'row', alignItems: 'center', justifyContent: 'space-evenly',marginTop:16}}>
+      <Button buttonStyle={{borderRadius:15}} title='Save' onPress={handleSubmit} disabled={loading} icon={{
+                name: 'save',
+                type: 'material',
+                size: 24,
+                color: 'white',
+              }}>
+      </Button>
       {error ? <Text>{error}</Text> : null}
       {success ? <Text>Profile updated successfully</Text> : null}
+      <Button type='clear' title='Close' onPress={onSubmit} />
+      </View>
+
     </View>
   );
 }
