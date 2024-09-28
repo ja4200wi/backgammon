@@ -44,6 +44,7 @@ const colors = {
 interface BoardProps {
   positions: Position[];
   currentPlayer: PLAYER_COLORS;
+  isLoadingGame:boolean;
   pipCount: number[];
   homeCount: number[];
   dice: DiceProps;
@@ -80,6 +81,7 @@ const Board = forwardRef<any, BoardProps>(
       localPlayerId,
       opponentPlayerId,
       gameMode,
+      isLoadingGame
     },
     ref
   ) => {
@@ -628,7 +630,7 @@ const Board = forwardRef<any, BoardProps>(
           ]}
         >
           {/* Other board components */}
-          {dice.startingSeq && (
+          {dice.startingSeq && !isLoadingGame && (
             <View style={styles.TopDice}>
               <Dice
                 diceOne={dice.diceOne}
@@ -648,7 +650,7 @@ const Board = forwardRef<any, BoardProps>(
                 justifyContent: 'center',
               }}
             >
-              {!dice.startingSeq && dice.color === DICE_COLORS.WHITE && (
+              {!dice.startingSeq && !isLoadingGame && dice.color === DICE_COLORS.WHITE && (
                 <Dice
                   diceOne={dice.diceOne}
                   diceTwo={dice.diceTwo}
@@ -677,7 +679,7 @@ const Board = forwardRef<any, BoardProps>(
                 justifyContent: 'center',
               }}
             >
-              {!dice.startingSeq && dice.color === DICE_COLORS.BLACK && (
+              {!dice.startingSeq && !isLoadingGame && dice.color === DICE_COLORS.BLACK && (
                 <Dice
                   diceOne={dice.diceOne}
                   diceTwo={dice.diceTwo}

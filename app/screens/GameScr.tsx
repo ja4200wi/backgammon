@@ -18,6 +18,7 @@ import { Turn } from '../gameLogic/turn';
 import LoadingPopup from '../components/misc/LoadingAlert';
 import AnimatedChecker from '../components/game/AnimatedChecker';
 import GameOverModal from '../components/game/GameOverModal';
+import LoadingAlert from '../components/misc/LoadingAlert';
 
 interface GameScrProps {
   navigation: any;
@@ -77,13 +78,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     firstRoll,
     gameOver,
     double,
+    isLoadingGame,
     onlineTurns,
   } = useGameLogic(
     gameId,
     localPlayerId,
     setDoubleAlertVisible,
     isWaitingForDouble,
-    setIsWaitingForDouble
+    setIsWaitingForDouble,
   );
 
   const { pointsToWin } = route.params;
@@ -203,6 +205,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     //for now naviagate to Join Game
     navigation.navigate('OnlineMatching', {});
   };
+  
   const handleAnimation = async (
     startX: number,
     startY: number,
@@ -266,6 +269,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           localPlayerId={localPlayerId}
           opponentPlayerId={opponentPlayerId}
           gameMode={gameMode}
+          isLoadingGame={isLoadingGame}
         />
       </View>
       <GameNavBar
@@ -319,6 +323,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         onAccept={handleGoPlayFriends}
         onDecline={handleCloseDouble}
       />
+      <LoadingAlert visible={isLoadingGame} message='' />
     </SafeAreaView>
   );
 };

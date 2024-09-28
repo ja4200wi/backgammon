@@ -207,13 +207,16 @@ export const useGameLogic = (
           setDice(nextMoveDice);
         }
       } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
+        console.log('DOUBLE MOVE')
         if (hasDoubled) {
           tempDoubleDice = currentGame.double();
           hasDoubled = false;
         } else {
           if(copyOnlineTurns.length === 0 && localPlayerId !== tempOnlineTurn.playerId) {
+            setIsLoadingGame(false)
             setDoubleAlertVisible(true);
           } else if(copyOnlineTurns.length === 0 && localPlayerId === tempOnlineTurn.playerId) {
+            setIsLoadingGame(false)
             setIsWaitingForDouble(true)
           } else {
             hasDoubled = true;
@@ -822,5 +825,6 @@ export const useGameLogic = (
     opponentPlayerId,
     isOnlineGame,
     handleDisableScreen,
+    isLoadingGame,
   };
 };
