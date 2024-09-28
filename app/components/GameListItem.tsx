@@ -87,7 +87,6 @@ export default function GameListItem({
     }).subscribe({
       next: async ({ items, isSynced }) => {
         setLastTurns([...items]);
-        console.log('Last turns:', items);
         if (items.length > 0) {
           setHasGameStarted(true);
           setDisabled(false);

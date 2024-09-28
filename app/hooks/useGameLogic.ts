@@ -177,7 +177,6 @@ export const useGameLogic = (
         setDice(startingDice);
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
-  
         const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
         await processTurn(copyOnlineTurns, game, iAm,startingDice);
         await pause(1000)
@@ -201,7 +200,6 @@ export const useGameLogic = (
       const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn);
       
       const nextMoveDice = transformOnlineDice(tempOnlineTurn.diceForNextTurn!) // Use the remaining moves for the next dice roll
-  
       if (tempOnlineTurn.type === 'MOVE') {
         currentGame = await makeTurn(tempLocalTurn, true, currentGame);
         if (currentGame) {
@@ -222,11 +220,12 @@ export const useGameLogic = (
           }
         }
       } else if (tempOnlineTurn.type === 'GIVE_UP') {
-        setIsWaitingForDouble(false);
         if (localPlayerId !== tempOnlineTurn.playerId) {
           setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
+          return
         } else {
           setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
+          return
         }
 
       }
@@ -478,6 +477,7 @@ export const useGameLogic = (
     turn: Turn,
     turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'
   ): Promise<OnlineDice> => {
+    if(!turn.hasMoves && turnType === undefined) return { dieOne: 0, dieTwo: 0 };
     const turnToSend: SendableTurn = transformLocalTurnToOnlineTurn(
       turn,
       turnType
@@ -495,7 +495,6 @@ export const useGameLogic = (
     reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
   ) => {
     if (game) {
-      console.log('sending final game state to server and ending game');
       const distWhite = game.getDistances().distWhite;
       const distBlack = game.getDistances().distBlack;
       const doubleDiceValue = doubleDice.getMultiplicator();
@@ -632,7 +631,6 @@ export const useGameLogic = (
       updatePipCount(distances.distBlack, distances.distWhite);
       if (currentGame && whoAmI === currentGame.getCurrentPlayer()) {
         const turn = currentGame.getTurnAfterMove();
-        await sendTurnToServer(turn); // ad gameover type here
       }
     }
   };
