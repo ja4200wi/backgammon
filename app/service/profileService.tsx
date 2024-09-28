@@ -38,14 +38,12 @@ export async function getPlayerName(playerId: string): Promise<string> {
 export async function getPlayerInfo(
   playerId: string
 ): Promise<PlayerInfo | null> {
-  console.log('Getting player info', playerId);
   const player = await client.models.Player.get(
     { id: playerId },
     {
       selectionSet,
     }
   );
-  console.log(player);
   return player.data;
 }
 
@@ -81,7 +79,6 @@ export async function updateCountry(
   playerId: string,
   newCountry: string
 ): Promise<void> {
-  console.log('Updating country', playerId, newCountry);
   await client.models.Player.update({ id: playerId, country: newCountry });
 }
 
@@ -93,14 +90,12 @@ export async function updateEmoji(
     id: playerId,
     emoji: newEmoji,
   });
-  console.log(response);
 }
 
 export async function updateColor(
   playerId: string,
   newColor: string
 ): Promise<void> {
-  console.log('Updating color', playerId, newColor);
   await client.models.Player.update({
     id: playerId,
     profilePicColor: newColor,

@@ -40,7 +40,6 @@ export default function OnlineMatching({
           if (items[0]?.playerTwoID !== 'EMPTY') {
             setIsWaitingForOpponent(false);
             initGame(gameId, items[0]!.playerOneID!);
-            console.log('Game started', localPlayerId);
             navigation.navigate('Game', {
               gameId,
               localPlayerId: localPlayerId,
