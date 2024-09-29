@@ -607,6 +607,7 @@ const Board = forwardRef<any, BoardProps>(
                 <AvatarWithFlag
                   size={32}
                   flagSize={8}
+                  fontSize={24}
                   playerId={opponentPlayerId}
                 />
                 <PlayerName playerId={opponentPlayerId} />
@@ -719,6 +720,7 @@ const Board = forwardRef<any, BoardProps>(
                 <AvatarWithFlag
                   size={32}
                   flagSize={8}
+                  fontSize={24}
                   playerId={localPlayerId}
                 />
                 <PlayerName playerId={localPlayerId} />
