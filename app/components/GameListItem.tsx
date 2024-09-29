@@ -239,7 +239,11 @@ export default function GameListItem({
               style={{ marginLeft: 8 }}
               onPress={() => joinGame(item.id)}
             >
-              <Icon name='play-circle' color={APP_COLORS.appGreen} size={32} />
+              <Icon
+                name='play-circle'
+                color={isMyTurn ? APP_COLORS.appGreen : APP_COLORS.appYellow}
+                size={32}
+              />
             </TouchableOpacity>
           </View>
         )}

@@ -155,49 +155,78 @@ function ProfileContent({}: {}) {
   useEffect(() => {
     const sub = client.models.SessionStat.observeQuery().subscribe({
       next: async ({ items, isSynced }) => {
-        setGameHistory([...items]);
-        setGamesPlayed(items.length);
-        setWins(items.filter((game) => game.winnerId === userInfo?.id).length);
+        // Create a map to filter out duplicate gameIds
+        const uniqueGamesMap = new Map<string, HistoryGame>();
+        items.forEach((game) => {
+          if (!uniqueGamesMap.has(game.gameId)) {
+            uniqueGamesMap.set(game.gameId, game);
+          }
+        });
+
+        // Convert the map values back into an array
+        const uniqueGames = Array.from(uniqueGamesMap.values());
+
+        setGameHistory([...uniqueGames]);
+        setGamesPlayed(uniqueGames.length);
+        setWins(
+          uniqueGames.filter((game) => game.winnerId === userInfo?.id).length
+        );
         setWinByGiveUp(
-          items.filter(
+          uniqueGames.filter(
             (game) =>
               game.reason === 'GIVE_UP' && game.winnerId === userInfo?.id
           ).length
         );
         setlossByGiveUp(
-          items.filter(
+          uniqueGames.filter(
             (game) => game.reason === 'GIVE_UP' && game.loserId === userInfo?.id
           ).length
         );
-        setFavoriteOpp(await getPlayerName(getMostOftenId(items)));
+        setFavoriteOpp(
+          await getPlayerName(
+            getMostOftenOpponentId(uniqueGames, userInfo?.id || '')
+          )
+        );
       },
     });
     return () => sub.unsubscribe();
   }, []);
 
-  const getMostOftenId = (items: HistoryGame[]): string => {
-    const ids = items.map((game) => game.winnerId);
+  const getMostOftenOpponentId = (
+    items: HistoryGame[],
+    localId: string
+  ): string => {
     const counts: Record<string, number> = {};
-    let compare = 0;
-    let mostFrequent: string | undefined;
 
-    for (let i = 0, len = ids.length; i < len; i++) {
-      const id = ids[i];
-      if (id == null) {
+    // Iterate through each game to find the opponent ID
+    for (const game of items) {
+      // Determine the opponent's ID by comparing winnerId and loserId to localId
+      const opponentId =
+        game.winnerId === localId ? game.loserId : game.winnerId;
+
+      // Skip if the opponentId is null or matches the localId
+      if (opponentId == null || opponentId === localId) {
         continue;
       }
-      if (counts[id] === undefined) {
-        counts[id] = 1;
-      } else {
-        counts[id] = counts[id] + 1;
-      }
 
-      if (counts[id] > compare) {
-        compare = counts[id];
-        mostFrequent = id;
+      // Increment the count for this opponent
+      counts[opponentId] = (counts[opponentId] || 0) + 1;
+    }
+
+    // Find the most frequent opponent id
+    let mostFrequentId: string | null = null;
+    let maxCount = 0;
+
+    for (const id in counts) {
+      const count = counts[id];
+
+      if (count > maxCount) {
+        mostFrequentId = id;
+        maxCount = count;
       }
     }
-    return mostFrequent || '';
+
+    return mostFrequentId || '';
   };
 
   return (
@@ -254,7 +283,16 @@ function HistoryContent() {
       },
     }).subscribe({
       next: async ({ items, isSynced }) => {
-        setHistory([...items]);
+        const uniqueGamesMap = new Map<string, HistoryGame>();
+        items.forEach((game) => {
+          if (!uniqueGamesMap.has(game.gameId)) {
+            uniqueGamesMap.set(game.gameId, game);
+          }
+        });
+
+        // Convert the map values back into an array
+        const uniqueGames = Array.from(uniqueGamesMap.values());
+        setHistory([...uniqueGames]);
       },
     });
     return () => sub.unsubscribe();
