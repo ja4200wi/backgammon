@@ -123,7 +123,6 @@ function HomeScreenStats({}: {}) {
 
         // Convert the map values back into an array
         const uniqueGames = Array.from(uniqueGamesMap.values());
-        console.log(uniqueGames);
 
         setGameHistory([...uniqueGames]);
         setGamesPlayed(uniqueGames.length);
@@ -133,7 +132,6 @@ function HomeScreenStats({}: {}) {
           const winsCount = uniqueGames.filter(
             (game) => game.winnerId === userInfo?.id
           ).length;
-          console.log('games won', winsCount);
           setWins(winsCount);
           setLoading(false); // Data is fully loaded, set loading to false
         } else {
