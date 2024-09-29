@@ -216,7 +216,6 @@ function HistoryContent() {
       },
     }).subscribe({
       next: async ({ items, isSynced }) => {
-        console.log('History:', items);
         setHistory([...items]);
       },
     });
