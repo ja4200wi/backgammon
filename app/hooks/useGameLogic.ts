@@ -15,6 +15,8 @@ import { del, generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import endGame, { sendTurn, saveGameStats } from '../service/gameService';
 import { on } from 'events';
+import { copy } from 'aws-amplify/storage';
+import { G } from 'react-native-svg';
 
 const client = generateClient<Schema>();
 
@@ -39,7 +41,8 @@ export const useGameLogic = (
   localPlayerId: string,
   setDoubleAlertVisible: React.Dispatch<React.SetStateAction<boolean>>,
   isWaitingForDouble: boolean,
-  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>
+  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowWaitingDouble:React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   // #region State Management
   const [game, setGame] = useState<Game | null>(null);
@@ -97,7 +100,6 @@ export const useGameLogic = (
       setIsLoadingGame(false)
     }
   }, [gamemode, game]);
-
   useEffect(() => {
     if (
       isOnlineGame() &&
@@ -139,6 +141,9 @@ export const useGameLogic = (
       setIsLoadingGame(false)
     }
   },[isLoadingGame])
+  useEffect(()=> {
+    console.log('GAME GAME GAME',game?.getCurrentPlayer())
+  },[game])
   // #endregion
 
   // #region Game Actions
@@ -170,12 +175,16 @@ export const useGameLogic = (
     const newGame = new Game();
     setGame(newGame);
   };
+  useEffect(() => {
+    console.log('CHANGE IN WHOAMI',whoAmI)
+  },[whoAmI])
   const loadGame = async () => {
     if (game) {
       if (isOnlineGame() && onlineTurns) {
         const startingDice = getOnlineDice(onlineTurns, 0)
         setDice(startingDice);
         const iAm = await getWhoAmI();
+        console.log('SETTING WHO AM I',iAm)
         setWhoAmI(iAm);
         const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
         await processTurn(copyOnlineTurns, game, iAm,startingDice);
@@ -207,7 +216,6 @@ export const useGameLogic = (
           setDice(nextMoveDice);
         }
       } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
-        console.log('DOUBLE MOVE')
         if (hasDoubled) {
           tempDoubleDice = currentGame.double();
           hasDoubled = false;
@@ -218,16 +226,23 @@ export const useGameLogic = (
           } else if(copyOnlineTurns.length === 0 && localPlayerId === tempOnlineTurn.playerId) {
             setIsLoadingGame(false)
             setIsWaitingForDouble(true)
+            setShowWaitingDouble(true)
           } else {
             hasDoubled = true;
           }
         }
       } else if (tempOnlineTurn.type === 'GIVE_UP') {
         if (localPlayerId !== tempOnlineTurn.playerId) {
-          setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
+          setIsLoadingGame(false)
+          setTimeout(() => {
+            setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
+          }, 100);
           return
         } else {
-          setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
+          setIsLoadingGame(false)
+          setTimeout(() => {
+            setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
+          }, 100);
           return
         }
 
@@ -249,10 +264,9 @@ export const useGameLogic = (
     } else {
       setDisableScreen(false);
     }
-  
-    setTimeout(() => {
-      setIsLoadingGame(false);
-    }, 1000);
+    setIsLoadingGame(false)
+    console.log('DONE WITH LOAD GAME',whoAmI)
+
   };
 
   const setUpGame = async () => {
@@ -346,6 +360,8 @@ export const useGameLogic = (
     return false;
   };
   const switchplayer = async () => {
+    console.log('IN SWITCHY',game,whoAmI)
+    const iAm = await getWhoAmI()
     if (
       game &&
       !game.isGameOver() &&
@@ -362,16 +378,18 @@ export const useGameLogic = (
         gamemode === GAME_TYPE.COMPUTER &&
         !didswitch
       ) {
-        runGame();
       }
     } else if (
       game &&
       !game.isGameOver() &&
       isOnlineGame() &&
-      whoAmI === game.getCurrentPlayer()
+      iAm === game.getCurrentPlayer()
     ) {
+      console.log('SWITCHING PLAYER MY TURN')
       const turn = game.getTurnAfterMove();
+      console.log('SENDING TURN TO SERVER',turn)
       const newOnlineDice = await sendTurnToServer(turn);
+      console.log('NEW DICE',newOnlineDice)
       const newLocalDice = transformOnlineDice(newOnlineDice);
       game.onlineSwitchPlayer(newLocalDice);
       setDice(newLocalDice);
@@ -380,13 +398,16 @@ export const useGameLogic = (
       } else {
         setDisableScreen(true);
       }
+      const copyGame = game.deepCopy()
+      setGame(copyGame)
     } else if (
       game &&
       !game.isGameOver() &&
       isOnlineGame() &&
-      whoAmI !== game.getCurrentPlayer() &&
+      iAm !== game.getCurrentPlayer() &&
       onlineTurns
     ) {
+      console.log('IN WRONG SWITCH PLAYER')
       const newdice = getOnlineDice(onlineTurns);
       setDice(newdice);
       game.onlineSwitchPlayer(newdice);
@@ -532,6 +553,7 @@ export const useGameLogic = (
         setDoubleAlertVisible(true);
       } else {
         setIsWaitingForDouble(false);
+        setShowWaitingDouble(false);
         double();
       }
     } else if (
@@ -539,6 +561,7 @@ export const useGameLogic = (
       localPlayerId !== latestTurn?.playerId
     ) {
       setIsWaitingForDouble(false);
+      setShowWaitingDouble(false)
       setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
     }
   };
@@ -699,13 +722,15 @@ export const useGameLogic = (
     if (gamemode === GAME_TYPE.COMPUTER) {
       return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
     } else if (isOnlineGame()) {
-      if(disableScreen) return true
+      if(isWaitingForDouble) return true
       return whoAmI !== currentGame.getCurrentPlayer();
     }
     return false;
   };
   const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
+    console.log('CHECKING FOR LEGAL MOVE')
     if (currentGame && !currentGame.hasLegalMove()) {
+      console.log('SWITCHING PLAYER')
       if (fastSwitch) {
         switchplayer();
         return true;

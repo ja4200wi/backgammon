@@ -41,6 +41,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
   const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false);
+  const [showWaitingDouble,setShowWaitingDouble] = useState(false)
   const [doCheckerAnimation, setDoCheckerAnimation] = useState<boolean>(false);
   const [animatedCheckerValues, setAnimatedCheckerValues] = useState<{
     sx: number;
@@ -86,6 +87,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setDoubleAlertVisible,
     isWaitingForDouble,
     setIsWaitingForDouble,
+    setShowWaitingDouble,
   );
 
   const { pointsToWin } = route.params;
@@ -143,6 +145,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     } else if (isOnlineGame(gameMode)) {
       sendTurnToServer(new Turn(), 'DOUBLE');
       setIsWaitingForDouble(true);
+      setShowWaitingDouble(true)
       //set wait for double true
     } else {
       setDoubleAlertVisible(true);
@@ -220,10 +223,10 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   };
   const handleCloseDouble = () => {
     handleDisableScreen(true)
-    setIsWaitingForDouble(false)
+    setShowWaitingDouble(false)
   }
   const handleGoPlayFriends = () => {
-    setIsWaitingForDouble(false)
+    setShowWaitingDouble(true)
     navigation.navigate('PlayFriend', { localPlayerId: localPlayerId });
   }
 
@@ -315,7 +318,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       />
       {/* Waiting for Double Modal */}
       <CustomAlert
-        visible={isWaitingForDouble}
+        visible={showWaitingDouble}
         headline={`You just Doubled!`}
         bodyText='We are waiting for the response of your opponent. Come back later!'
         acceptButtonText='Next Match'
