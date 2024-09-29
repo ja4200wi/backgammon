@@ -21,6 +21,7 @@ import {
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
+import { HomeScreenStats } from '../components/HomeScreenStats';
 
 const selectionSet = [
   'id',
@@ -53,20 +54,7 @@ function UserCard({
           {userInfo?.name}
         </Text>
       </View>
-      <View style={styles.statsRow}>
-        <Text style={GLOBAL_STYLES.lineItems}>ELO</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{ELO} GP</Text>
-      </View>
-      <Divider style={styles.divider} />
-      <View style={styles.statsRow}>
-        <Text style={GLOBAL_STYLES.lineItems}>Coins</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Coins}</Text>
-      </View>
-      <Divider style={styles.divider} />
-      <View style={styles.statsRow}>
-        <Text style={GLOBAL_STYLES.lineItems}>Global Ranking</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{GlobalRank}</Text>
-      </View>
+      <HomeScreenStats />
     </Card>
   );
 }

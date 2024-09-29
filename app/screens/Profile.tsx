@@ -144,23 +144,7 @@ function HistoryLineItem({
   );
 }
 
-function ProfileContent({
-  GamesPlayed,
-  Wins,
-  Gammons,
-  Backgammons,
-  ELO,
-  League,
-  Coins,
-}: {
-  GamesPlayed: string;
-  Wins: string;
-  Gammons: string;
-  Backgammons: string;
-  ELO: string;
-  League: string;
-  Coins: string;
-}) {
+function ProfileContent({}: {}) {
   const { userInfo } = useUser();
   const [gameHistory, setGameHistory] = useState<HistoryGame[]>([]);
   const [gamesPlayed, setGamesPlayed] = useState(0);
@@ -242,7 +226,13 @@ function ProfileContent({
   );
 }
 
-const selectionSet = ['gameId', 'gameType', 'winnerId', 'reason'] as const;
+const selectionSet = [
+  'gameId',
+  'gameType',
+  'winnerId',
+  'loserId',
+  'reason',
+] as const;
 type HistoryGame = SelectionSet<
   Schema['SessionStat']['type'],
   typeof selectionSet
@@ -275,7 +265,9 @@ function HistoryContent() {
         <HistoryLineItem
           key={game.gameId}
           GameType={game.gameType as GAME_TYPE}
-          Opponent={game.winnerId!}
+          Opponent={
+            game.winnerId === userInfo?.id ? game.loserId! : game.winnerId!
+          }
           Win={game.winnerId === userInfo?.id}
         />
       ))}
@@ -303,15 +295,7 @@ export default function Profile({ navigation }: { navigation: any }) {
         >
           <UserProfile />
           <Headline headline='Statistics' />
-          <ProfileContent
-            GamesPlayed='243'
-            Wins='183'
-            Gammons='23'
-            Backgammons='1'
-            ELO='1245 GP'
-            League='Gold League'
-            Coins='395'
-          />
+          <ProfileContent />
           <Headline headline='Game History' />
           <HistoryContent />
         </ScrollView>
