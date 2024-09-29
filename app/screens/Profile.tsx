@@ -23,6 +23,7 @@ import EditProfileForm from '../components/profile/EditProfileForm';
 import { useUser } from '../utils/UserContent';
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 function UserProfile() {
   const { userInfo } = useUser();
@@ -160,35 +161,82 @@ function ProfileContent({
   League: string;
   Coins: string;
 }) {
+  const { userInfo } = useUser();
+  const [gameHistory, setGameHistory] = useState<HistoryGame[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [wins, setWins] = useState(0);
+  const [winByGiveUp, setWinByGiveUp] = useState(0);
+  const [lossByGiveUp, setlossByGiveUp] = useState(0);
+  const [favoriteOpp, setFavoriteOpp] = useState('');
+  useEffect(() => {
+    const sub = client.models.SessionStat.observeQuery().subscribe({
+      next: async ({ items, isSynced }) => {
+        setGameHistory([...items]);
+        setGamesPlayed(items.length);
+        setWins(items.filter((game) => game.winnerId === userInfo?.id).length);
+        setWinByGiveUp(
+          items.filter(
+            (game) =>
+              game.reason === 'GIVE_UP' && game.winnerId === userInfo?.id
+          ).length
+        );
+        setlossByGiveUp(
+          items.filter(
+            (game) => game.reason === 'GIVE_UP' && game.loserId === userInfo?.id
+          ).length
+        );
+        setFavoriteOpp(await getPlayerName(getMostOftenId(items)));
+      },
+    });
+    return () => sub.unsubscribe();
+  }, []);
+
+  const getMostOftenId = (items: HistoryGame[]): string => {
+    const ids = items.map((game) => game.winnerId);
+    const counts: Record<string, number> = {};
+    let compare = 0;
+    let mostFrequent: string | undefined;
+
+    for (let i = 0, len = ids.length; i < len; i++) {
+      const id = ids[i];
+      if (id == null) {
+        continue;
+      }
+      if (counts[id] === undefined) {
+        counts[id] = 1;
+      } else {
+        counts[id] = counts[id] + 1;
+      }
+
+      if (counts[id] > compare) {
+        compare = counts[id];
+        mostFrequent = id;
+      }
+    }
+    return mostFrequent || '';
+  };
+
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={GLOBAL_STYLES.rowLineItems}>
         <Text style={GLOBAL_STYLES.lineItems}>Games Played</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{GamesPlayed}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{gamesPlayed}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
         <Text style={GLOBAL_STYLES.lineItems}>Wins</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Wins}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{wins}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>Gammons</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Gammons}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>Games won via GIVE UP</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{winByGiveUp}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>Backgammons</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Backgammons}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>Games lost via GIVE UP</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{lossByGiveUp}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>ELO</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{ELO}</Text>
-      </View>
-      <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>League</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{League}</Text>
-      </View>
-      <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>Coins</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Coins}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>Most games against</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{favoriteOpp}</Text>
       </View>
     </View>
   );
