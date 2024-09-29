@@ -80,6 +80,7 @@ export function HomeScreenStats({}: {}) {
 
   return (
     <>
+    <View style={{marginTop:8}} >
       <View style={styles.statsRow}>
         <Text style={GLOBAL_STYLES.lineItems}>Games Played</Text>
         <Text style={GLOBAL_STYLES.lineItems}>{gamesPlayed}</Text>
@@ -97,6 +98,7 @@ export function HomeScreenStats({}: {}) {
             ? `${((wins / gamesPlayed) * 100).toFixed(0)}%`
             : '0%'}
         </Text>
+      </View>
       </View>
     </>
   );
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: APP_COLORS.iconGrey,
-    marginVertical: 4,
+    marginVertical: 6,
   },
   playButton: {
     backgroundColor: APP_COLORS.appGreen,
@@ -145,4 +147,9 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     zIndex: 3,
   },
+  lineItem: {
+    fontSize:18,
+    fontWeight:'700',
+    color:'#FFF'
+  }
 });
