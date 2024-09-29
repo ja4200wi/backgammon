@@ -172,7 +172,6 @@ export const useGameLogic = (
     setGame(newGame);
   };
   useEffect(() => {
-    console.log('CHANGE IN WHOAMI',whoAmI)
   },[whoAmI])
   const loadGame = async () => {
     if (game) {
@@ -180,7 +179,6 @@ export const useGameLogic = (
         const startingDice = getOnlineDice(onlineTurns, 0);
         setDice(startingDice);
         const iAm = await getWhoAmI();
-        console.log('SETTING WHO AM I',iAm)
         setWhoAmI(iAm);
         const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
         await processTurn(copyOnlineTurns, game, iAm, startingDice);
@@ -268,7 +266,6 @@ export const useGameLogic = (
       setDisableScreen(false);
     }
     setIsLoadingGame(false)
-    console.log('DONE WITH LOAD GAME',whoAmI)
 
   };
 
@@ -363,7 +360,6 @@ export const useGameLogic = (
     return false;
   };
   const switchplayer = async () => {
-    console.log('IN SWITCHY',game,whoAmI)
     const iAm = await getWhoAmI()
     if (
       game &&
@@ -382,17 +378,15 @@ export const useGameLogic = (
         !didswitch
       ) {
       }
+      runGame()
     } else if (
       game &&
       !game.isGameOver() &&
       isOnlineGame() &&
       iAm === game.getCurrentPlayer()
     ) {
-      console.log('SWITCHING PLAYER MY TURN')
       const turn = game.getTurnAfterMove();
-      console.log('SENDING TURN TO SERVER',turn)
       const newOnlineDice = await sendTurnToServer(turn);
-      console.log('NEW DICE',newOnlineDice)
       const newLocalDice = transformOnlineDice(newOnlineDice);
       game.onlineSwitchPlayer(newLocalDice);
       setDice(newLocalDice);
@@ -410,7 +404,6 @@ export const useGameLogic = (
       iAm !== game.getCurrentPlayer() &&
       onlineTurns
     ) {
-      console.log('IN WRONG SWITCH PLAYER')
       const newdice = getOnlineDice(onlineTurns);
       setDice(newdice);
       game.onlineSwitchPlayer(newdice);
@@ -741,9 +734,7 @@ export const useGameLogic = (
     return false;
   };
   const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
-    console.log('CHECKING FOR LEGAL MOVE')
     if (currentGame && !currentGame.hasLegalMove()) {
-      console.log('SWITCHING PLAYER')
       if (fastSwitch) {
         switchplayer();
         return true;
@@ -812,7 +803,7 @@ export const useGameLogic = (
   };
   const runBot = async () => {
     if (game) {
-      if (game.getMovesLeft().length === 0) {
+      if (game.getMovesLeft().length === 0) { return
       } else {
         if (game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
           setDisableScreen(true);
