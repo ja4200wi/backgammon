@@ -28,6 +28,7 @@ import { identifyUser } from 'aws-amplify/in-app-messaging';
 import AvatarWithFlag from '../misc/AvatarWithFlag';
 import IngameAvatarWithFlag from './IngameAvatarWithFlag';
 import { PlayerName } from '../misc/SmallComponents';
+import { Avatar } from 'react-native-elements';
 
 export interface Position {
   index: number;
@@ -44,7 +45,7 @@ const colors = {
 interface BoardProps {
   positions: Position[];
   currentPlayer: PLAYER_COLORS;
-  isLoadingGame:boolean;
+  isLoadingGame: boolean;
   pipCount: number[];
   homeCount: number[];
   dice: DiceProps;
@@ -81,7 +82,7 @@ const Board = forwardRef<any, BoardProps>(
       localPlayerId,
       opponentPlayerId,
       gameMode,
-      isLoadingGame
+      isLoadingGame,
     },
     ref
   ) => {
@@ -593,18 +594,24 @@ const Board = forwardRef<any, BoardProps>(
         {disableScreen && <View style={styles.overlay} />}
         <View style={styles.row}>
           <PipCount color={PLAYER_COLORS.BLACK} count={pipCount[1]} />
-          {gameMode === GAME_TYPE.FRIENDLIST && (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <IngameAvatarWithFlag  flagSize={8} size={32} playerId={opponentPlayerId!} />
-              <PlayerName playerId={opponentPlayerId!} />
-            </View>
-          )}
+          {gameMode === GAME_TYPE.FRIENDLIST &&
+            opponentPlayerId !== null &&
+            opponentPlayerId !== undefined && (
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <AvatarWithFlag
+                  size={32}
+                  flagSize={8}
+                  playerId={opponentPlayerId}
+                />
+                <PlayerName playerId={opponentPlayerId} />
+              </View>
+            )}
           <Home
             onPress={handleHomePress}
             count={homeCount[1]}
@@ -650,15 +657,17 @@ const Board = forwardRef<any, BoardProps>(
                 justifyContent: 'center',
               }}
             >
-              {!dice.startingSeq && !isLoadingGame && dice.color === DICE_COLORS.WHITE && (
-                <Dice
-                  diceOne={dice.diceOne}
-                  diceTwo={dice.diceTwo}
-                  color={dice.color}
-                  startingSeq={dice.startingSeq}
-                  firstRoll={dice.firstRoll}
-                />
-              )}
+              {!dice.startingSeq &&
+                !isLoadingGame &&
+                dice.color === DICE_COLORS.WHITE && (
+                  <Dice
+                    diceOne={dice.diceOne}
+                    diceTwo={dice.diceTwo}
+                    color={dice.color}
+                    startingSeq={dice.startingSeq}
+                    firstRoll={dice.firstRoll}
+                  />
+                )}
             </View>
             <View style={[styles.sixSpikes]}>{SixSpikes(13)}</View>
           </View>
@@ -679,15 +688,17 @@ const Board = forwardRef<any, BoardProps>(
                 justifyContent: 'center',
               }}
             >
-              {!dice.startingSeq && !isLoadingGame && dice.color === DICE_COLORS.BLACK && (
-                <Dice
-                  diceOne={dice.diceOne}
-                  diceTwo={dice.diceTwo}
-                  color={dice.color}
-                  startingSeq={dice.startingSeq}
-                  firstRoll={dice.firstRoll}
-                />
-              )}
+              {!dice.startingSeq &&
+                !isLoadingGame &&
+                dice.color === DICE_COLORS.BLACK && (
+                  <Dice
+                    diceOne={dice.diceOne}
+                    diceTwo={dice.diceTwo}
+                    color={dice.color}
+                    startingSeq={dice.startingSeq}
+                    firstRoll={dice.firstRoll}
+                  />
+                )}
             </View>
             <View style={[styles.sixSpikes]}>{SixSpikes(19)}</View>
           </View>
@@ -695,18 +706,24 @@ const Board = forwardRef<any, BoardProps>(
 
         <View style={styles.row}>
           <PipCount color={PLAYER_COLORS.WHITE} count={pipCount[0]} />
-          {gameMode === GAME_TYPE.FRIENDLIST && (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}
-            >
-              <IngameAvatarWithFlag size={32} flagSize={8} playerId={localPlayerId!} />
-              <PlayerName playerId={localPlayerId!} />
-            </View>
-          )}
+          {gameMode === GAME_TYPE.FRIENDLIST &&
+            localPlayerId !== null &&
+            localPlayerId !== undefined && (
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <AvatarWithFlag
+                  size={32}
+                  flagSize={8}
+                  playerId={localPlayerId}
+                />
+                <PlayerName playerId={localPlayerId} />
+              </View>
+            )}
           <Home
             onPress={handleHomePress}
             count={homeCount[0]}

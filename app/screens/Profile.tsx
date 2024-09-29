@@ -7,15 +7,8 @@ import {
   ImageBackground,
   Text,
   Modal,
-  Pressable,
 } from 'react-native';
-import {
-  APP_COLORS,
-  DIMENSIONS,
-  ICONS,
-  GAME_TYPE,
-  COUNTRIES,
-} from '../utils/constants';
+import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
 import Header from '../components/navigation/Header';
 import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
@@ -23,24 +16,14 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   getEnumFromKey,
-  getPlayerInfo,
+  getPlayerName,
   getUserName,
 } from '../service/profileService';
-import { SelectionSet } from 'aws-amplify/api';
-import { Schema } from '../../amplify/data/resource';
 import EditProfileForm from '../components/profile/EditProfileForm';
 import { useUser } from '../utils/UserContent';
-
-const selectionSet = [
-  'id',
-  'name',
-  'emoji',
-  'country',
-  'profilePicColor',
-  'createdAt',
-  'updatedAt',
-] as const;
-type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
+import { generateClient, SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 function UserProfile() {
   const { userInfo } = useUser();
@@ -49,11 +32,7 @@ function UserProfile() {
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag
-          country={getEnumFromKey(userInfo?.country)}
-          emoji={userInfo?.emoji}
-          color={userInfo?.profilePicColor}
-        />
+        <AvatarWithFlag playerId={userInfo?.id!} />
         <View
           style={{
             flexDirection: 'column',
@@ -116,6 +95,16 @@ function HistoryLineItem({
   Opponent: string;
   Win: boolean;
 }) {
+  const [opponentUserName, setOpponentUserName] = useState<string>('');
+
+  const updateOpponentUserName = async () => {
+    const username = await getPlayerName(Opponent);
+    setOpponentUserName(username);
+  };
+
+  useEffect(() => {
+    updateOpponentUserName();
+  }, []);
   // Determine which icon to show based on the GameType
   const renderIcon = () => {
     switch (GameType) {
@@ -143,7 +132,7 @@ function HistoryLineItem({
         ]}
       >
         {renderIcon()}
-        <Text style={GLOBAL_STYLES.lineItems}>{Opponent}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{opponentUserName}</Text>
         <Icon
           name='circle'
           color={Win ? APP_COLORS.appGreen : APP_COLORS.appRed}
@@ -172,72 +161,124 @@ function ProfileContent({
   League: string;
   Coins: string;
 }) {
+  const { userInfo } = useUser();
+  const [gameHistory, setGameHistory] = useState<HistoryGame[]>([]);
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [wins, setWins] = useState(0);
+  const [winByGiveUp, setWinByGiveUp] = useState(0);
+  const [lossByGiveUp, setlossByGiveUp] = useState(0);
+  const [favoriteOpp, setFavoriteOpp] = useState('');
+  useEffect(() => {
+    const sub = client.models.SessionStat.observeQuery().subscribe({
+      next: async ({ items, isSynced }) => {
+        setGameHistory([...items]);
+        setGamesPlayed(items.length);
+        setWins(items.filter((game) => game.winnerId === userInfo?.id).length);
+        setWinByGiveUp(
+          items.filter(
+            (game) =>
+              game.reason === 'GIVE_UP' && game.winnerId === userInfo?.id
+          ).length
+        );
+        setlossByGiveUp(
+          items.filter(
+            (game) => game.reason === 'GIVE_UP' && game.loserId === userInfo?.id
+          ).length
+        );
+        setFavoriteOpp(await getPlayerName(getMostOftenId(items)));
+      },
+    });
+    return () => sub.unsubscribe();
+  }, []);
+
+  const getMostOftenId = (items: HistoryGame[]): string => {
+    const ids = items.map((game) => game.winnerId);
+    const counts: Record<string, number> = {};
+    let compare = 0;
+    let mostFrequent: string | undefined;
+
+    for (let i = 0, len = ids.length; i < len; i++) {
+      const id = ids[i];
+      if (id == null) {
+        continue;
+      }
+      if (counts[id] === undefined) {
+        counts[id] = 1;
+      } else {
+        counts[id] = counts[id] + 1;
+      }
+
+      if (counts[id] > compare) {
+        compare = counts[id];
+        mostFrequent = id;
+      }
+    }
+    return mostFrequent || '';
+  };
+
   return (
     <View style={[styles.content, { padding: 16 }]}>
       <View style={GLOBAL_STYLES.rowLineItems}>
         <Text style={GLOBAL_STYLES.lineItems}>Games Played</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{GamesPlayed}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{gamesPlayed}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
         <Text style={GLOBAL_STYLES.lineItems}>Wins</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Wins}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{wins}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>Gammons</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Gammons}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>Games won via GIVE UP</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{winByGiveUp}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>Backgammons</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Backgammons}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>Games lost via GIVE UP</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{lossByGiveUp}</Text>
       </View>
       <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>ELO</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{ELO}</Text>
-      </View>
-      <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>League</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{League}</Text>
-      </View>
-      <View style={GLOBAL_STYLES.rowLineItems}>
-        <Text style={GLOBAL_STYLES.lineItems}>Coins</Text>
-        <Text style={GLOBAL_STYLES.lineItems}>{Coins}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>Most games against</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{favoriteOpp}</Text>
       </View>
     </View>
   );
 }
+
+const selectionSet = ['gameId', 'gameType', 'winnerId', 'reason'] as const;
+type HistoryGame = SelectionSet<
+  Schema['SessionStat']['type'],
+  typeof selectionSet
+>;
+
+const client = generateClient<Schema>();
+
 function HistoryContent() {
+  const { userInfo } = useUser();
+  const [history, setHistory] = useState<HistoryGame[]>([]);
+
+  useEffect(() => {
+    const sub = client.models.SessionStat.observeQuery({
+      filter: {
+        or: [
+          { winnerId: { eq: userInfo?.id } },
+          { loserId: { eq: userInfo?.id } },
+        ],
+      },
+    }).subscribe({
+      next: async ({ items, isSynced }) => {
+        setHistory([...items]);
+      },
+    });
+    return () => sub.unsubscribe();
+  }, []);
   return (
     <View>
-      <HistoryLineItem
-        GameType={GAME_TYPE.ELO}
-        Opponent='DaddyGammer'
-        Win={true}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.PASSPLAY}
-        Opponent='MiaTurtle'
-        Win={false}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.COMPUTER}
-        Opponent='ChampJann'
-        Win={false}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.RANDOM}
-        Opponent='Peterpan'
-        Win={true}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.ELO}
-        Opponent='Guest28395'
-        Win={true}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.FRIENDLIST}
-        Opponent='IwinYouLose'
-        Win={false}
-      />
+      {history.map((game) => (
+        <HistoryLineItem
+          key={game.gameId}
+          GameType={game.gameType as GAME_TYPE}
+          Opponent={game.winnerId!}
+          Win={game.winnerId === userInfo?.id}
+        />
+      ))}
     </View>
   );
 }
@@ -255,7 +296,11 @@ export default function Profile({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <ScrollView contentContainerStyle={{flexGrow:1,paddingBottom: 16,}} style={{ zIndex: 2,flex:1}} alwaysBounceVertical={false}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+          style={{ zIndex: 2, flex: 1 }}
+          alwaysBounceVertical={false}
+        >
           <UserProfile />
           <Headline headline='Statistics' />
           <ProfileContent

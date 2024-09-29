@@ -35,7 +35,11 @@ const GameOverModal = ({
 
   const updateUsername = async () => {
     const info = await getPlayerInfo(winner!);
-    setUsername(info!.name);
+    if (info === null) {
+      setUsername('Unknown');
+      return;
+    }
+    setUsername(info.name);
   };
 
   useEffect(() => {

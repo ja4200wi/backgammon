@@ -33,6 +33,7 @@ export async function initGame(gameId: string, userId: string): Promise<void> {
 export async function saveGameStats(
   gameId: string,
   winnerId: string,
+  loserId: string,
   gameType: GAME_TYPE,
   duration: number,
   numTurns: number,
@@ -47,6 +48,7 @@ export async function saveGameStats(
     gameId,
     gameType: gameTypeConversion,
     winnerId,
+    loserId,
     scores,
     doubleDiceValue,
     duration,

@@ -47,11 +47,8 @@ function UserCard({
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag
-          country={getEnumFromKey(userInfo?.country)}
-          emoji={userInfo?.emoji}
-          color={userInfo?.profilePicColor}
-        />
+        <AvatarWithFlag playerId={userInfo?.id!} />
+
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
           {userInfo?.name}
         </Text>

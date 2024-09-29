@@ -93,21 +93,14 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const { pointsToWin } = route.params;
   const [startedGame, setStartedGame] = useState<boolean>(false);
   useEffect(() => {
-    if (
-      !startedGame &&
-      gameMode === GAME_TYPE.PASSPLAY
-    ) {
+    if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
       setStartedGame(true);
       startGame(gameMode);
-    } else if(
-      !startedGame &&
-      gameMode === GAME_TYPE.COMPUTER
-    ) {
+    } else if (!startedGame && gameMode === GAME_TYPE.COMPUTER) {
       setStartedGame(true);
-      console.log('BOTTYPE',botType)
-      startGame(gameMode,undefined,botType);
-    }
-    else if (
+      console.log('BOTTYPE', botType);
+      startGame(gameMode, undefined, botType);
+    } else if (
       !startedGame &&
       isOnlineGame(gameMode) &&
       onlineTurns &&
@@ -125,7 +118,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
         gameOver.reason &&
         gameOver.winner === localPlayerId
       ) {
-        sendFinalGameStateToServer(gameOver.winner, gameOver.reason);
+        sendFinalGameStateToServer(
+          gameOver.winner,
+          opponentPlayerId,
+          gameOver.reason
+        );
       }
       isOnlineGame(gameMode)
         ? setWinnerOnlineAlertVisible(true)
@@ -182,19 +179,19 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setWinnerOfflineAlertVisible(false); // Hide the modal
     setWinnerOnlineAlertVisible(false);
   };
-  const getHeadline = ():string => {
-    if(botType) {
-      return `Play vs ${botType}`
+  const getHeadline = (): string => {
+    if (botType) {
+      return `Play vs ${botType}`;
     }
     switch (gameMode) {
       case GAME_TYPE.FRIENDLIST:
         return 'Play vs Friend';
       case GAME_TYPE.PASSPLAY:
-        return 'Local Game'
+        return 'Local Game';
       default:
         return 'Backgammon';
     }
-  }
+  };
 
   const handleMoveChecker = async (
     sourceIndex: number,
@@ -208,7 +205,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     //for now naviagate to Join Game
     navigation.navigate('OnlineMatching', {});
   };
-  
+
   const handleAnimation = async (
     startX: number,
     startY: number,
@@ -228,7 +225,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handleGoPlayFriends = () => {
     setShowWaitingDouble(true)
     navigation.navigate('PlayFriend', { localPlayerId: localPlayerId });
-  }
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
