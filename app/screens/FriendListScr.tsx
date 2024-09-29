@@ -74,7 +74,11 @@ export default function FriendList({ navigation }: { navigation: any }) {
       >
         {/* Semi-transparent Square */}
         <View style={styles.overlaySquare} />
-        <ScrollView contentContainerStyle={{flexGrow:1,paddingBottom: 16,}} style={{ zIndex: 2,flex:1}} alwaysBounceVertical={false} >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 16 }}
+          style={{ zIndex: 2, flex: 1 }}
+          alwaysBounceVertical={false}
+        >
           <InviteFriend />
           <Headline headline='Friends' />
           <SearchPlayer />
@@ -95,6 +99,7 @@ export default function FriendList({ navigation }: { navigation: any }) {
                     friendId={friendId}
                     friendshipId={friend.id}
                     extraInfo={friend.createdAt}
+                    navigation={navigation}
                   />
                 );
               })}

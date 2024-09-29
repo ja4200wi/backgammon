@@ -22,6 +22,7 @@ import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
 import { HomeScreenStats } from '../components/HomeScreenStats';
+import LastGame from '../components/LastGame';
 
 const selectionSet = [
   'id',
@@ -97,6 +98,7 @@ export default function HomeScr({ navigation }: { navigation: any }) {
       >
         <View style={styles.overlaySquare} />
         <UserCard ELO={1354} Coins={394} GlobalRank={39459} />
+        <LastGame navigation={navigation} />
         <PlayButton navigation={navigation} />
       </ImageBackground>
     </SafeAreaView>

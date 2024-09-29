@@ -11,7 +11,7 @@ import {
 
 import { generateClient, SelectionSet } from 'aws-amplify/data';
 import { Schema } from '../../amplify/data/resource';
-import { Button } from '@rneui/themed';
+import { Button, Icon } from '@rneui/themed';
 import { getCurrentUser } from 'aws-amplify/auth';
 import { APP_COLORS, GAME_TYPE } from '../utils/constants';
 import {
@@ -61,10 +61,12 @@ type PlayerInfo = SelectionSet<
 >;
 
 export default function GameListItem({
+  isLargePlayButton,
   navigation,
   localPlayerId,
   item,
 }: {
+  isLargePlayButton: boolean;
   navigation: any;
   localPlayerId: string;
   item: Session;
@@ -175,7 +177,7 @@ export default function GameListItem({
   };
 
   return (
-    <View style={{ padding: 16 }}>
+    <View style={{ padding: 8 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {/* Profile section on the left */}
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
@@ -220,14 +222,27 @@ export default function GameListItem({
         </View>
 
         {/* Icons (Check and Cancel) aligned to the right */}
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          <Button
-            title={buttonTitle}
-            buttonStyle={isMyTurn ? styles.continueButton : styles.startButton}
-            disabled={disabled}
-            onPress={() => joinGame(item.id)}
-          />
-        </View>
+        {isLargePlayButton ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Button
+              title={buttonTitle}
+              buttonStyle={
+                isMyTurn ? styles.continueButton : styles.startButton
+              }
+              disabled={disabled}
+              onPress={() => joinGame(item.id)}
+            />
+          </View>
+        ) : (
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <TouchableOpacity
+              style={{ marginLeft: 8 }}
+              onPress={() => joinGame(item.id)}
+            >
+              <Icon name='play-circle' color={APP_COLORS.appGreen} size={32} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );

@@ -32,6 +32,7 @@ export default function FriendListScreen({
     if (errors) {
       console.error(errors);
     } else {
+      console.log(player);
       setSearchResults(player);
     }
   };

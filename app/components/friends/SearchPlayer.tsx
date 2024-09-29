@@ -43,6 +43,7 @@ export default function SearchPlayer() {
     if (errors) {
       console.error(errors);
     } else {
+      console.log(player);
       setSearchResults(player);
     }
   };
@@ -68,20 +69,16 @@ export default function SearchPlayer() {
       />
       {searchResults.length > 0 && (
         <ScrollView
-          style={{ maxHeight: (DIMENSIONS.screenHeight)* 5 / 9 }}
+          style={{ maxHeight: (DIMENSIONS.screenHeight * 5) / 9 }}
           showsHorizontalScrollIndicator={false}
         >
           {searchResults.map((player) => {
             return (
-              <View>
-                <AddFriend
-                  key={player.id}
-                  friendId={player.id}
-                  addFriend={() =>
-                    handleInviteFriend(localPlayerId!, player.id)
-                  }
-                />
-              </View>
+              <AddFriend
+                key={player.id}
+                friendId={player.id}
+                addFriend={() => handleInviteFriend(localPlayerId!, player.id)}
+              />
             );
           })}
         </ScrollView>

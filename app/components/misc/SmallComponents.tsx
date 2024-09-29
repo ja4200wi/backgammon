@@ -183,11 +183,14 @@ export function Friend({
   friendId,
   friendshipId,
   extraInfo,
+  navigation,
 }: {
   friendId: string;
   friendshipId: string;
   extraInfo?: string;
+  navigation: any;
 }) {
+  const { userInfo } = useUser();
   const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
 
   const updatePlayer = async () => {
@@ -195,12 +198,19 @@ export function Friend({
     setFriendInfo(friendInfoNew);
   };
 
+  const handleCreateGame = async () => {
+    const success = await createGameWithFriend(userInfo?.id!, friendId);
+    if (success) {
+      navigation.navigate('PlayFriend', {});
+    }
+  };
+
   useEffect(() => {
     updatePlayer();
   }, [friendId]);
 
   const confirmRemoveFriend = () => {
-    const options = ['Cancel', 'Challange Friend', 'Remove Friend'];
+    const options = ['Cancel', 'Challenge Friend', 'Remove Friend'];
     ActionSheetIOS.showActionSheetWithOptions(
       {
         options,
@@ -209,8 +219,7 @@ export function Friend({
       },
       (buttonIndex) => {
         if (buttonIndex === 1) {
-          console.log('THIS IS MISSING');
-          //createGameWithFriend(userIdOne,friendId)
+          handleCreateGame();
         } else if (buttonIndex === 2) {
           removeFriend(friendshipId);
         }

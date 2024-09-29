@@ -22,10 +22,11 @@ import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
 import SearchPlayer from '../components/friends/SearchPlayer';
-import { Button } from '@rneui/themed';
+import { Button, Card } from '@rneui/themed';
 import StartFriendGame from './StartFriendGame';
 import GameListItem from './GameListItem';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { GLOBAL_STYLES } from '../utils/globalStyles';
 
 const selectionSet = [
   'id',
@@ -33,12 +34,13 @@ const selectionSet = [
   'playerTwoID',
   'gameType',
   'isGameStarted',
+  'createdAt',
 ] as const;
 type Session = SelectionSet<Schema['Session']['type'], typeof selectionSet>;
 
 const client = generateClient<Schema>();
 
-export default function FriendList2({ navigation }: { navigation: any }) {
+export default function LastGame({ navigation }: { navigation: any }) {
   const { userInfo } = useUser();
   const localPlayerId = userInfo?.id;
   const [games, setGames] = useState<Session[]>([]);
@@ -70,7 +72,9 @@ export default function FriendList2({ navigation }: { navigation: any }) {
       },
     }).subscribe({
       next: async ({ items, isSynced }) => {
-        setGames([...items]);
+        // get last element of items array
+        const lastItem = items[items.length - 1];
+        setGames([lastItem]);
       },
     });
     return () => sub.unsubscribe();
@@ -86,7 +90,7 @@ export default function FriendList2({ navigation }: { navigation: any }) {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <GameListItem
-              isLargePlayButton={true}
+              isLargePlayButton={false}
               navigation={navigation}
               localPlayerId={localPlayerId || ''}
               item={item}
@@ -98,64 +102,29 @@ export default function FriendList2({ navigation }: { navigation: any }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       {/* Body with Background Image */}
-      <View>
-        <Headline headline='Current Games' />
-        {renderGameList(games.filter((game) => game.isGameStarted))}
-
-        <Headline headline='Open Requests' />
-        {renderGameList(games.filter((game) => !game.isGameStarted))}
-      </View>
-      <Button
-        title='Start New Game'
-        loading={false}
-        loadingProps={{ size: 'small', color: 'white' }}
-        buttonStyle={styles.playButton}
-        titleStyle={{ fontWeight: 'bold', fontSize: 24 }}
-        onPress={() => setModalVisible(true)}
-      />
-      <Modal
-        animationType='slide'
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: 700,
+          color: 'white',
+          marginLeft: 12,
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={styles.modalHeader}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFF' }}>
-                Pick a Friend to play
-              </Text>
-              <View style={{ position: 'absolute', right: -10 }}>
-                <Button
-                  title={'Close'}
-                  type='clear'
-                  titleStyle={{ fontWeight: '700', color: '#FFF' }}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Icon name='cancel' size={24} color={'#FFF'} />
-                </Button>
-              </View>
-            </View>
-            <StartFriendGame
-              closeModal={closeModal}
-              localPlayerId={localPlayerId || ''}
-            />
-          </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
+        Last Game
+      </Text>
+      {renderGameList(games.filter((game) => game.isGameStarted))}
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    backgroundColor: '#312F2C',
+    justifyContent: 'center',
+    backgroundColor: APP_COLORS.headerBackGroundColor,
+
     zIndex: 3,
   },
   bodyContainer: {

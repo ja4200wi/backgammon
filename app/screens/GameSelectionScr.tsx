@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   View,
@@ -10,7 +9,14 @@ import {
   ImageBackground,
 } from 'react-native';
 import { Card, Button } from '@rneui/themed';
-import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE, BOARD_TYPE, BOT_NAMES } from '../utils/constants';
+import {
+  APP_COLORS,
+  DIMENSIONS,
+  ICONS,
+  GAME_TYPE,
+  BOARD_TYPE,
+  BOT_NAMES,
+} from '../utils/constants';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
 import HeaderSecondary from '../components/navigation/HeaderSecondary';
 import { getCurrentUser } from 'aws-amplify/auth';
@@ -24,8 +30,10 @@ import { DifficultyDisplay } from '../components/misc/SmallComponents';
 const client = generateClient<Schema>();
 
 export default function GameSelectionScr({ navigation }: { navigation: any }) {
-  const [selectedMode, setSelectedMode] = useState<GAME_TYPE>(GAME_TYPE.FRIENDLIST); // Default selection
-  const [selectedBot,setSelectedBot] = useState<BOT_NAMES>(BOT_NAMES.RIANA)
+  const [selectedMode, setSelectedMode] = useState<GAME_TYPE>(
+    GAME_TYPE.FRIENDLIST
+  ); // Default selection
+  const [selectedBot, setSelectedBot] = useState<BOT_NAMES>(BOT_NAMES.RIANA);
   const handleSelectMode = (mode: GAME_TYPE) => {
     if (selectedMode !== mode) {
       setSelectedMode(mode);
@@ -81,7 +89,7 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
 
     const handleCreateSession = async () => {
       const userName = await getUserName();
-      const gameId = await createSession(userName);
+      const gameId = await createSession(userName, GAME_TYPE.RANDOM);
       navigation.navigate('OnlineMatching', {
         gameId,
         localPlayerId: userName,
@@ -223,27 +231,70 @@ export default function GameSelectionScr({ navigation }: { navigation: any }) {
           </View>
           {selectedMode === GAME_TYPE.COMPUTER && (
             <>
-              <View style={{flexDirection:'column'}}>
-              <TouchableOpacity activeOpacity={1} onPress={()=>{setSelectedBot(BOT_NAMES.RIANA)}} style={styles.robotContainer}>
-                <Text style={{fontSize: 32}}>{'🧠'}</Text>
-                <Text style={[styles.name,{fontWeight:700,fontSize:24,color: selectedBot === BOT_NAMES.RIANA ? APP_COLORS.appGreen : '#FFF'}]}>Riana</Text>
-                <View style={styles.difficultyContainer}>
-                  <DifficultyDisplay level={3} />
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={1} onPress={()=>{setSelectedBot(BOT_NAMES.LARRY)}} style={styles.robotContainer}>
-              <Text style={{fontSize: 32}}>{'🤖'}</Text>
-                <Text style={[styles.name, {fontWeight:700,fontSize:24,color: selectedBot === BOT_NAMES.LARRY ? APP_COLORS.appGreen : '#FFF'}]}>Larry</Text>
-                <View style={styles.difficultyContainer}>
-                  <DifficultyDisplay level={1} />
-                </View>
-              </TouchableOpacity>
+              <View style={{ flexDirection: 'column' }}>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => {
+                    setSelectedBot(BOT_NAMES.RIANA);
+                  }}
+                  style={styles.robotContainer}
+                >
+                  <Text style={{ fontSize: 32 }}>{'🧠'}</Text>
+                  <Text
+                    style={[
+                      styles.name,
+                      {
+                        fontWeight: 700,
+                        fontSize: 24,
+                        color:
+                          selectedBot === BOT_NAMES.RIANA
+                            ? APP_COLORS.appGreen
+                            : '#FFF',
+                      },
+                    ]}
+                  >
+                    Riana
+                  </Text>
+                  <View style={styles.difficultyContainer}>
+                    <DifficultyDisplay level={3} />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => {
+                    setSelectedBot(BOT_NAMES.LARRY);
+                  }}
+                  style={styles.robotContainer}
+                >
+                  <Text style={{ fontSize: 32 }}>{'🤖'}</Text>
+                  <Text
+                    style={[
+                      styles.name,
+                      {
+                        fontWeight: 700,
+                        fontSize: 24,
+                        color:
+                          selectedBot === BOT_NAMES.LARRY
+                            ? APP_COLORS.appGreen
+                            : '#FFF',
+                      },
+                    ]}
+                  >
+                    Larry
+                  </Text>
+                  <View style={styles.difficultyContainer}>
+                    <DifficultyDisplay level={1} />
+                  </View>
+                </TouchableOpacity>
               </View>
               <Button
                 title={`Play vs ${selectedBot}`}
                 buttonStyle={styles.startButton}
                 onPress={() =>
-                  navigation.navigate('Game', { gameMode: GAME_TYPE.COMPUTER, botType: selectedBot })
+                  navigation.navigate('Game', {
+                    gameMode: GAME_TYPE.COMPUTER,
+                    botType: selectedBot,
+                  })
                 }
               />
             </>
@@ -401,17 +452,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   robotContainer: {
-    flexDirection: 'row',         
-    alignItems: 'center', 
-    width: '100%',     
-    marginTop:8,          
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 8,
   },
   name: {
     marginLeft: 16,
-    flexShrink: 1,               
+    flexShrink: 1,
   },
   difficultyContainer: {
-    marginLeft: 'auto', 
+    marginLeft: 'auto',
   },
 });
-
