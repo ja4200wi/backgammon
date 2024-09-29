@@ -28,6 +28,7 @@ import { useEffect, useState } from 'react';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../../amplify/data/resource';
 import { createGameWithFriend } from '../StartFriendGame';
+import {Share} from 'react-native';
 
 TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
@@ -353,6 +354,20 @@ export function SentRequest({
 }
 
 export function InviteFriend() {
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message: 'Check out this app: Gammon.com!! Link kommt bald!', // Replace with your actual app link
+      });
+      if (result.action === Share.sharedAction) {
+        console.log('Content shared');
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share dismissed');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
   return (
     <View
       style={{
@@ -380,9 +395,7 @@ export function InviteFriend() {
           fontWeight: '700',
         }}
         icon={<LetterIcon width={32} height={32} style={{ marginRight: 8 }} />}
-        onPress={() => {
-          console.log('sending invite');
-        }}
+        onPress={() => {handleShare()}}
       />
     </View>
   );

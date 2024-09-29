@@ -18,7 +18,7 @@ export default function NavBar({ navigation, selectedScreen }: NavBarProps) {
             name='people'
             type='material'
             color={selectedScreen === 'Friends' ? '#6B9C41' : APP_COLORS.iconGrey}
-            size={36}
+            size={44}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
@@ -26,7 +26,7 @@ export default function NavBar({ navigation, selectedScreen }: NavBarProps) {
             name='home'
             type='material'
             color={selectedScreen === 'Home' ? '#6B9C41' : APP_COLORS.iconGrey}
-            size={36}
+            size={44}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
@@ -36,7 +36,7 @@ export default function NavBar({ navigation, selectedScreen }: NavBarProps) {
             color={
               selectedScreen === 'Profile' ? '#6B9C41' : APP_COLORS.iconGrey
             }
-            size={36}
+            size={44}
           />
         </TouchableOpacity>
       </View>
