@@ -7,15 +7,8 @@ import {
   ImageBackground,
   Text,
   Modal,
-  Pressable,
 } from 'react-native';
-import {
-  APP_COLORS,
-  DIMENSIONS,
-  ICONS,
-  GAME_TYPE,
-  COUNTRIES,
-} from '../utils/constants';
+import { APP_COLORS, DIMENSIONS, ICONS, GAME_TYPE } from '../utils/constants';
 import Header from '../components/navigation/Header';
 import AvatarWithFlag from '../components/misc/AvatarWithFlag';
 import { GLOBAL_STYLES } from '../utils/globalStyles';
@@ -23,24 +16,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
   getEnumFromKey,
-  getPlayerInfo,
+  getPlayerName,
   getUserName,
 } from '../service/profileService';
-import { SelectionSet } from 'aws-amplify/api';
-import { Schema } from '../../amplify/data/resource';
 import EditProfileForm from '../components/profile/EditProfileForm';
 import { useUser } from '../utils/UserContent';
-
-const selectionSet = [
-  'id',
-  'name',
-  'emoji',
-  'country',
-  'profilePicColor',
-  'createdAt',
-  'updatedAt',
-] as const;
-type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
+import { generateClient, SelectionSet } from 'aws-amplify/api';
+import { Schema } from '../../amplify/data/resource';
 
 function UserProfile() {
   const { userInfo } = useUser();
@@ -112,6 +94,16 @@ function HistoryLineItem({
   Opponent: string;
   Win: boolean;
 }) {
+  const [opponentUserName, setOpponentUserName] = useState<string>('');
+
+  const updateOpponentUserName = async () => {
+    const username = await getPlayerName(Opponent);
+    setOpponentUserName(username);
+  };
+
+  useEffect(() => {
+    updateOpponentUserName();
+  }, []);
   // Determine which icon to show based on the GameType
   const renderIcon = () => {
     switch (GameType) {
@@ -139,7 +131,7 @@ function HistoryLineItem({
         ]}
       >
         {renderIcon()}
-        <Text style={GLOBAL_STYLES.lineItems}>{Opponent}</Text>
+        <Text style={GLOBAL_STYLES.lineItems}>{opponentUserName}</Text>
         <Icon
           name='circle'
           color={Win ? APP_COLORS.appGreen : APP_COLORS.appRed}
@@ -201,39 +193,45 @@ function ProfileContent({
     </View>
   );
 }
+
+const selectionSet = ['gameId', 'gameType', 'winnerId', 'reason'] as const;
+type HistoryGame = SelectionSet<
+  Schema['SessionStat']['type'],
+  typeof selectionSet
+>;
+
+const client = generateClient<Schema>();
+
 function HistoryContent() {
+  const { userInfo } = useUser();
+  const [history, setHistory] = useState<HistoryGame[]>([]);
+
+  useEffect(() => {
+    const sub = client.models.SessionStat.observeQuery({
+      filter: {
+        or: [
+          { winnerId: { eq: userInfo?.id } },
+          { loserId: { eq: userInfo?.id } },
+        ],
+      },
+    }).subscribe({
+      next: async ({ items, isSynced }) => {
+        console.log('History:', items);
+        setHistory([...items]);
+      },
+    });
+    return () => sub.unsubscribe();
+  }, []);
   return (
     <View>
-      <HistoryLineItem
-        GameType={GAME_TYPE.ELO}
-        Opponent='DaddyGammer'
-        Win={true}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.PASSPLAY}
-        Opponent='MiaTurtle'
-        Win={false}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.COMPUTER}
-        Opponent='ChampJann'
-        Win={false}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.RANDOM}
-        Opponent='Peterpan'
-        Win={true}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.ELO}
-        Opponent='Guest28395'
-        Win={true}
-      />
-      <HistoryLineItem
-        GameType={GAME_TYPE.FRIENDLIST}
-        Opponent='IwinYouLose'
-        Win={false}
-      />
+      {history.map((game) => (
+        <HistoryLineItem
+          key={game.gameId}
+          GameType={game.gameType as GAME_TYPE}
+          Opponent={game.winnerId!}
+          Win={game.winnerId === userInfo?.id}
+        />
+      ))}
     </View>
   );
 }

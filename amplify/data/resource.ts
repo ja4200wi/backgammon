@@ -47,7 +47,9 @@ const schema = a
         game: a.belongsTo('Session', 'gameId'),
         gameType: a.enum(['ELO', 'RANDOM', 'FRIENDLIST', 'COMPUTER']),
         winnerId: a.id(),
+        loserId: a.id(),
         winner: a.belongsTo('Player', 'winnerId'),
+        loser: a.belongsTo('Player', 'loserId'),
         scores: a.customType({
           white: a.integer(),
           black: a.integer(),
@@ -68,6 +70,7 @@ const schema = a
         sessionsAsPlayerOne: a.hasMany('Session', 'playerOneID'),
         sessionsAsPlayerTwo: a.hasMany('Session', 'playerTwoID'),
         sessionsWon: a.hasMany('SessionStat', 'winnerId'),
+        sessionsLost: a.hasMany('SessionStat', 'loserId'),
         friendsAsOne: a.hasMany('Friends', 'userIdOne'),
         friendsAsTwo: a.hasMany('Friends', 'userIdTwo'),
         turnsMade: a.hasMany('Turns', 'playerId'),
