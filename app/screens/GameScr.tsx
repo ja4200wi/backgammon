@@ -99,7 +99,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       startGame(gameMode);
     } else if (!startedGame && gameMode === GAME_TYPE.COMPUTER) {
       setStartedGame(true);
-      console.log('BOTTYPE', botType);
       startGame(gameMode, undefined, botType);
     } else if (
       !startedGame &&
@@ -114,7 +113,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   {/* END GAME*/}
   useEffect(() => {
     if (gameOver.gameover) {
-      console.log('GAMEOVER:',gameOver)
       setWinner(gameOver.winner);
       if (
         isOnlineGame() &&
@@ -127,7 +125,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           gameOver.reason
         );
       }
-      console.log('SETTING OFFLINE OR ONLINE ALERT; OFFLINE:',!isOnlineGame(gameMode))
       isOnlineGame(gameMode)
         ? setWinnerOnlineAlertVisible(true)
         : setWinnerOfflineAlertVisible(true); 

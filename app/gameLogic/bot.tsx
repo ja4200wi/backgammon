@@ -22,11 +22,9 @@ export class Bot {
     
     private makeBotMove(game: Game): (Turn | null) {
         if(this.botType === BOT_NAMES.LARRY) {
-            console.log('returning larry move')
             return this.tempTurnEasyBot(game)
         }
         let bestTurn = this.getMediumScore(game, [],this.botType);
-        console.log('returning riana move')
         return bestTurn.turn;
     }    
     private makeMoveHardBot(game:Game): (Turn | null) {

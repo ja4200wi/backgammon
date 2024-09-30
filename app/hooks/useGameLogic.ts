@@ -314,7 +314,6 @@ export const useGameLogic = (
   ): Promise<boolean> => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
-      console.log(game.getCurrentPlayer(),'HOMECHECKER:',game.getHomeCheckers(game.getCurrentPlayer()))
       if (success) {
         if (!isGameOver()) {
           updateGameState();
@@ -704,15 +703,12 @@ export const useGameLogic = (
     }
   };
   const isGameOver = (): boolean => {
-    console.log('IN ISGAME OVER',game?.isGameOver())
     if (game) {
       if (game.isGameOver()) {
         if (isOfflineGame()) {
           const winner = game.whoIsWinner();
-          console.log('Setting game over OFFLINE')
           if(gamemode === GAME_TYPE.COMPUTER) {
             const winnerText = winner === PLAYER_COLORS.BLACK ? BOT_NAMES.RIANA : 'You'
-            console.log('TYPE IS COMPUTER: WINNER IS',winnerText)
             setGameOver({ gameover: true, winner: winnerText, reason: 'GAME_OVER' });
           } else {
             setGameOver({ gameover: true, winner: winner, reason: 'GAME_OVER' });
@@ -744,7 +740,6 @@ export const useGameLogic = (
   };
   const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
     if (currentGame && !currentGame.hasLegalMove()) {
-      console.log('NO LEGAL MOVE SWITCHING')
       if (fastSwitch) {
         switchplayer();
         return true;
@@ -754,7 +749,6 @@ export const useGameLogic = (
         return true;
       }
     } else if (!currentGame && game && !game.hasLegalMove()) {
-      console.log('NO LEGAL MOVE SWITCHING')
       if (fastSwitch) {
         switchplayer();
         return true;
@@ -786,7 +780,6 @@ export const useGameLogic = (
       setFirstRoll(false);
     }
     if (game) {
-      console.log('SWITCHING IN UPDATEMOVE')
       switchplayer();
     }
   };
