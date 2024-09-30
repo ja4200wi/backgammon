@@ -36,7 +36,7 @@ const GameOverModal = ({
   const updateUsername = async () => {
     const info = await getPlayerInfo(winner!);
     if (info === null) {
-      setUsername('Unknown');
+      setUsername(winner);
       return;
     }
     setUsername(info.name);
@@ -48,7 +48,7 @@ const GameOverModal = ({
   return (
     <CustomAlert
       visible={visible}
-      headline={`${username} wins the Game`}
+      headline={username === 'You' ? 'You win the Game' : `${username} wins the Game`}
       bodyText='What would you like to do?'
       acceptButtonText='Play Again'
       declineButtonText='Go to Home'

@@ -295,12 +295,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
 
       {/* Custom Modal for Winner Announcement */}
       {/* Offline Winner Modal */}
-      <CustomAlert 
+      <GameOverModal
         visible={winnerOfflineAlertVisible}
-        headline={gameOver.winner === 'You' ? `You win the Game` : `${gameOver.winner} wins the Game`}
-        bodyText='What would you like to do?'
-        acceptButtonText='Play Again'
-        declineButtonText='Go to Home'
+        winner={winner}
         onAccept={handleRestart}
         onDecline={handleGoHome}
       />
