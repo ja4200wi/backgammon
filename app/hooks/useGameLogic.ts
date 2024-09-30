@@ -378,8 +378,8 @@ export const useGameLogic = (
         gamemode === GAME_TYPE.COMPUTER &&
         !didswitch
       ) {
+        runGame()
       }
-      runGame()
     } else if (
       game &&
       !game.isGameOver() &&
@@ -744,6 +744,7 @@ export const useGameLogic = (
   };
   const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
     if (currentGame && !currentGame.hasLegalMove()) {
+      console.log('NO LEGAL MOVE SWITCHING')
       if (fastSwitch) {
         switchplayer();
         return true;
@@ -753,6 +754,7 @@ export const useGameLogic = (
         return true;
       }
     } else if (!currentGame && game && !game.hasLegalMove()) {
+      console.log('NO LEGAL MOVE SWITCHING')
       if (fastSwitch) {
         switchplayer();
         return true;
@@ -784,6 +786,7 @@ export const useGameLogic = (
       setFirstRoll(false);
     }
     if (game) {
+      console.log('SWITCHING IN UPDATEMOVE')
       switchplayer();
     }
   };
