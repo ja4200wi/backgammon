@@ -2,26 +2,17 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
-  StatusBar,
   SafeAreaView,
-  ImageBackground,
   Text,
   Modal,
   FlatList,
 } from 'react-native';
-import { APP_COLORS, DIMENSIONS, COUNTRIES } from '../utils/constants';
-import Header from '../components/navigation/Header';
-import { ScrollView } from 'react-native-gesture-handler';
-import {
-  Headline,
-  InviteFriend,
-  OpenRequest,
-  SentRequest,
-} from '../components/misc/SmallComponents';
+import { APP_COLORS, DIMENSIONS } from '../utils/constants';
+
+import { Headline } from '../components/misc/SmallComponents';
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import { useUser } from '../utils/UserContent';
-import SearchPlayer from '../components/friends/SearchPlayer';
 import { Button } from '@rneui/themed';
 import StartFriendGame from './StartFriendGame';
 import GameListItem from './GameListItem';
