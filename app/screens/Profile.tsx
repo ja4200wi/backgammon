@@ -153,7 +153,14 @@ function ProfileContent({}: {}) {
   const [lossByGiveUp, setlossByGiveUp] = useState(0);
   const [favoriteOpp, setFavoriteOpp] = useState('');
   useEffect(() => {
-    const sub = client.models.SessionStat.observeQuery().subscribe({
+    const sub = client.models.SessionStat.observeQuery({
+      filter: {
+        or: [
+          { winnerId: { eq: userInfo?.id } },
+          { loserId: { eq: userInfo?.id } },
+        ],
+      },
+    }).subscribe({
       next: async ({ items, isSynced }) => {
         // Create a map to filter out duplicate gameIds
         const uniqueGamesMap = new Map<string, HistoryGame>();
@@ -296,7 +303,7 @@ function HistoryContent() {
       },
     });
     return () => sub.unsubscribe();
-  }, []);
+  }, [userInfo?.id]);
   return (
     <View>
       {history.map((game) => (

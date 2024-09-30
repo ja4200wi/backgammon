@@ -103,7 +103,14 @@ function HomeScreenStats({}: {}) {
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
-    const sub = client.models.SessionStat.observeQuery().subscribe({
+    const sub = client.models.SessionStat.observeQuery({
+      filter: {
+        or: [
+          { winnerId: { eq: userInfo?.id } },
+          { loserId: { eq: userInfo?.id } },
+        ],
+      },
+    }).subscribe({
       next: async ({ items, isSynced }) => {
         // Create a map to filter out duplicate gameIds
         const uniqueGamesMap = new Map<string, HistoryGame>();
@@ -200,28 +207,23 @@ function LastGame({ navigation }: { navigation: any }) {
       next: async ({ items, isSynced }) => {
         // get last element of items array
         const lastItem = items[items.length - 1];
+        console.log('lastItem', lastItem);
         setGames([lastItem]);
       },
     });
     return () => sub.unsubscribe();
   }, [userInfo?.id]);
 
-  const renderGameList = (gameList: Session[]) => (
-    <View style={{ zIndex: 3 }}>
-      {gameList.length === 0 ? (
+  const renderLastGame = (game: Session) => (
+    <View>
+      {game === undefined ? (
         <Text style={styles.noGamesText}>No games available.</Text>
       ) : (
-        <FlatList
-          data={gameList}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <GameListItem
-              isLargePlayButton={false}
-              navigation={navigation}
-              localPlayerId={userInfo?.id || ''}
-              item={item}
-            />
-          )}
+        <GameListItem
+          isLargePlayButton={false}
+          navigation={navigation}
+          localPlayerId={userInfo?.id || ''}
+          item={game}
         />
       )}
     </View>
@@ -240,7 +242,7 @@ function LastGame({ navigation }: { navigation: any }) {
       >
         Last Game
       </Text>
-      {renderGameList(games.filter((game) => game.isGameStarted))}
+      {games.length > 0 && renderLastGame(games[0])}
     </Card>
   );
 }
