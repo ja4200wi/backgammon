@@ -314,6 +314,7 @@ export const useGameLogic = (
   ): Promise<boolean> => {
     if (game) {
       const success = game.moveStone(sourceIndex, targetIndex);
+      console.log(game.getCurrentPlayer(),'HOMECHECKER:',game.getHomeCheckers(game.getCurrentPlayer()))
       if (success) {
         if (!isGameOver()) {
           updateGameState();
@@ -703,11 +704,19 @@ export const useGameLogic = (
     }
   };
   const isGameOver = (): boolean => {
+    console.log('IN ISGAME OVER',game?.isGameOver())
     if (game) {
       if (game.isGameOver()) {
         if (isOfflineGame()) {
           const winner = game.whoIsWinner();
-          setGameOver({ gameover: true, winner: winner, reason: 'GAME_OVER' });
+          console.log('Setting game over OFFLINE')
+          if(gamemode === GAME_TYPE.COMPUTER) {
+            const winnerText = winner === PLAYER_COLORS.BLACK ? BOT_NAMES.RIANA : 'You'
+            console.log('TYPE IS COMPUTER: WINNER IS',winnerText)
+            setGameOver({ gameover: true, winner: winnerText, reason: 'GAME_OVER' });
+          } else {
+            setGameOver({ gameover: true, winner: winner, reason: 'GAME_OVER' });
+          }
           return true;
         } else if (isOnlineGame() && onlineTurns) {
           const onlineWinner =

@@ -92,6 +92,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
 
   const { pointsToWin } = route.params;
   const [startedGame, setStartedGame] = useState<boolean>(false);
+  {/* START GAME*/}
   useEffect(() => {
     if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
       setStartedGame(true);
@@ -110,8 +111,10 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       startGame(gameMode, onlineTurns);
     }
   }, [onlineTurns, startedGame]);
+  {/* END GAME*/}
   useEffect(() => {
     if (gameOver.gameover) {
+      console.log('GAMEOVER:',gameOver)
       setWinner(gameOver.winner);
       if (
         isOnlineGame() &&
@@ -124,9 +127,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           gameOver.reason
         );
       }
+      console.log('SETTING OFFLINE OR ONLINE ALERT; OFFLINE:',!isOnlineGame(gameMode))
       isOnlineGame(gameMode)
         ? setWinnerOnlineAlertVisible(true)
-        : setWinnerOfflineAlertVisible(true); // Show the modal when the game is over
+        : setWinnerOfflineAlertVisible(true); 
+
     }
   }, [gameOver]);
   const handeDoubleAccept = () => {
@@ -290,9 +295,12 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
 
       {/* Custom Modal for Winner Announcement */}
       {/* Offline Winner Modal */}
-      <GameOverModal
-        visible={winnerOnlineAlertVisible}
-        winner={winner}
+      <CustomAlert 
+        visible={winnerOfflineAlertVisible}
+        headline={gameOver.winner === 'You' ? `You win the Game` : `${gameOver.winner} wins the Game`}
+        bodyText='What would you like to do?'
+        acceptButtonText='Play Again'
+        declineButtonText='Go to Home'
         onAccept={handleRestart}
         onDecline={handleGoHome}
       />
