@@ -5,8 +5,7 @@ import { Schema } from '../../amplify/data/resource';
 import { Button } from '@rneui/themed';
 import { createSession } from '../service/gameService';
 import AvatarWithFlag from './misc/AvatarWithFlag';
-import { APP_COLORS, COUNTRIES } from '../utils/constants';
-import IngameAvatarWithFlag from './game/IngameAvatarWithFlag';
+import { APP_COLORS } from '../utils/constants';
 
 const selectionSet = ['id', 'userIdOne', 'userIdTwo', 'isConfirmed'] as const;
 type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
