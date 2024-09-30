@@ -52,22 +52,23 @@ type HistoryGame = SelectionSet<
   typeof selectionSet
 >;
 
-function UserCard({}: {}) {
+function UserCard() {
   const { userInfo } = useUser();
 
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
       <View style={styles.userRow}>
-        <AvatarWithFlag playerId={userInfo?.id!} />
+        <AvatarWithFlag playerId={userInfo?.id ?? ''} />
 
         <Text style={[GLOBAL_STYLES.headline, , { marginLeft: 16 }]}>
-          {userInfo?.name}
+          {userInfo?.name || 'Unknown User'}
         </Text>
       </View>
       <HomeScreenStats />
     </Card>
   );
 }
+
 function PuzzleCard() {
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
@@ -80,6 +81,7 @@ function PuzzleCard() {
     </Card>
   );
 }
+
 function PlayButton({ navigation }: { navigation: any }) {
   return (
     <View style={styles.buttonContainer}>
@@ -95,56 +97,67 @@ function PlayButton({ navigation }: { navigation: any }) {
   );
 }
 
-function HomeScreenStats({}: {}) {
+function HomeScreenStats() {
   const { userInfo } = useUser();
   const [gameHistory, setGameHistory] = useState<HistoryGame[]>([]);
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [wins, setWins] = useState(0);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userInfo?.id) return; // Check for userInfo presence
     const sub = client.models.SessionStat.observeQuery({
       filter: {
         or: [
-          { winnerId: { eq: userInfo?.id } },
-          { loserId: { eq: userInfo?.id } },
+          { winnerId: { eq: userInfo.id } },
+          { loserId: { eq: userInfo.id } },
         ],
       },
     }).subscribe({
       next: async ({ items, isSynced }) => {
-        // Create a map to filter out duplicate gameIds
-        const uniqueGamesMap = new Map<string, HistoryGame>();
-        items.forEach((game) => {
-          if (!uniqueGamesMap.has(game.gameId)) {
-            uniqueGamesMap.set(game.gameId, game);
+        try {
+          // Create a map to filter out duplicate gameIds
+          const uniqueGamesMap = new Map<string, HistoryGame>();
+          items.forEach((game) => {
+            if (!uniqueGamesMap.has(game.gameId)) {
+              uniqueGamesMap.set(game.gameId, game);
+            }
+          });
+
+          // Convert the map values back into an array
+          const uniqueGames = Array.from(uniqueGamesMap.values());
+
+          setGameHistory([...uniqueGames]);
+          setGamesPlayed(uniqueGames.length);
+
+          if (isSynced) {
+            const winsCount = uniqueGames.filter(
+              (game) => game.winnerId === userInfo.id
+            ).length;
+            setWins(winsCount);
+            setLoading(false);
+          } else {
+            setLoading(true);
           }
-        });
-
-        // Convert the map values back into an array
-        const uniqueGames = Array.from(uniqueGamesMap.values());
-
-        setGameHistory([...uniqueGames]);
-        setGamesPlayed(uniqueGames.length);
-
-        // Only set wins and stop loading when data is fully synced
-        if (isSynced) {
-          const winsCount = uniqueGames.filter(
-            (game) => game.winnerId === userInfo?.id
-          ).length;
-          setWins(winsCount);
-          setLoading(false); // Data is fully loaded, set loading to false
-        } else {
-          // Set loading to true if not synced to ensure consistency
-          setLoading(true);
+        } catch (error) {
+          console.error('Error processing game stats:', error);
+          setLoading(false); // Ensure loading stops even if there's an error
         }
+      },
+      error: (error) => {
+        console.error('Subscription error:', error);
+        setLoading(false);
       },
     });
 
-    return () => sub.unsubscribe();
+    return () => {
+      if (sub) {
+        sub.unsubscribe();
+      }
+    };
   }, [userInfo?.id]);
 
   if (loading) {
-    // Display loading indicator while data is loading
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size='large' color={APP_COLORS.appGreen} />
@@ -178,6 +191,7 @@ function HomeScreenStats({}: {}) {
     </>
   );
 }
+
 function LastGame({ navigation }: { navigation: any }) {
   const { userInfo } = useUser();
   const [games, setGames] = useState<Session[]>([]);
@@ -204,14 +218,26 @@ function LastGame({ navigation }: { navigation: any }) {
         ],
       },
     }).subscribe({
-      next: async ({ items, isSynced }) => {
-        // get last element of items array
-        const lastItem = items[items.length - 1];
-        console.log('lastItem', lastItem);
-        setGames([lastItem]);
+      next: ({ items }) => {
+        try {
+          const lastItem = items[items.length - 1];
+          if (lastItem) {
+            setGames([lastItem]);
+          }
+        } catch (error) {
+          console.error('Error fetching last game:', error);
+        }
+      },
+      error: (error) => {
+        console.error('Subscription error:', error);
       },
     });
-    return () => sub.unsubscribe();
+
+    return () => {
+      if (sub) {
+        sub.unsubscribe();
+      }
+    };
   }, [userInfo?.id]);
 
   const renderLastGame = (game: Session) => (
@@ -231,11 +257,10 @@ function LastGame({ navigation }: { navigation: any }) {
 
   return (
     <Card containerStyle={[GLOBAL_STYLES.card, { zIndex: 2 }]}>
-      {/* Body with Background Image */}
       <Text
         style={{
           fontSize: 24,
-          fontWeight: 700,
+          fontWeight: '700',
           color: 'white',
           marginLeft: 12,
         }}
