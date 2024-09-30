@@ -52,15 +52,7 @@ type HistoryGame = SelectionSet<
   typeof selectionSet
 >;
 
-function UserCard({
-  ELO,
-  Coins,
-  GlobalRank,
-}: {
-  ELO: number;
-  Coins: number;
-  GlobalRank: number;
-}) {
+function UserCard({}: {}) {
   const { userInfo } = useUser();
 
   return (
@@ -142,7 +134,7 @@ function HomeScreenStats({}: {}) {
     });
 
     return () => sub.unsubscribe();
-  }, []);
+  }, [userInfo?.id]);
 
   if (loading) {
     // Display loading indicator while data is loading
@@ -181,24 +173,23 @@ function HomeScreenStats({}: {}) {
 }
 function LastGame({ navigation }: { navigation: any }) {
   const { userInfo } = useUser();
-  const localPlayerId = userInfo?.id;
   const [games, setGames] = useState<Session[]>([]);
 
   useEffect(() => {
-    if (!localPlayerId) return;
+    if (!userInfo?.id) return;
     const sub = client.models.Session.observeQuery({
       filter: {
         or: [
           {
             and: [
-              { playerOneID: { eq: localPlayerId } },
+              { playerOneID: { eq: userInfo.id } },
               { gameType: { eq: 'FRIENDLIST' } },
               { isGameOver: { eq: false } },
             ],
           },
           {
             and: [
-              { playerTwoID: { eq: localPlayerId } },
+              { playerTwoID: { eq: userInfo.id } },
               { gameType: { eq: 'FRIENDLIST' } },
               { isGameOver: { eq: false } },
             ],
@@ -213,7 +204,7 @@ function LastGame({ navigation }: { navigation: any }) {
       },
     });
     return () => sub.unsubscribe();
-  }, []);
+  }, [userInfo?.id]);
 
   const renderGameList = (gameList: Session[]) => (
     <View style={{ zIndex: 3 }}>
@@ -227,7 +218,7 @@ function LastGame({ navigation }: { navigation: any }) {
             <GameListItem
               isLargePlayButton={false}
               navigation={navigation}
-              localPlayerId={localPlayerId || ''}
+              localPlayerId={userInfo?.id || ''}
               item={item}
             />
           )}
@@ -265,7 +256,7 @@ export default function HomeScr({ navigation }: { navigation: any }) {
         resizeMode='cover'
       >
         <View style={styles.overlaySquare} />
-        <UserCard ELO={1354} Coins={394} GlobalRank={39459} />
+        <UserCard />
         <LastGame navigation={navigation} />
         <PlayButton navigation={navigation} />
       </ImageBackground>
