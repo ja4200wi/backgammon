@@ -37,10 +37,10 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
   showRestartGame,
   showGiveUp,
 }) => {
-  const [isAcceptButtonDisabled, setIsAcceptButtonDisabled] = useState(false);
+  const [areButtonsDisabled, setAreButtonsDisabled] = useState(false);
 
   const acceptButtonColor =
-    showAcceptMoveButton || disableButtons || isAcceptButtonDisabled
+    showAcceptMoveButton || disableButtons || areButtonsDisabled
       ? APP_COLORS.iconGrey
       : APP_COLORS.appBlue;
 
@@ -51,14 +51,14 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
 
   const handleAcceptMove = () => {
     // Disable the button to prevent multiple clicks
-    setIsAcceptButtonDisabled(true);
+    setAreButtonsDisabled(true);
 
     // Call the onAcceptMove function
     onAcceptMove();
 
     // Re-enable the button after a delay (e.g., 2 seconds)
     setTimeout(() => {
-      setIsAcceptButtonDisabled(false);
+      setAreButtonsDisabled(false);
     }, 2000); // Adjust the delay as needed
   };
 
@@ -98,11 +98,11 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
 
   return (
     <View style={styles.footerContainer}>
-      <TouchableOpacity onPress={showActionSheet} disabled={!showGiveUp || disableButtons}>
+      <TouchableOpacity onPress={showActionSheet} disabled={!showGiveUp || disableButtons || areButtonsDisabled}>
         <Icon name='flag' type='material' color={APP_COLORS.iconGrey} size={36} />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity onPress={onDouble} disabled={disableButtons || allowDouble}>
+      <TouchableOpacity onPress={onDouble} disabled={disableButtons || allowDouble || areButtonsDisabled}>
         <Text
           style={{
             fontSize: 30,
@@ -114,13 +114,13 @@ const GameNavBar: React.FC<GameNavBarProps> = ({
         </Text>
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
-      <TouchableOpacity onPress={onUndoMove} disabled={showUndoMoveButton || disableButtons}>
+      <TouchableOpacity onPress={onUndoMove} disabled={showUndoMoveButton || disableButtons || areButtonsDisabled}>
         <Icon name='replay' type='material' color={undoButtonColor} size={36} />
       </TouchableOpacity>
       <Divider orientation='vertical' color={APP_COLORS.iconGrey} />
       <TouchableOpacity
         onPress={handleAcceptMove}
-        disabled={showAcceptMoveButton || disableButtons || isAcceptButtonDisabled}
+        disabled={showAcceptMoveButton || disableButtons || areButtonsDisabled}
       >
         <Icon name='done' type='material' color={acceptButtonColor} size={36} />
       </TouchableOpacity>
