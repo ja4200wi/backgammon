@@ -366,7 +366,7 @@ export function InviteFriend() {
   const handleShare = async () => {
     try {
       const result = await Share.share({
-        message: 'Check out this app: Gammon.com!! Link kommt bald!', // Replace with your actual app link
+        message: 'Hey, download the TestFlight app to check out our awesome Backgammon app by clicking this link: https://testflight.apple.com/join/DX1WfTYc. And don\'t forget to give us feedback!'
       });
       if (result.action === Share.sharedAction) {
         console.log('Content shared');
