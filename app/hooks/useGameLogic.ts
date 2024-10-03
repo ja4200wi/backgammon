@@ -49,15 +49,11 @@ export const useGameLogic = (
   const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
   const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
   const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
-  const [pipCount, setPipCount] = useState(GAME_SETTINGS.startScores);
   const [doubleDice, setDoubleDice] = useState<DoubleDice>(new DoubleDice());
   const [firstRoll, setFirstRoll] = useState(true);
   const [lastturn, setLastTurn] = useState<Turn>();
   const [disableScreen, setDisableScreen] = useState<boolean>(false);
   const [gamemode, setGameMode] = useState<GAME_TYPE>();
-  const [homeCheckers, setHomeCheckers] = useState(
-    GAME_SETTINGS.startHomeCheckerCount
-  );
   const [gameOver, setGameOver] = useState<{
     gameover: boolean;
     winner: PLAYER_COLORS | string;
@@ -254,9 +250,6 @@ export const useGameLogic = (
     setGame(copyOfGame);
     setDoubleDice(tempDoubleDice);
     setPositions(copyOfGame.getCurrentPositions());
-    const distances = copyOfGame.getDistances();
-    updatePipCount(distances.distBlack, distances.distWhite);
-    updateHomeCheckers(copyOfGame);
     await checkForLegalMove(false, copyOfGame);
 
     if (copyOfGame.getCurrentPlayer() !== iAm) {
@@ -276,8 +269,6 @@ export const useGameLogic = (
         setWhoAmI(iAm);
       }
       setPositions(game.getCurrentPositions());
-      setPipCount(GAME_SETTINGS.startScores);
-      setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount);
       doStartingPhase();
     }
   };
@@ -419,7 +410,6 @@ export const useGameLogic = (
     setStartingPhase(true);
     setFirstRoll(true);
     setDisableScreen(true);
-    setHomeCheckers(GAME_SETTINGS.startHomeCheckerCount);
     setDoubleDice(new DoubleDice());
   };
   const giveUp = (looser: PLAYER_COLORS) => {
@@ -656,9 +646,6 @@ export const useGameLogic = (
   const setUpEndBoard = async (currentGame: Game) => {
     if (currentGame) {
       setPositions(currentGame.getCurrentPositions());
-      updateHomeCheckers(currentGame);
-      const distances = currentGame.getDistances();
-      updatePipCount(distances.distBlack, distances.distWhite);
       if (currentGame && whoAmI === currentGame.getCurrentPlayer()) {
         const turn = currentGame.getTurnAfterMove();
       }
@@ -684,10 +671,7 @@ export const useGameLogic = (
   };
   const updateGameState = async () => {
     if (game) {
-      setPositions(game.getCurrentPositions());
-      const distances = game.getDistances();
-      updatePipCount(distances.distBlack, distances.distWhite);
-      updateHomeCheckers(game);
+      setPositions(game.getCurrentPositions()); // unneccecary becaue of new board logic
       if (isOnlineGame() && whoAmI !== game.getCurrentPlayer()) {
         return;
       }
@@ -770,23 +754,13 @@ export const useGameLogic = (
     }
     return currentGame.getLastMoves().length === 0;
   };
-  const updatePipCount = (distBlack: number, distWhite: number) => {
-    setPipCount([distWhite, distBlack]);
-  };
+  
   const updateMoveIsOver = () => {
     if (firstRoll) {
       setFirstRoll(false);
     }
     if (game) {
       switchplayer();
-    }
-  };
-  const updateHomeCheckers = (game: Game) => {
-    if (game) {
-      setHomeCheckers([
-        game.getHomeCheckers(PLAYER_COLORS.WHITE),
-        game.getHomeCheckers(PLAYER_COLORS.BLACK),
-      ]);
     }
   };
   const handleDisableScreen = (bool: boolean) => {
@@ -830,8 +804,6 @@ export const useGameLogic = (
     game,
     dice,
     positions,
-    pipCount,
-    homeCheckers,
     boardRef,
     onMoveChecker,
     startGame,

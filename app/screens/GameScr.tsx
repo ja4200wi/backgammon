@@ -54,8 +54,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     game,
     dice,
     positions,
-    pipCount,
-    homeCheckers,
     boardRef,
     opponentPlayerId,
     onMoveChecker,
@@ -251,8 +249,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           ref={boardRef}
           positions={positions}
           currentPlayer={game?.getCurrentPlayer()!}
-          pipCount={pipCount}
-          homeCount={homeCheckers}
+          pipCount={game ? [game?.getDistances().distWhite,game?.getDistances().distBlack] : [167,167]}
+          homeCount={game ? [game?.getHomeCheckers(PLAYER_COLORS.WHITE),game?.getHomeCheckers(PLAYER_COLORS.BLACK)] : [0,0]}
           dice={{
             diceOne: dice[0],
             diceTwo: dice[1],
