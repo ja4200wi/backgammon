@@ -16,6 +16,18 @@ const selectionSet = [
 ] as const;
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
+const friendshipSelectionSet = [
+  'id',
+  'userIdOne',
+  'userIdTwo',
+  'isConfirmed',
+  'createdAt',
+] as const;
+type Friendship = SelectionSet<
+  Schema['Friends']['type'],
+  typeof friendshipSelectionSet
+>;
+
 export async function createPlayer(): Promise<void> {
   const user = await fetchUserAttributes();
   await client.models.Player.create({
@@ -46,13 +58,14 @@ export async function getPlayerName(playerId: string): Promise<string> {
 export async function getPlayerInfo(
   playerId: string
 ): Promise<PlayerInfo | null> {
-  const player = await client.models.Player.get(
+  // handle loading state
+  const { data: player, errors } = await client.models.Player.get(
     { id: playerId },
     {
       selectionSet,
     }
   );
-  return player.data;
+  return player;
 }
 
 export async function getEmail(): Promise<string> {
@@ -73,6 +86,29 @@ export async function getEmoji(playerId: string): Promise<string> {
 export async function getColor(playerId: string): Promise<string> {
   const color = await client.models.Player.get({ id: playerId });
   return color.data?.profilePicColor || APP_COLORS.appGreen;
+}
+
+export async function getFriendships(
+  playerId: string
+): Promise<(Friendship | null)[]> {
+  const { data: friends, errors } = await client.models.Friends.list({
+    filter: {
+      or: [
+        {
+          userIdOne: { eq: playerId },
+        },
+        {
+          userIdTwo: { eq: playerId },
+        },
+      ],
+    },
+  });
+  if (errors) {
+    console.error('Failed to fetch friends:', errors);
+    return [];
+  }
+  if (friends.length === 0) return [];
+  return friends;
 }
 
 // Update Data

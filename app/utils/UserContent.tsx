@@ -6,11 +6,20 @@ import React, {
   ReactNode,
   useContext,
 } from 'react';
-import { getPlayerInfo, getUserName } from '../service/profileService';
+import {
+  getFriendships,
+  getPlayerInfo,
+  getUserName,
+} from '../service/profileService';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 
-const selectionSet = [
+type Friend = {
+  friend: PlayerInfo;
+  friendShip: Friendship;
+};
+
+const playerSelectionSet = [
   'id',
   'name',
   'country',
@@ -19,10 +28,26 @@ const selectionSet = [
   'createdAt',
   'updatedAt',
 ] as const;
-type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
+type PlayerInfo = SelectionSet<
+  Schema['Player']['type'],
+  typeof playerSelectionSet
+>;
+
+const friendshipSelectionSet = [
+  'id',
+  'userIdOne',
+  'userIdTwo',
+  'isConfirmed',
+  'createdAt',
+] as const;
+type Friendship = SelectionSet<
+  Schema['Friends']['type'],
+  typeof friendshipSelectionSet
+>;
 
 interface UserContextType {
   userInfo: PlayerInfo | null;
+  friends: Friend[] | null;
   loading: boolean;
   refetchUserData: () => Promise<void>; // Add refetchUserData function to the context type
 }
@@ -36,6 +61,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: UserProviderProps) => {
   const [userInfo, setUserInfo] = useState<PlayerInfo | null>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchUserData = async () => {
@@ -51,14 +77,38 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
+  const fetchFriends = async () => {
+    const userId = await getUserName();
+    const friendShips = await getFriendships(userId);
+    const friendList = await Promise.all(
+      friendShips
+        .filter((friendShip) => friendShip !== null)
+        .map(async (friendShip) => {
+          const friendId =
+            friendShip.userIdOne === userId
+              ? friendShip.userIdTwo
+              : friendShip.userIdOne;
+          const friend = await getPlayerInfo(friendId!);
+          if (friend === null) return { friend: null, friendShip: null };
+          return { friend, friendShip };
+        })
+    );
+    setFriends(
+      friendList.filter(
+        (friend) => friend.friend !== null && friend.friendShip !== null
+      )
+    );
+  };
+
   useEffect(() => {
     fetchUserData();
+    fetchFriends();
   }, []);
 
   // Provide user data, loading state, and the refetch method to the context
   return (
     <UserContext.Provider
-      value={{ userInfo, loading, refetchUserData: fetchUserData }}
+      value={{ userInfo, friends, loading, refetchUserData: fetchUserData }}
     >
       {children}
     </UserContext.Provider>

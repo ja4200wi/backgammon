@@ -24,43 +24,46 @@ import { useUser } from '../utils/UserContent';
 import SearchPlayer from '../components/friends/SearchPlayer';
 import { Divider } from '@rneui/base';
 
-const selectionSet = [
+type Friend = {
+  friend: PlayerInfo;
+  friendShip: Friendship;
+};
+
+const playerSelectionSet = [
+  'id',
+  'name',
+  'country',
+  'emoji',
+  'profilePicColor',
+  'createdAt',
+  'updatedAt',
+] as const;
+type PlayerInfo = SelectionSet<
+  Schema['Player']['type'],
+  typeof playerSelectionSet
+>;
+
+const friendshipSelectionSet = [
   'id',
   'userIdOne',
   'userIdTwo',
   'isConfirmed',
   'createdAt',
 ] as const;
-type Friends = SelectionSet<Schema['Friends']['type'], typeof selectionSet>;
+type Friendship = SelectionSet<
+  Schema['Friends']['type'],
+  typeof friendshipSelectionSet
+>;
 
 const client = generateClient<Schema>();
 
 export default function FriendList({ navigation }: { navigation: any }) {
-  const { userInfo } = useUser();
+  const { userInfo, friends } = useUser();
   const localPlayerId = userInfo?.id;
 
-  const [friends, setFriends] = useState<Friends[]>([]);
-
-  useEffect(() => {
-    if (!localPlayerId) return;
-    const sub = client.models.Friends.observeQuery({
-      filter: {
-        or: [
-          {
-            userIdOne: { eq: localPlayerId },
-          },
-          {
-            userIdTwo: { eq: localPlayerId },
-          },
-        ],
-      },
-    }).subscribe({
-      next: async ({ items, isSynced }) => {
-        setFriends([...items]);
-      },
-    });
-    return () => sub.unsubscribe();
-  }, []);
+  if (friends === null) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,21 +87,15 @@ export default function FriendList({ navigation }: { navigation: any }) {
           <SearchPlayer />
           <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
             {friends
-              .filter((friend) => friend.isConfirmed)
+              .filter((friend) => friend.friendShip.isConfirmed)
               .map((friend) => {
-                const friendId =
-                  friend.userIdOne === localPlayerId
-                    ? friend.userIdTwo
-                    : friend.userIdOne;
-                if (!friendId) {
-                  return null;
-                }
                 return (
                   <Friend
-                    key={friend.id}
-                    friendId={friendId}
-                    friendshipId={friend.id}
-                    extraInfo={friend.createdAt}
+                    key={friend.friend.id}
+                    friendId={friend.friend.id}
+                    friendName={friend.friend.name}
+                    friendshipId={friend.friendShip.id}
+                    friendsSince={friend.friendShip.createdAt}
                     navigation={navigation}
                   />
                 );
@@ -107,31 +104,27 @@ export default function FriendList({ navigation }: { navigation: any }) {
           <Headline headline='Open Requests' />
           <View style={{ backgroundColor: APP_COLORS.backgroundColor }}>
             {friends
-              .filter((friend) => !friend.isConfirmed)
+              .filter((friend) => !friend.friendShip.isConfirmed)
               .map((friend) => {
-                const friendId =
-                  friend.userIdOne === localPlayerId
-                    ? friend.userIdTwo
-                    : friend.userIdOne;
-                if (!friendId) {
-                  return null;
-                }
-                const didISendRequest = friend.userIdOne === localPlayerId;
+                const didISendRequest =
+                  friend.friendShip.userIdOne === localPlayerId;
                 if (didISendRequest) {
                   return (
                     <SentRequest
-                      key={friend.id}
-                      friendId={friendId}
-                      extraInfo={friend.createdAt}
+                      key={friend.friend.id}
+                      friendId={friend.friend.id}
+                      friendName={friend.friend.name}
+                      requestSent={friend.friendShip.createdAt}
                     />
                   );
                 } else {
                   return (
                     <OpenRequest
-                      key={friend.id}
-                      friendId={friendId}
-                      friendshipId={friend.id}
-                      extraInfo={friend.createdAt}
+                      key={friend.friend.id}
+                      friendId={friend.friend.id}
+                      friendName={friend.friend.name}
+                      friendshipId={friend.friendShip.id}
+                      requestSent={friend.friendShip.createdAt}
                     />
                   );
                 }

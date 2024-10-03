@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { Avatar } from 'react-native-elements'; // Ensure this is installed and set up
-import CountryFlag from 'react-native-country-flag'; // Ensure this is installed and set up
-import Profile from '../../images/profile.svg'; // Ensure your SVG import is correct
-import { APP_COLORS, COUNTRIES } from '../../utils/constants';
-import { color } from '@rneui/base';
+import React, { useEffect, useState, useMemo } from 'react';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { Avatar } from 'react-native-elements';
+import CountryFlag from 'react-native-country-flag';
+import { APP_COLORS } from '../../utils/constants';
 import { generateClient, SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../../amplify/data/resource';
 import { getEnumFromKey, getPlayerInfo } from '../../service/profileService';
+import { GLOBAL_STYLES } from '../../utils/globalStyles';
 
 const selectionSet = [
   'id',
@@ -18,76 +17,87 @@ const selectionSet = [
   'createdAt',
   'updatedAt',
 ] as const;
+
 type PlayerInfo = SelectionSet<Schema['Player']['type'], typeof selectionSet>;
 
 const client = generateClient<Schema>();
 
 const AvatarWithFlag = ({
   playerId,
-  size,
-  flagSize,
-  fontSize,
+  size = 64,
+  flagSize = 14,
+  fontSize = 40,
 }: {
   playerId: string;
   size?: number;
   flagSize?: number;
   fontSize?: number;
 }) => {
-  size = size || 64;
-  flagSize = flagSize || 14;
-  fontSize = fontSize || 40;
-  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  function filterPlayerInfo(item: Record<string, any>) {
-    return selectionSet.reduce((filteredItem, key) => {
-      if (item !== null && item !== undefined && item.hasOwnProperty(key)) {
-        filteredItem[key] = item[key];
-      }
-      return filteredItem;
-    }, {} as Record<(typeof selectionSet)[number], any>);
-  }
+  const updatePlayerInfo = async () => {
+    setLoading(true);
+    try {
+      const response = await getPlayerInfo(playerId);
+      setPlayerInfo(response);
+    } catch (error) {
+      console.error('Failed to fetch player info:', error);
+      setPlayerInfo(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const sub = client.models.Player.observeQuery({
-      filter: {
-        id: { eq: playerId },
-      },
-    }).subscribe({
-      next: async ({ items, isSynced }) => {
-        const firstItem = items[0];
-        const filteredItem = filterPlayerInfo(firstItem);
-        setPlayerInfo(filteredItem);
-      },
-    });
-    return () => sub.unsubscribe();
+    updatePlayerInfo();
   }, [playerId]);
+
+  const avatarStyle = useMemo(
+    () => ({
+      backgroundColor: playerInfo?.profilePicColor || APP_COLORS.iconGrey,
+      ...styles.avatar,
+    }),
+    [playerInfo?.profilePicColor]
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size='large' color={APP_COLORS.appGreen} />
+        <Text style={GLOBAL_STYLES.lineItems}>Loading game stats...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { width: size, height: size }]}>
-      <Avatar
-        size={size}
-        rounded
-        containerStyle={{
-          backgroundColor: playerInfo?.profilePicColor || APP_COLORS.iconGrey,
-          ...styles.avatar,
-        }}
-      ></Avatar>
-      <View style={styles.profileContainer}>
-        <Text
-          style={{
-            fontSize: fontSize,
-            color:
-              playerInfo?.profilePicColor === '#000000' ? 'white' : 'black',
-          }}
-        >
-          {playerInfo?.emoji}
-        </Text>
-      </View>
-      <View style={styles.flagContainer}>
-        <CountryFlag
-          isoCode={getEnumFromKey(playerInfo?.country)}
-          size={flagSize}
-        />
-      </View>
+      <Avatar size={size} rounded containerStyle={avatarStyle} />
+      {playerInfo ? (
+        <>
+          <View style={styles.profileContainer}>
+            <Text
+              style={{
+                fontSize,
+                color:
+                  playerInfo?.profilePicColor === '#000000' ? 'white' : 'black',
+              }}
+            >
+              {playerInfo?.emoji}
+            </Text>
+          </View>
+          {playerInfo?.country && (
+            <View style={styles.flagContainer}>
+              <CountryFlag
+                isoCode={getEnumFromKey(playerInfo.country)}
+                size={flagSize}
+              />
+            </View>
+          )}
+        </>
+      ) : (
+        <Text style={GLOBAL_STYLES.lineItems}>No player data available</Text>
+      )}
     </View>
   );
 };
@@ -112,15 +122,21 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1, // Ensure the profile is on top of the Avatar
+    zIndex: 1,
   },
   flagContainer: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: 'transparent', // Ensure the background is transparent
-    zIndex: 2, // Ensure the flag is on top of other elements
+    backgroundColor: 'transparent',
+    zIndex: 2,
     borderRadius: 15,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: APP_COLORS.headerBackGroundColor,
   },
 });
 

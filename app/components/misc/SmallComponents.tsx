@@ -28,7 +28,7 @@ import { useEffect, useState } from 'react';
 import { SelectionSet } from 'aws-amplify/api';
 import { Schema } from '../../../amplify/data/resource';
 import { createGameWithFriend } from '../StartFriendGame';
-import {Share} from 'react-native';
+import { Share } from 'react-native';
 
 TimeAgo.addLocale(en);
 const timeAgo = new TimeAgo('en-US');
@@ -131,22 +131,14 @@ export function UserProfile({
 export function OpenRequest({
   friendId,
   friendshipId,
-  extraInfo,
+  friendName,
+  requestSent,
 }: {
   friendId: string;
   friendshipId: string;
-  extraInfo: string;
+  friendName: string | null;
+  requestSent: string;
 }) {
-  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
-
-  const updatePlayer = async () => {
-    const friendInfoNew = await getPlayerInfo(friendId);
-    setFriendInfo(friendInfoNew);
-  };
-
-  useEffect(() => {
-    updatePlayer();
-  }, [friendId]);
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -154,9 +146,11 @@ export function OpenRequest({
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
+            <Text style={GLOBAL_STYLES.headline}>
+              {friendName || 'No Name'}
+            </Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-              {timeAgo.format(new Date(extraInfo))}
+              {timeAgo.format(new Date(requestSent), 'twitter')}
             </Text>
           </View>
         </View>
@@ -183,21 +177,17 @@ export function OpenRequest({
 export function Friend({
   friendId,
   friendshipId,
-  extraInfo,
+  friendName,
+  friendsSince,
   navigation,
 }: {
   friendId: string;
   friendshipId: string;
-  extraInfo?: string;
+  friendName: string | null;
+  friendsSince: string;
   navigation: any;
 }) {
   const { userInfo } = useUser();
-  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
-
-  const updatePlayer = async () => {
-    const friendInfoNew = await getPlayerInfo(friendId);
-    setFriendInfo(friendInfoNew);
-  };
 
   const handleCreateGame = async () => {
     const success = await createGameWithFriend(userInfo?.id!, friendId);
@@ -205,10 +195,6 @@ export function Friend({
       navigation.navigate('PlayFriend', {});
     }
   };
-
-  useEffect(() => {
-    updatePlayer();
-  }, [friendId]);
 
   const confirmRemoveFriend = () => {
     const options = ['Cancel', 'Challenge Friend', 'Remove Friend'];
@@ -235,14 +221,12 @@ export function Friend({
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
+            <Text style={GLOBAL_STYLES.headline}>
+              {friendName || 'No Name'}
+            </Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-              {extraInfo && (
-                <>
-                  {'friends since '}
-                  {timeAgo.format(new Date(extraInfo), 'twitter')}
-                </>
-              )}
+              {'friends since '}
+              {timeAgo.format(new Date(friendsSince), 'twitter')}
             </Text>
           </View>
         </View>
@@ -322,21 +306,13 @@ export function DifficultyDisplay({ level }: { level: number }) {
 }
 export function SentRequest({
   friendId,
-  extraInfo,
+  friendName,
+  requestSent,
 }: {
   friendId: string;
-  extraInfo?: string;
+  friendName: string | null;
+  requestSent: string;
 }) {
-  const [friendInfo, setFriendInfo] = useState<PlayerInfo | null>(null);
-
-  const updatePlayer = async () => {
-    const friendInfoNew = await getPlayerInfo(friendId);
-    setFriendInfo(friendInfoNew);
-  };
-
-  useEffect(() => {
-    updatePlayer();
-  }, [friendId]);
   return (
     <View style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -344,9 +320,11 @@ export function SentRequest({
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
           <AvatarWithFlag playerId={friendId} />
           <View style={{ marginLeft: 16 }}>
-            <Text style={GLOBAL_STYLES.headline}>{friendInfo?.name}</Text>
+            <Text style={GLOBAL_STYLES.headline}>
+              {friendName || 'No Name'}
+            </Text>
             <Text style={{ fontSize: 12, color: APP_COLORS.standardGrey }}>
-              {extraInfo && timeAgo.format(new Date(extraInfo))}
+              {timeAgo.format(new Date(requestSent), 'twitter')}
             </Text>
           </View>
         </View>
@@ -404,7 +382,9 @@ export function InviteFriend() {
           fontWeight: '700',
         }}
         icon={<LetterIcon width={32} height={32} style={{ marginRight: 8 }} />}
-        onPress={() => {handleShare()}}
+        onPress={() => {
+          handleShare();
+        }}
       />
     </View>
   );

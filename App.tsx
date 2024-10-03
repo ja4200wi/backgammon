@@ -19,7 +19,7 @@ import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import outputs from './amplify_outputs.json';
 import OnlineMatching from './app/screens/OnlineMatchingScr';
 import { Button, StyleSheet, View } from 'react-native';
-import { UserProvider } from './app/utils/UserContent';
+import { UserProvider, useUser } from './app/utils/UserContent';
 
 Amplify.configure(outputs);
 
@@ -44,34 +44,42 @@ function HomeTabs() {
   );
 }
 
+const AppWrapper = () => {
+  const { loading } = useUser();
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Button title='Loading...' />
+      </View>
+    );
+  }
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: APP_COLORS.headerBackGroundColor,
+      }}
+    >
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name='Main' component={HomeTabs} />
+          <Stack.Screen name='GameSelection' component={GameSelectionScr} />
+          <Stack.Screen name='Game' component={GameScreen} />
+          <Stack.Screen name='OnlineMatching' component={OnlineMatching} />
+          <Stack.Screen name='Friends' component={Friends} />
+          <Stack.Screen name='PlayFriend' component={PlayFriend} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
+  );
+};
+
 export default function App() {
   return (
     <Authenticator.Provider>
       <Authenticator>
         <UserProvider>
-          <SafeAreaView
-            style={{
-              flex: 1,
-              backgroundColor: APP_COLORS.headerBackGroundColor,
-            }}
-          >
-            <NavigationContainer>
-              <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name='Main' component={HomeTabs} />
-                <Stack.Screen
-                  name='GameSelection'
-                  component={GameSelectionScr}
-                />
-                <Stack.Screen name='Game' component={GameScreen} />
-                <Stack.Screen
-                  name='OnlineMatching'
-                  component={OnlineMatching}
-                />
-                <Stack.Screen name='Friends' component={Friends} />
-                <Stack.Screen name='PlayFriend' component={PlayFriend} />
-              </Stack.Navigator>
-            </NavigationContainer>
-          </SafeAreaView>
+          <AppWrapper />
         </UserProvider>
       </Authenticator>
     </Authenticator.Provider>
