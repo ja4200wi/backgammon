@@ -249,7 +249,6 @@ export const useGameLogic = (
         }
       }
     }
-
     // After all turns are processed
     const copyOfGame = currentGame!.deepCopy();
     setGame(copyOfGame);
@@ -258,7 +257,7 @@ export const useGameLogic = (
     const distances = copyOfGame.getDistances();
     updatePipCount(distances.distBlack, distances.distWhite);
     updateHomeCheckers(copyOfGame);
-    checkForLegalMove(false, copyOfGame);
+    await checkForLegalMove(false, copyOfGame);
 
     if (copyOfGame.getCurrentPlayer() !== iAm) {
       setDisableScreen(true);
@@ -360,7 +359,6 @@ export const useGameLogic = (
     return false;
   };
   const switchplayer = async () => {
-    const iAm = await getWhoAmI()
     if (
       game &&
       !game.isGameOver() &&
@@ -383,7 +381,7 @@ export const useGameLogic = (
       game &&
       !game.isGameOver() &&
       isOnlineGame() &&
-      iAm === game.getCurrentPlayer()
+      whoAmI === game.getCurrentPlayer()
     ) {
       const turn = game.getTurnAfterMove();
       const newOnlineDice = await sendTurnToServer(turn);
@@ -401,7 +399,7 @@ export const useGameLogic = (
       game &&
       !game.isGameOver() &&
       isOnlineGame() &&
-      iAm !== game.getCurrentPlayer() &&
+      whoAmI !== game.getCurrentPlayer() &&
       onlineTurns
     ) {
       const newdice = getOnlineDice(onlineTurns);
@@ -540,7 +538,7 @@ export const useGameLogic = (
   };
 
   const runOnline = async () => {
-    const latestTurn = getLatestOnlineTurn(onlineTurns!);
+    const latestTurn = getLatestOnlineTurn(onlineTurns!)
     if (localPlayerId === latestTurn?.playerId) {
       return;
     }
@@ -741,20 +739,20 @@ export const useGameLogic = (
   const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
     if (currentGame && !currentGame.hasLegalMove()) {
       if (fastSwitch) {
-        switchplayer();
+        await switchplayer();
         return true;
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        switchplayer();
+        await switchplayer();
         return true;
       }
     } else if (!currentGame && game && !game.hasLegalMove()) {
       if (fastSwitch) {
-        switchplayer();
+        await switchplayer();
         return true;
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        switchplayer();
+        await switchplayer();
         return true;
       }
     }

@@ -285,7 +285,11 @@ const Board = forwardRef<any, BoardProps>(
         } else {
           checker = spikes[currentLastMove.to].checkers.pop()!;
         }
-        spikes[currentLastMove.from].checkers.push(checker);
+        if(currentLastMove.from === 25 || currentLastMove.from === 0) {
+          prisonCheckers.push(checker)
+        } else {
+          spikes[currentLastMove.from].checkers.push(checker);
+        }
         if (currentLastMove.indexHit) {
           const indexToRemove = prisonCheckers.findIndex(
             (checker) => checker.props.index === currentLastMove.indexHit
