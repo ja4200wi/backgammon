@@ -174,8 +174,8 @@ export const useGameLogic = (
     };
 
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver} = useStateManagement(switchplayer,)
-  const {double,giveUp} = useGameTurns(isOfflineGame,isOnlineGame,opponentPlayerId,localPlayerId,setUpEndBoard)
-  const {startGame,startOnline,startOffline,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame)
+  const {double,giveUp} = useGameTurns()
+  const {startGame,startOnline,startOffline,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
 
 const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   const boardRef = useRef<any>(null); // Define a ref for the Board component
