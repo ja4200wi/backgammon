@@ -5,17 +5,14 @@ import { BOT_NAMES, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
 import { useGameState } from './GameStateContext';
 import { useStateManagement } from './useGameLogicStateManagement';
+import { useGameHelper } from './useGameLogicHelper';
 
 
 export const useGameTurns = (
-    isOfflineGame: () => boolean,
-    isOnlineGame: (gameMode?: GAME_TYPE) => boolean,
-    opponentPlayerId:string,
-    localPlayerId:string,
-    setUpEndBoard: (currentGame: Game) => Promise<void>,
 ) => {
 
-    const {game, setDoubleDice, setGameOver, whoAmI} = useGameState()
+    const {game, setDoubleDice, setGameOver, whoAmI,localPlayerId,opponentPlayerId} = useGameState()
+    const {setUpEndBoard,isOnlineGame,isOfflineGame} = useGameHelper()
 
     const double = () => {
         if (game) {
