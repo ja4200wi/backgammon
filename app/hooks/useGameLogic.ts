@@ -22,6 +22,7 @@ import { useGameLogicComputer } from './useGameLogicComputer';
 import { getOnlineDice, transformOnlineDice, pause, transformLocalTurnToOnlineTurn, transformOnlineTurnToLocalTurn, getLatestOnlineTurn} from '../gameLogic/gameUtils';
 import { useStateManagement } from './useGameLogicStateManagement';
 import { useGameTurns } from './useGameLogicTurns';
+import { useGameHelper } from './useGameLogicHelper';
 
 const client = generateClient<Schema>();
 
@@ -51,6 +52,28 @@ export const useGameLogic = (
 ) => {
   // #region State Management
 
+  const runGame = () => {
+    if (!gamemode || !game) return;
+    switch (gamemode) {
+      case GAME_TYPE.PASSPLAY:
+        break;
+      case GAME_TYPE.COMPUTER:
+        runBot()
+        break;
+      case GAME_TYPE.RANDOM:
+        runOnline();
+        break;
+      case GAME_TYPE.FRIENDLIST:
+        // Initialize game with friends logic here
+        break;
+      case GAME_TYPE.ELO:
+        // Initialize Elo ranked game logic here
+        break;
+      default:
+        break;
+    }
+  };
+
   const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
@@ -79,24 +102,7 @@ export const useGameLogic = (
     bot,
     setBot} = useGameState()
 
-    const isOnlineGame = (gameMode?: GAME_TYPE) => {
-      if (gameMode) {
-        return (
-          gameMode === GAME_TYPE.RANDOM ||
-          gameMode === GAME_TYPE.ELO ||
-          gameMode === GAME_TYPE.FRIENDLIST
-        );
-      } else {
-        return (
-          gamemode === GAME_TYPE.RANDOM ||
-          gamemode === GAME_TYPE.ELO ||
-          gamemode === GAME_TYPE.FRIENDLIST
-        );
-      }
-    };
-    const isOfflineGame = () => {
-      return gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY;
-    };
+    const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom,setUpEndBoard} = useGameHelper()
 
     const switchplayer = async () => {
       if (
@@ -150,14 +156,6 @@ export const useGameLogic = (
           setDisableScreen(true);
         }
         await checkForLegalMove(false, game);
-      }
-    };
-    const setUpEndBoard = async (currentGame: Game) => {
-      if (currentGame) {
-        setPositions(currentGame.getCurrentPositions());
-        if (currentGame && whoAmI === currentGame.getCurrentPlayer()) {
-          const turn = currentGame.getTurnAfterMove();
-        }
       }
     };
 
@@ -435,27 +433,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     }
     return false;
   };
-  const runGame = () => {
-    if (!gamemode || !game) return;
-    switch (gamemode) {
-      case GAME_TYPE.PASSPLAY:
-        break;
-      case GAME_TYPE.COMPUTER:
-        runBot()
-        break;
-      case GAME_TYPE.RANDOM:
-        runOnline();
-        break;
-      case GAME_TYPE.FRIENDLIST:
-        // Initialize game with friends logic here
-        break;
-      case GAME_TYPE.ELO:
-        // Initialize Elo ranked game logic here
-        break;
-      default:
-        break;
-    }
-  };
   const updatePositionHandler = async (
     sourceIndex: number,
     targetIndex: number,
@@ -641,21 +618,12 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     return false;
   };
   
-  
-  const handleDisableScreen = (bool: boolean) => {
-    setDisableScreen(bool);
-  };
   const undoMove = async () => {
     if (game) {
       game.undoMove();
       await updateGameState();
       await updatePositionHandler(0, 0, 'UNDO');
     }
-  };
-  const legalMovesFrom = (from: number): number[] => {
-    if (game) {
-      return game?.getLegalMovesFrom(from) ?? [];
-    } else return [];
   };
   // #endregion
 
