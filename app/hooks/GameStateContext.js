@@ -7,6 +7,10 @@ import { DoubleDice } from '../gameLogic/doubleDice';
 // Create the context
 const GameStateContext = createContext();
 
+/**
+ * @typedef {import('../path/to/schema').Schema['Turns']['type']} OnlineTurn
+ */
+
 // Create the provider
 export const GameStateProvider = ({ children }) => {
   const [isStartingPhase, setStartingPhase] = useState(true);
@@ -32,10 +36,11 @@ export const GameStateProvider = ({ children }) => {
   const [bot, setBot] = useState(new Bot(BOT_NAMES.DEFAULT));
 
   // ONLINE CONSTANTS
-  const [gameId,setGameId] = useState('0');
-  const [localPlayerId, setLocalPlayerId] = useState('0')
-  const [whoAmI, setWhoAmI] = useState(PLAYER_COLORS.WHITE);
-  const [opponentPlayerId, setOpponentPlayerId] = useState('0');
+  const [gameId,setGameId] = useState();
+  const [localPlayerId, setLocalPlayerId] = useState()
+  const [whoAmI, setWhoAmI] = useState();
+  const [opponentPlayerId, setOpponentPlayerId] = useState();
+  const [onlineTurns, setOnlineTurns] = useState(/** @type {OnlineTurn[]} */ ([]));
 
   //const [playerOneId,setPlayerOneId] = useState<string>("")
   //const [playerTwoId,setPlayerTwoId] = useState<string>("")
@@ -74,7 +79,9 @@ export const GameStateProvider = ({ children }) => {
         opponentPlayerId,
         setOpponentPlayerId,
         whoAmI,
-        setWhoAmI
+        setWhoAmI,
+        onlineTurns,
+        setOnlineTurns
       }}
     >
       {children}

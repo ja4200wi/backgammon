@@ -3,10 +3,13 @@ import { Game } from '../gameLogic/backgammon'; // Assuming this contains core B
 import { Schema } from '../../amplify/data/resource';
 import { generateClient } from 'aws-amplify/api';
 import { PLAYER_COLORS } from '../utils/constants';
-import { transformOnlineTurnToLocalTurn } from '../gameLogic/gameUtils'
+import { transformLocalTurnToOnlineTurn, transformOnlineTurnToLocalTurn } from '../gameLogic/gameUtils'
 import { useGameState } from './GameStateContext';
 import { getLatestOnlineTurn } from '../gameLogic/gameUtils';
 import { Turn } from '../gameLogic/turn';
+import endGame, { saveGameStats, sendTurn } from '../service/gameService';
+import { useGameTurns } from './useGameLogicTurns';
+import { useStateManagement } from './useGameLogicStateManagement';
 
 const client = generateClient<Schema>();
 
@@ -22,20 +25,26 @@ type SendableTurn = {
 type OnlineDice = Schema['Dice']['type'];
 
 export const useGameLogicOnline = (
-  gameId: string,
-  localPlayerId: string,
-  setDoubleAlertVisible: React.Dispatch<React.SetStateAction<boolean>>,
-  isWaitingForDouble: boolean,
-  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowWaitingDouble:React.Dispatch<React.SetStateAction<boolean>>,
   makeTurn: (turn: Turn, quickTurn?: boolean, game?: Game) => Promise<Game | undefined>,
+  gameId:string,
+  setDoubleAlertVisible:React.Dispatch<React.SetStateAction<boolean>>,
+  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowWaitingDouble:React.Dispatch<React.SetStateAction<boolean>>
 ) => {
 
-  const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
-  const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
+  const {
+    localPlayerId,
+    setOpponentPlayerId,
+    doubleDice,
+    gamemode,
+    game,
+    setGameOver,
+    isWaitingForDouble,
+    setOnlineTurns,
+    onlineTurns,
+  } = useGameState()
 
-  const {setGameOver} = useGameState()
-
+  const {double} = useGameTurns()
 
   useEffect(() => {
     if (gameId !== undefined && gameId !== null) {
@@ -99,8 +108,53 @@ export const useGameLogicOnline = (
       return PLAYER_COLORS.BLACK;
     }
   };
-
+  const sendTurnToServer = async (
+    turn: Turn,
+    turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'
+  ): Promise<OnlineDice> => {
+    if (!turn.hasMoves && turnType === undefined)
+      return { dieOne: 0, dieTwo: 0 };
+    const turnToSend: SendableTurn = transformLocalTurnToOnlineTurn(
+      turn,
+      gameId,
+      localPlayerId,
+      turnType
+    );
+    const nextDice: OnlineDice | null | undefined = await sendTurn(turnToSend);
+    if (nextDice === null || nextDice === undefined) {
+      return { dieOne: 0, dieTwo: 0 };
+    } else {
+      return nextDice;
+    }
+  };
+  const sendFinalGameStateToServer = async (
+    winnerId: string,
+    loserId: string,
+    reason: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER'
+  ) => {
+    if (game) {
+      const distWhite = game.getDistances().distWhite;
+      const distBlack = game.getDistances().distBlack;
+      const doubleDiceValue = doubleDice.getMultiplicator();
+      saveGameStats(
+        gameId,
+        winnerId,
+        loserId,
+        gamemode!,
+        0,
+        0,
+        1,
+        { white: distWhite, black: distBlack },
+        doubleDiceValue,
+        reason
+      );
+      endGame(gameId);
+    }
+  };
   return {
-    
+    getWhoAmI,
+    sendTurnToServer,
+    sendFinalGameStateToServer,
+    runOnline,
   };
 };
