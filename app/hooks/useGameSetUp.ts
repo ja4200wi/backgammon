@@ -12,10 +12,11 @@ type OnlineTurn = Schema['Turns']['type'];
 export const useGameSetup = (
   getWhoAmI: () => Promise<PLAYER_COLORS>,
   runGame: () => void,
-
+  gameId: string,
+  localPlayerId: string,
 ) => {
 
-    const {setGameMode, setGame , setBot , onlineTurns, setWhoAmI, setPositions, setStartingPhase,game,setGameIsRunning,setFirstRoll,setDisableScreen,setDoubleDice} = useGameState()
+    const {setGameMode, setGame , setBot , onlineTurns, setWhoAmI, setPositions, setStartingPhase,game,setGameIsRunning,setFirstRoll,setDisableScreen,setDoubleDice,setGameId,setLocalPlayerId} = useGameState()
     const {isOnlineGame, isOfflineGame} = useGameHelper()
 
     const startGame = async (
@@ -34,6 +35,8 @@ export const useGameSetup = (
       const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
         const onlineDice = getOnlineDice(newOnlineTurns!, 0);
         setGameMode(gamemode);
+        setGameId(gameId)
+        setLocalPlayerId(localPlayerId)
         const startPlayer =
           onlineDice[0] > onlineDice[1] ? PLAYER_COLORS.WHITE : PLAYER_COLORS.BLACK;
         const newGame = new Game(startPlayer, onlineDice);
@@ -45,7 +48,6 @@ export const useGameSetup = (
           setBot(new Bot(botTpye))}
           ;
         const newGame = new Game();
-        console.log('Setting game')
         setGame(newGame);
       };
       const setUpGame = async () => {
@@ -60,7 +62,6 @@ export const useGameSetup = (
       };
       const doStartingPhase = async () => {
         if (game && isOfflineGame()) {
-          console.log('doing starting phase now')
           if (game.getDice()[0] > game.getDice()[1]) {
             game.setPlayer(PLAYER_COLORS.WHITE);
             setTimeout(() => setStartingPhase(false), 2250);
