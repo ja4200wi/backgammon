@@ -12,6 +12,7 @@ import PlayFriend from './app/screens/PlayFriendScr';
 import FriendList from './app/screens/FriendListScr';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { APP_COLORS } from './app/utils/constants';
+import { GameStateProvider } from './app/hooks/GameStateContext';
 
 import { Amplify } from 'aws-amplify';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
@@ -62,7 +63,13 @@ export default function App() {
                   name='GameSelection'
                   component={GameSelectionScr}
                 />
-                <Stack.Screen name='Game' component={GameScreen} />
+                <Stack.Screen name='Game'>
+                  {props => (
+                    <GameStateProvider>
+                      <GameScreen {...props} />
+                    </GameStateProvider>
+                  )}
+                </Stack.Screen>
                 <Stack.Screen
                   name='OnlineMatching'
                   component={OnlineMatching}

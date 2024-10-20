@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { showAcceptMoveButton, showUndoMoveButton } from '../gameLogic/gameUtils';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
@@ -19,6 +20,8 @@ import LoadingPopup from '../components/misc/LoadingAlert';
 import AnimatedChecker from '../components/game/AnimatedChecker';
 import GameOverModal from '../components/game/GameOverModal';
 import LoadingAlert from '../components/misc/LoadingAlert';
+import { useGameState } from '../hooks/GameStateContext';
+import { ConsoleLogger } from 'aws-amplify/utils';
 
 interface GameScrProps {
   navigation: any;
@@ -51,33 +54,22 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   }>({ sx: 0, sy: 0, ex: 0, ey: 0 });
   const { gameId, localPlayerId, gameMode, botType } = route.params;
   const {
-    game,
-    dice,
-    positions,
     boardRef,
     opponentPlayerId,
     onMoveChecker,
     startGame,
-    showAcceptMoveButton,
     updateMoveIsOver,
     isOnlineGame,
-    showUndoMoveButton,
     isOfflineGame,
     undoMove,
     handleDisableScreen,
     giveUp,
     legalMovesFrom,
     disabledScreen,
-    setGameOver,
     resetGame,
     sendTurnToServer,
     sendFinalGameStateToServer,
-    doubleDice,
-    isStartingPhase,
-    firstRoll,
-    gameOver,
     double,
-    isLoadingGame,
     onlineTurns,
   } = useGameLogic(
     gameId,
@@ -88,11 +80,27 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setShowWaitingDouble,
   );
 
+  const { 
+    isLoadingGame,
+    firstRoll,
+    isStartingPhase,
+    game, 
+    positions,
+    doubleDice,
+    gameOver,
+    setGameOver,
+  } = useGameState()
+
+  useEffect(() => {
+    console.log('firstroll GAMESCR',firstRoll,"startingphase",isStartingPhase)
+  },[firstRoll,isStartingPhase])
+
   const { pointsToWin } = route.params;
   const [startedGame, setStartedGame] = useState<boolean>(false);
   {/* START GAME*/}
   useEffect(() => {
     if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
+      console.log('Starting Game')
       setStartedGame(true);
       startGame(gameMode);
     } else if (!startedGame && gameMode === GAME_TYPE.COMPUTER) {
@@ -252,8 +260,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           pipCount={game ? [game?.getDistances().distWhite,game?.getDistances().distBlack] : [167,167]}
           homeCount={game ? [game?.getHomeCheckers(PLAYER_COLORS.WHITE),game?.getHomeCheckers(PLAYER_COLORS.BLACK)] : [0,0]}
           dice={{
-            diceOne: dice[0],
-            diceTwo: dice[1],
+            diceOne: game ? game?.getDice()[0] : 1,
+            diceTwo: game ? game?.getDice()[1] : 2,
             color:
               game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
                 ? DICE_COLORS.WHITE

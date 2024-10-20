@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useReducer } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import {
   BOT_DIFFICULTY,
@@ -17,6 +17,11 @@ import endGame, { sendTurn, saveGameStats } from '../service/gameService';
 import { on } from 'events';
 import { copy } from 'aws-amplify/storage';
 import { G } from 'react-native-svg';
+import { useGameState } from '../hooks/GameStateContext';
+import { useGameLogicComputer } from './useGameLogicComputer';
+import { getOnlineDice, transformOnlineDice, pause, transformLocalTurnToOnlineTurn, transformOnlineTurnToLocalTurn, getLatestOnlineTurn} from '../gameLogic/gameUtils';
+import { useStateManagement } from './useGameLogicStateManagement';
+import { useGameTurns } from './useGameLogicTurns';
 
 const client = generateClient<Schema>();
 
@@ -45,30 +50,144 @@ export const useGameLogic = (
   setShowWaitingDouble:React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   // #region State Management
-  const [game, setGame] = useState<Game | null>(null);
-  const [dice, setDice] = useState<number[]>(GAME_SETTINGS.startDice);
-  const [isStartingPhase, setStartingPhase] = useState<boolean>(true);
-  const [positions, setPositions] = useState(GAME_SETTINGS.startingPositions);
-  const [doubleDice, setDoubleDice] = useState<DoubleDice>(new DoubleDice());
-  const [firstRoll, setFirstRoll] = useState(true);
-  const [lastturn, setLastTurn] = useState<Turn>();
-  const [disableScreen, setDisableScreen] = useState<boolean>(false);
-  const [gamemode, setGameMode] = useState<GAME_TYPE>();
-  const [gameOver, setGameOver] = useState<{
-    gameover: boolean;
-    winner: PLAYER_COLORS | string;
-    reason?: 'GIVE_UP' | 'DOUBLE' | 'TIMEOUT' | 'GAME_OVER';
-  }>({
-    gameover: false,
-    winner: PLAYER_COLORS.NAP,
-  });
-  const [gameIsRunning, setGameIsRunning] = useState(false);
+
   const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
-  const [isLoadingGame, setIsLoadingGame] = useState<boolean>(true);
-  const [bot, setBot] = useState<Bot>(new Bot(BOT_NAMES.RIANA));
+
+  const { 
+    isStartingPhase,
+    setStartingPhase, 
+    firstRoll,
+    setFirstRoll, 
+    disableScreen, 
+    setDisableScreen, 
+    isLoadingGame, 
+    setIsLoadingGame, 
+    gameIsRunning, 
+    setGameIsRunning, 
+    game, 
+    setGame,
+    positions,
+    setPositions,
+    doubleDice,
+    setDoubleDice,
+    gamemode,
+    setGameMode,
+    gameOver,
+    setGameOver,
+    bot,
+    setBot} = useGameState()
+
+    const isOnlineGame = (gameMode?: GAME_TYPE) => {
+      if (gameMode) {
+        return (
+          gameMode === GAME_TYPE.RANDOM ||
+          gameMode === GAME_TYPE.ELO ||
+          gameMode === GAME_TYPE.FRIENDLIST
+        );
+      } else {
+        return (
+          gamemode === GAME_TYPE.RANDOM ||
+          gamemode === GAME_TYPE.ELO ||
+          gamemode === GAME_TYPE.FRIENDLIST
+        );
+      }
+    };
+    const isOfflineGame = () => {
+      return gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY;
+    };
+
+    const switchplayer = async () => {
+      if (
+        game &&
+        !game.isGameOver() &&
+        isOfflineGame()
+      ) {
+        game.switchPlayer();
+        forceRender()
+        if (disableScreen) {
+          setDisableScreen(false);
+        }
+        const didswitch = await checkForLegalMove(false);
+        if (
+          game.getCurrentPlayer() === PLAYER_COLORS.BLACK &&
+          gamemode === GAME_TYPE.COMPUTER &&
+          !didswitch
+        ) {
+          runGame()
+        }
+      } else if (
+        game &&
+        !game.isGameOver() &&
+        isOnlineGame() &&
+        whoAmI === game.getCurrentPlayer()
+      ) {
+        const turn = game.getTurnAfterMove();
+        const newOnlineDice = await sendTurnToServer(turn);
+        const newLocalDice = transformOnlineDice(newOnlineDice);
+        game.onlineSwitchPlayer(newLocalDice);
+        if (disableScreen) {
+          setDisableScreen(false);
+        } else {
+          setDisableScreen(true);
+        }
+        const copyGame = game.deepCopy()
+        setGame(copyGame)
+      } else if (
+        game &&
+        !game.isGameOver() &&
+        isOnlineGame() &&
+        whoAmI !== game.getCurrentPlayer() &&
+        onlineTurns
+      ) {
+        const newdice = getOnlineDice(onlineTurns);
+        forceRender()
+        game.onlineSwitchPlayer(newdice);
+        if (disableScreen) {
+          setDisableScreen(false);
+        } else {
+          setDisableScreen(true);
+        }
+        await checkForLegalMove(false, game);
+      }
+    };
+    const setUpEndBoard = async (currentGame: Game) => {
+      if (currentGame) {
+        setPositions(currentGame.getCurrentPositions());
+        if (currentGame && whoAmI === currentGame.getCurrentPlayer()) {
+          const turn = currentGame.getTurnAfterMove();
+        }
+      }
+    };
+
+  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver} = useStateManagement(switchplayer,)
+  const {double,giveUp} = useGameTurns(isOfflineGame,isOnlineGame,opponentPlayerId,localPlayerId,setUpEndBoard)
+
+const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   const boardRef = useRef<any>(null); // Define a ref for the Board component
+  const makeTurn = async (
+    turn: Turn,
+    quickTurn?: boolean,
+    game?: Game
+  ): Promise<Game | undefined> => {
+    if (quickTurn && game) {
+      if (turn.hasMoves()) {
+        await doQuickMove(turn, game);
+      } else {
+        return game;
+      }
+    } else if (turn.hasMoves()) {
+      setTimeout(() => doPlayerTwoMove(turn), 750);
+      return game;
+    } else {
+      setTimeout(() => updateMoveIsOver(), 750);
+      return game;
+    }
+    return game;
+  };
+  const { runBot } = useGameLogicComputer(game,makeTurn)
+
   // #endregion
 
   // #region Effects
@@ -85,6 +204,9 @@ export const useGameLogic = (
       return () => sub.unsubscribe();
     }
   }, []);
+  useEffect(() => {
+    console.log('isloadingGame',isLoadingGame)
+  },[isLoadingGame])
   useEffect(() => {
     if (
       (gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY) &&
@@ -145,6 +267,7 @@ export const useGameLogic = (
     newOnlineTurns?: OnlineTurn[],
     botType?: BOT_NAMES
   ) => {
+    // Übergabe von onlineturns ist hier unnötig; und mit globalGameState auch die anderen beiden
     if (newOnlineTurns) {
       startOnline(gamemode, newOnlineTurns);
     } else {
@@ -154,7 +277,6 @@ export const useGameLogic = (
   };
   const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
     const onlineDice = getOnlineDice(newOnlineTurns!, 0);
-    setDice(onlineDice);
     setGameMode(gamemode);
     const startPlayer =
       onlineDice[0] > onlineDice[1] ? PLAYER_COLORS.WHITE : PLAYER_COLORS.BLACK;
@@ -163,8 +285,11 @@ export const useGameLogic = (
   };
   const startOffline = (gamemode: GAME_TYPE, botTpye?: BOT_NAMES) => {
     setGameMode(gamemode);
-    if (botTpye) setBot(new Bot(botTpye));
+    if (botTpye) {
+      setBot(new Bot(botTpye))}
+      ;
     const newGame = new Game();
+    console.log('Setting game')
     setGame(newGame);
   };
   useEffect(() => {
@@ -173,7 +298,6 @@ export const useGameLogic = (
     if (game) {
       if (isOnlineGame() && onlineTurns) {
         const startingDice = getOnlineDice(onlineTurns, 0);
-        setDice(startingDice);
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
         const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
@@ -182,11 +306,7 @@ export const useGameLogic = (
       }
     }
   };
-  const pause = async (duration: number) => {
-    return new Promise<void>((resolve) => {
-      setTimeout(resolve, duration);
-    });
-  };
+  
   const processTurn = async (
     copyOnlineTurns: OnlineTurn[],
     game: Game,
@@ -208,7 +328,7 @@ export const useGameLogic = (
         currentGame = await makeTurn(tempLocalTurn, true, currentGame);
         if (currentGame) {
           currentGame.onlineSwitchPlayer(nextMoveDice);
-          setDice(nextMoveDice);
+          forceRender()
         }
       } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
         if (hasDoubled) {
@@ -264,7 +384,6 @@ export const useGameLogic = (
   const setUpGame = async () => {
     if (game) {
       if (isOnlineGame() && onlineTurns) {
-        setDice(getOnlineDice(onlineTurns, 0));
         const iAm = await getWhoAmI();
         setWhoAmI(iAm);
       }
@@ -274,12 +393,11 @@ export const useGameLogic = (
   };
   const doStartingPhase = async () => {
     if (game && isOfflineGame()) {
+      console.log('doing starting phase now')
       if (game.getDice()[0] > game.getDice()[1]) {
         game.setPlayer(PLAYER_COLORS.WHITE);
-        setDice(game.getDice());
         setTimeout(() => setStartingPhase(false), 2250);
       } else {
-        setDice(game.getDice());
         setTimeout(() => {
           setStartingPhase(false);
           runGame();
@@ -323,7 +441,7 @@ export const useGameLogic = (
       case GAME_TYPE.PASSPLAY:
         break;
       case GAME_TYPE.COMPUTER:
-        runBot();
+        runBot()
         break;
       case GAME_TYPE.RANDOM:
         runOnline();
@@ -349,61 +467,7 @@ export const useGameLogic = (
     }
     return false;
   };
-  const switchplayer = async () => {
-    if (
-      game &&
-      !game.isGameOver() &&
-      (gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY)
-    ) {
-      game.switchPlayer();
-      setDice(game.getDice());
-      if (disableScreen) {
-        setDisableScreen(false);
-      }
-      const didswitch = await checkForLegalMove(false);
-      if (
-        game.getCurrentPlayer() === PLAYER_COLORS.BLACK &&
-        gamemode === GAME_TYPE.COMPUTER &&
-        !didswitch
-      ) {
-        runGame()
-      }
-    } else if (
-      game &&
-      !game.isGameOver() &&
-      isOnlineGame() &&
-      whoAmI === game.getCurrentPlayer()
-    ) {
-      const turn = game.getTurnAfterMove();
-      const newOnlineDice = await sendTurnToServer(turn);
-      const newLocalDice = transformOnlineDice(newOnlineDice);
-      game.onlineSwitchPlayer(newLocalDice);
-      setDice(newLocalDice);
-      if (disableScreen) {
-        setDisableScreen(false);
-      } else {
-        setDisableScreen(true);
-      }
-      const copyGame = game.deepCopy()
-      setGame(copyGame)
-    } else if (
-      game &&
-      !game.isGameOver() &&
-      isOnlineGame() &&
-      whoAmI !== game.getCurrentPlayer() &&
-      onlineTurns
-    ) {
-      const newdice = getOnlineDice(onlineTurns);
-      setDice(newdice);
-      game.onlineSwitchPlayer(newdice);
-      if (disableScreen) {
-        setDisableScreen(false);
-      } else {
-        setDisableScreen(true);
-      }
-      await checkForLegalMove(false, game);
-    }
-  };
+  
   const resetGame = () => {
     setGame(null);
     setGameIsRunning(false);
@@ -412,51 +476,7 @@ export const useGameLogic = (
     setDisableScreen(true);
     setDoubleDice(new DoubleDice());
   };
-  const giveUp = (looser: PLAYER_COLORS) => {
-    if (game) {
-      game.giveUp(looser);
-      const winner =
-        looser === PLAYER_COLORS.WHITE
-          ? PLAYER_COLORS.BLACK
-          : PLAYER_COLORS.WHITE;
-      if (isOfflineGame()) {
-        setGameOver({ gameover: true, winner: winner, reason: 'GIVE_UP' });
-      } else if (isOnlineGame()) {
-        setGameOver({
-          gameover: true,
-          winner: looser === whoAmI ? opponentPlayerId : localPlayerId,
-          reason: 'GIVE_UP',
-        });
-      }
-      setUpEndBoard(game);
-    }
-  };
-  const double = () => {
-    if (game) {
-      const newDoubleDice = game.double();
-      setDoubleDice(newDoubleDice);
-    }
-  };
-  const makeTurn = async (
-    turn: Turn,
-    quickTurn?: boolean,
-    game?: Game
-  ): Promise<Game | undefined> => {
-    if (quickTurn && game) {
-      if (turn.hasMoves()) {
-        await doQuickMove(turn, game);
-      } else {
-        return game;
-      }
-    } else if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 750);
-      return game;
-    } else {
-      setTimeout(() => updateMoveIsOver(), 750);
-      return game;
-    }
-    return game;
-  };
+  
   const doPlayerTwoMove = async (turn: Turn) => {
     const move = turn.nextMove();
     if (move) {
@@ -492,6 +512,8 @@ export const useGameLogic = (
       return { dieOne: 0, dieTwo: 0 };
     const turnToSend: SendableTurn = transformLocalTurnToOnlineTurn(
       turn,
+      gameId,
+      localPlayerId,
       turnType
     );
     const nextDice: OnlineDice | null | undefined = await sendTurn(turnToSend);
@@ -559,68 +581,7 @@ export const useGameLogic = (
 
   // #region Utility Functions
 
-  const transformLocalTurnToOnlineTurn = (
-    turn: Turn,
-    turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'
-  ): SendableTurn => {
-    const moves = [];
-    while (turn.hasMoves()) {
-      const tmpMove = turn.nextMove();
-      moves.push({ from: tmpMove!.getFrom(), to: tmpMove!.getTo() });
-    }
-    return {
-      gameId: gameId,
-      playerId: localPlayerId,
-      moves: moves,
-      type: turnType ? turnType : 'MOVE',
-    };
-  };
-  const transformOnlineTurnToLocalTurn = (turn: OnlineTurn): Turn => {
-    if (turn) {
-      const tempOnlineMoves = turn.moves;
-      const tempLocalMoves: Move[] = [];
 
-      // Iterate over tempOnlineMoves
-      while (tempOnlineMoves && tempOnlineMoves.length > 0) {
-        const currentMove = tempOnlineMoves.shift(); // Remove the first element from the array
-
-        if (
-          currentMove &&
-          currentMove.from !== undefined &&
-          currentMove.to !== undefined
-        ) {
-          // Assuming Move type has properties 'start' and 'end'
-          const localMove: Move = new Move(currentMove.from, currentMove.to);
-          tempLocalMoves.push(localMove);
-        }
-      }
-
-      // Return a new Turn object
-      return new Turn(tempLocalMoves);
-    }
-
-    // Return a default Turn if the input is null or undefined
-    return new Turn();
-  };
-  const getOnlineDice = (
-    turns: OnlineTurn[],
-    getDiceAt?: number
-  ): [number, number] => {
-    const latestTurn =
-      typeof getDiceAt === 'number' ? turns[getDiceAt] : turns.at(-1);
-    if (latestTurn)
-      if (latestTurn.diceForNextTurn) {
-        return transformOnlineDice(latestTurn.diceForNextTurn);
-      }
-    return [0, 0];
-  };
-  const transformOnlineDice = (onlineDice: OnlineDice): [number, number] => {
-    if (onlineDice) {
-      const diceForNextTurn = [onlineDice.dieOne ?? 0, onlineDice.dieTwo ?? 0];
-      return [diceForNextTurn[0], diceForNextTurn[1]];
-    }
-    return [0, 0];
-  };
   const getWhoAmI = async () => {
     const { data: session, errors } = await client.models.Session.get({
       id: gameId,
@@ -640,50 +601,8 @@ export const useGameLogic = (
       return PLAYER_COLORS.BLACK;
     }
   };
-  const getLatestOnlineTurn = (latestTurn: OnlineTurn[]) => {
-    return latestTurn.at(-1);
-  };
-  const setUpEndBoard = async (currentGame: Game) => {
-    if (currentGame) {
-      setPositions(currentGame.getCurrentPositions());
-      if (currentGame && whoAmI === currentGame.getCurrentPlayer()) {
-        const turn = currentGame.getTurnAfterMove();
-      }
-    }
-  };
-  const isOfflineGame = () => {
-    return gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY;
-  };
-  const isOnlineGame = (gameMode?: GAME_TYPE) => {
-    if (gameMode) {
-      return (
-        gameMode === GAME_TYPE.RANDOM ||
-        gameMode === GAME_TYPE.ELO ||
-        gameMode === GAME_TYPE.FRIENDLIST
-      );
-    } else {
-      return (
-        gamemode === GAME_TYPE.RANDOM ||
-        gamemode === GAME_TYPE.ELO ||
-        gamemode === GAME_TYPE.FRIENDLIST
-      );
-    }
-  };
-  const updateGameState = async () => {
-    if (game) {
-      setPositions(game.getCurrentPositions()); // unneccecary becaue of new board logic
-      if (isOnlineGame() && whoAmI !== game.getCurrentPlayer()) {
-        return;
-      }
-      if (
-        gamemode === GAME_TYPE.COMPUTER &&
-        game.getCurrentPlayer() === PLAYER_COLORS.BLACK
-      ) {
-        return;
-      }
-      checkForLegalMove(true, game);
-    }
-  };
+  
+  
   const isGameOver = (): boolean => {
     if (game) {
       if (game.isGameOver()) {
@@ -712,6 +631,7 @@ export const useGameLogic = (
     return false;
   };
   const disabledScreen = (currentGame: Game): boolean => {
+    if(!currentGame) return false
     if (gamemode === GAME_TYPE.COMPUTER) {
       return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
     } else if (isOnlineGame()) {
@@ -720,49 +640,8 @@ export const useGameLogic = (
     }
     return false;
   };
-  const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
-    if (currentGame && !currentGame.hasLegalMove()) {
-      if (fastSwitch) {
-        await switchplayer();
-        return true;
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        await switchplayer();
-        return true;
-      }
-    } else if (!currentGame && game && !game.hasLegalMove()) {
-      if (fastSwitch) {
-        await switchplayer();
-        return true;
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        await switchplayer();
-        return true;
-      }
-    }
-    return false;
-  };
-  const showAcceptMoveButton = (currentGame: Game) => {
-    if (game) {
-      return !(currentGame.getMovesLeft().length === 0);
-    }
-    return true;
-  };
-  const showUndoMoveButton = (currentGame: Game) => {
-    if (game === null) {
-      return true;
-    }
-    return currentGame.getLastMoves().length === 0;
-  };
   
-  const updateMoveIsOver = () => {
-    if (firstRoll) {
-      setFirstRoll(false);
-    }
-    if (game) {
-      switchplayer();
-    }
-  };
+  
   const handleDisableScreen = (bool: boolean) => {
     setDisableScreen(bool);
   };
@@ -778,38 +657,15 @@ export const useGameLogic = (
       return game?.getLegalMovesFrom(from) ?? [];
     } else return [];
   };
-  const runBot = async () => {
-    if (game) {
-      if (game.getMovesLeft().length === 0) { return
-      } else {
-        if (game.getCurrentPlayer() === PLAYER_COLORS.BLACK) {
-          setDisableScreen(true);
-          await makeBotMove();
-        }
-      }
-    }
-  };
-  const makeBotMove = async () => {
-    if (game) {
-      //const botTurn = bot.tempTurnEasyBot(game);
-      const botTurn = bot.makeMove(game);
-      if (botTurn) {
-        await makeTurn(botTurn);
-      } else console.log('FAILED');
-    }
-  };
   // #endregion
 
   return {
     game,
-    dice,
     positions,
     boardRef,
     onMoveChecker,
     startGame,
-    showAcceptMoveButton,
     updateMoveIsOver,
-    showUndoMoveButton,
     undoMove,
     legalMovesFrom,
     disabledScreen,
