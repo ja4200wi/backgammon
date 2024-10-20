@@ -1,28 +1,22 @@
 import { useState, useEffect, useRef, useReducer } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import {
-  BOT_DIFFICULTY,
   BOT_NAMES,
-  GAME_SETTINGS,
   GAME_TYPE,
   PLAYER_COLORS,
 } from '../utils/constants';
 import { Turn } from '../gameLogic/turn';
-import { Bot } from '../gameLogic/bot';
 import { DoubleDice } from '../gameLogic/doubleDice';
-import { Move } from '../gameLogic/move';
-import { del, generateClient } from 'aws-amplify/api';
+import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
 import endGame, { sendTurn, saveGameStats } from '../service/gameService';
-import { on } from 'events';
-import { copy } from 'aws-amplify/storage';
-import { G } from 'react-native-svg';
 import { useGameState } from '../hooks/GameStateContext';
 import { useGameLogicComputer } from './useGameLogicComputer';
 import { getOnlineDice, transformOnlineDice, pause, transformLocalTurnToOnlineTurn, transformOnlineTurnToLocalTurn, getLatestOnlineTurn} from '../gameLogic/gameUtils';
 import { useStateManagement } from './useGameLogicStateManagement';
 import { useGameTurns } from './useGameLogicTurns';
 import { useGameHelper } from './useGameLogicHelper';
+import { useGameSetup } from './useGameSetUp';
 
 const client = generateClient<Schema>();
 
@@ -159,8 +153,29 @@ export const useGameLogic = (
       }
     };
 
+    const getWhoAmI = async () => {
+      const { data: session, errors } = await client.models.Session.get({
+        id: gameId,
+      });
+      if (session === null || session === undefined) {
+        return PLAYER_COLORS.NAP;
+      }
+      if (session.playerOneID === localPlayerId) {
+        setOpponentPlayerId(
+          session.playerTwoID === null ? '' : session.playerTwoID
+        );
+        return PLAYER_COLORS.WHITE;
+      } else {
+        setOpponentPlayerId(
+          session.playerOneID === null ? '' : session.playerOneID
+        );
+        return PLAYER_COLORS.BLACK;
+      }
+    };
+
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver} = useStateManagement(switchplayer,)
   const {double,giveUp} = useGameTurns(isOfflineGame,isOnlineGame,opponentPlayerId,localPlayerId,setUpEndBoard)
+  const {startGame,startOnline,startOffline,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame)
 
 const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   const boardRef = useRef<any>(null); // Define a ref for the Board component
@@ -260,36 +275,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   // #endregion
 
   // #region Game Actions
-  const startGame = async (
-    gamemode: GAME_TYPE,
-    newOnlineTurns?: OnlineTurn[],
-    botType?: BOT_NAMES
-  ) => {
-    // Übergabe von onlineturns ist hier unnötig; und mit globalGameState auch die anderen beiden
-    if (newOnlineTurns) {
-      startOnline(gamemode, newOnlineTurns);
-    } else {
-      if (botType) startOffline(gamemode, botType);
-      else startOffline(gamemode);
-    }
-  };
-  const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
-    const onlineDice = getOnlineDice(newOnlineTurns!, 0);
-    setGameMode(gamemode);
-    const startPlayer =
-      onlineDice[0] > onlineDice[1] ? PLAYER_COLORS.WHITE : PLAYER_COLORS.BLACK;
-    const newGame = new Game(startPlayer, onlineDice);
-    setGame(newGame);
-  };
-  const startOffline = (gamemode: GAME_TYPE, botTpye?: BOT_NAMES) => {
-    setGameMode(gamemode);
-    if (botTpye) {
-      setBot(new Bot(botTpye))}
-      ;
-    const newGame = new Game();
-    console.log('Setting game')
-    setGame(newGame);
-  };
+  
   useEffect(() => {
   },[whoAmI])
   const loadGame = async () => {
@@ -389,31 +375,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
       doStartingPhase();
     }
   };
-  const doStartingPhase = async () => {
-    if (game && isOfflineGame()) {
-      console.log('doing starting phase now')
-      if (game.getDice()[0] > game.getDice()[1]) {
-        game.setPlayer(PLAYER_COLORS.WHITE);
-        setTimeout(() => setStartingPhase(false), 2250);
-      } else {
-        setTimeout(() => {
-          setStartingPhase(false);
-          runGame();
-        }, 2250);
-      }
-    } else if (isOnlineGame() && game) {
-      const iAM = await getWhoAmI();
-      if (iAM === game.getCurrentPlayer()) {
-        setTimeout(() => {
-          setStartingPhase(false);
-        }, 2250);
-      } else {
-        setTimeout(() => {
-          setStartingPhase(false);
-        }, 2250);
-      }
-    }
-  };
+  
   const onMoveChecker = async (
     sourceIndex: number,
     targetIndex: number
@@ -445,14 +407,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     return false;
   };
   
-  const resetGame = () => {
-    setGame(null);
-    setGameIsRunning(false);
-    setStartingPhase(true);
-    setFirstRoll(true);
-    setDisableScreen(true);
-    setDoubleDice(new DoubleDice());
-  };
+  
   
   const doPlayerTwoMove = async (turn: Turn) => {
     const move = turn.nextMove();
@@ -557,27 +512,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   // #endregion
 
   // #region Utility Functions
-
-
-  const getWhoAmI = async () => {
-    const { data: session, errors } = await client.models.Session.get({
-      id: gameId,
-    });
-    if (session === null || session === undefined) {
-      return PLAYER_COLORS.NAP;
-    }
-    if (session.playerOneID === localPlayerId) {
-      setOpponentPlayerId(
-        session.playerTwoID === null ? '' : session.playerTwoID
-      );
-      return PLAYER_COLORS.WHITE;
-    } else {
-      setOpponentPlayerId(
-        session.playerOneID === null ? '' : session.playerOneID
-      );
-      return PLAYER_COLORS.BLACK;
-    }
-  };
   
   
   const isGameOver = (): boolean => {
