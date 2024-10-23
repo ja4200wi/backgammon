@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState,useRef } from 'react';
 import { BOT_NAMES, GAME_SETTINGS, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { Bot } from '../gameLogic/bot';
 import { Game } from '../gameLogic/backgammon';
@@ -13,6 +13,7 @@ const GameStateContext = createContext();
 
 // Create the provider
 export const GameStateProvider = ({ children }) => {
+  const boardRef = useRef(null);
   const [isStartingPhase, setStartingPhase] = useState(true);
   const [firstRoll, setFirstRoll] = useState(true);
   const [disableScreen, setDisableScreen] = useState(false);
@@ -81,7 +82,8 @@ export const GameStateProvider = ({ children }) => {
         whoAmI,
         setWhoAmI,
         onlineTurns,
-        setOnlineTurns
+        setOnlineTurns,
+        boardRef
       }}
     >
       {children}

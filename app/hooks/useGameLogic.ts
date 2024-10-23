@@ -90,13 +90,12 @@ export const useGameLogic = (
     doubleDice,
     setDoubleDice,
     gamemode,
-    setGameMode,
     gameOver,
     setGameOver,
-    bot,
-    setBot} = useGameState()
+    boardRef,
+    } = useGameState()
 
-    const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom,setUpEndBoard} = useGameHelper()
+    const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom} = useGameHelper()
 
     const switchplayer = async () => {
       if (
@@ -173,32 +172,12 @@ export const useGameLogic = (
       }
     };
 
-  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver} = useStateManagement(switchplayer,)
-  const {double,giveUp} = useGameTurns()
-  const {startGame,startOnline,startOffline,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
+  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer,onlineTurns,localPlayerId,opponentPlayerId)
+  const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
+  const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
 
 const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
-  const boardRef = useRef<any>(null); // Define a ref for the Board component
-  const makeTurn = async (
-    turn: Turn,
-    quickTurn?: boolean,
-    game?: Game
-  ): Promise<Game | undefined> => {
-    if (quickTurn && game) {
-      if (turn.hasMoves()) {
-        await doQuickMove(turn, game);
-      } else {
-        return game;
-      }
-    } else if (turn.hasMoves()) {
-      setTimeout(() => doPlayerTwoMove(turn), 750);
-      return game;
-    } else {
-      setTimeout(() => updateMoveIsOver(), 750);
-      return game;
-    }
-    return game;
-  };
+
   const { runBot } = useGameLogicComputer(game,makeTurn)
 
   // #endregion
@@ -375,63 +354,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
       doStartingPhase();
     }
   };
-  
-  const onMoveChecker = async (
-    sourceIndex: number,
-    targetIndex: number
-  ): Promise<boolean> => {
-    if (game) {
-      const success = game.moveStone(sourceIndex, targetIndex);
-      if (success) {
-        if (!isGameOver()) {
-          updateGameState();
-        } else {
-          setUpEndBoard(game);
-        }
-        return success;
-      } else {
-        return success;
-      }
-    }
-    return false;
-  };
-  const updatePositionHandler = async (
-    sourceIndex: number,
-    targetIndex: number,
-    type?: 'UNDO' | 'DISTRIBUTE'
-  ) => {
-    if (boardRef.current) {
-      boardRef.current.updatePosition(sourceIndex, targetIndex, type);
-      return true;
-    }
-    return false;
-  };
-  
-  
-  
-  const doPlayerTwoMove = async (turn: Turn) => {
-    const move = turn.nextMove();
-    if (move) {
-      await updatePositionHandler(move.getFrom(), move.getTo());
-      await onMoveChecker(move.getFrom(), move.getTo());
-      makeTurn(turn);
-    }
-  };
-  const doQuickMove = async (turn: Turn, game: Game) => {
-    const move = turn.nextMove();
-
-    if (move && game) {
-      try {
-        const success = game.moveStone(move.getFrom(), move.getTo());
-        if (success) {
-          await makeTurn(turn, true, game);
-        } else {
-        }
-      } catch (error) {
-        console.error('Error during moveStone:', error);
-      }
-    }
-  };
 
   // #endregion
 
@@ -514,33 +436,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   // #region Utility Functions
   
   
-  const isGameOver = (): boolean => {
-    if (game) {
-      if (game.isGameOver()) {
-        if (isOfflineGame()) {
-          const winner = game.whoIsWinner();
-          if(gamemode === GAME_TYPE.COMPUTER) {
-            const winnerText = winner === PLAYER_COLORS.BLACK ? BOT_NAMES.RIANA : 'You'
-            setGameOver({ gameover: true, winner: winnerText, reason: 'GAME_OVER' });
-          } else {
-            setGameOver({ gameover: true, winner: winner, reason: 'GAME_OVER' });
-          }
-          return true;
-        } else if (isOnlineGame() && onlineTurns) {
-          const onlineWinner =
-            game.whoIsWinner() === whoAmI ? localPlayerId : opponentPlayerId;
-          setGameOver({
-            gameover: true,
-            winner: onlineWinner,
-            reason: 'GAME_OVER',
-          });
-          return true;
-        }
-      }
-      return false;
-    }
-    return false;
-  };
   const disabledScreen = (currentGame: Game): boolean => {
     if(!currentGame) return false
     if (gamemode === GAME_TYPE.COMPUTER) {
@@ -550,14 +445,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
       return whoAmI !== currentGame.getCurrentPlayer();
     }
     return false;
-  };
-  
-  const undoMove = async () => {
-    if (game) {
-      game.undoMove();
-      await updateGameState();
-      await updatePositionHandler(0, 0, 'UNDO');
-    }
   };
   // #endregion
 

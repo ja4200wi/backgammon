@@ -1,12 +1,21 @@
+import { Schema } from '../../amplify/data/resource';
 import { Game } from '../gameLogic/backgammon';
 import { useGameState } from '../hooks/GameStateContext';
-import { GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
+import { BOT_NAMES, GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
+import { useGameHelper } from './useGameLogicHelper';
+
+type OnlineTurn = Schema['Turns']['type'];
 
 export const useStateManagement = (
     switchplayer: () => Promise<void>,
+    onlineTurns:any,
+    localPlayerId:string,
+    opponentPlayerId:string,
 ) => {
 
-    const {game,setPositions,gamemode,whoAmI,firstRoll,setFirstRoll} = useGameState()
+    const {game,setPositions,gamemode,whoAmI,firstRoll,setFirstRoll,setGameOver} = useGameState()
+
+    const {isOfflineGame,isOnlineGame} = useGameHelper()
 
     const forceRenderReducer = (x: number) => x + 1;
 
@@ -56,20 +65,34 @@ export const useStateManagement = (
         }
       };
 
-      const isOnlineGame = (gameMode?: GAME_TYPE) => {
-        if (gameMode) {
-          return (
-            gameMode === GAME_TYPE.RANDOM ||
-            gameMode === GAME_TYPE.ELO ||
-            gameMode === GAME_TYPE.FRIENDLIST
-          );
-        } else {
-          return (
-            gamemode === GAME_TYPE.RANDOM ||
-            gamemode === GAME_TYPE.ELO ||
-            gamemode === GAME_TYPE.FRIENDLIST
-          );
+      
+
+      const isGameOver = (): boolean => {
+        if (game) {
+          if (game.isGameOver()) {
+            if (isOfflineGame()) {
+              const winner = game.whoIsWinner();
+              if(gamemode === GAME_TYPE.COMPUTER) {
+                const winnerText = winner === PLAYER_COLORS.BLACK ? BOT_NAMES.RIANA : 'You'
+                setGameOver({ gameover: true, winner: winnerText, reason: 'GAME_OVER' });
+              } else {
+                setGameOver({ gameover: true, winner: winner, reason: 'GAME_OVER' });
+              }
+              return true;
+            } else if (isOnlineGame() && onlineTurns) {
+              const onlineWinner =
+                game.whoIsWinner() === whoAmI ? localPlayerId : opponentPlayerId;
+              setGameOver({
+                gameover: true,
+                winner: onlineWinner,
+                reason: 'GAME_OVER',
+              });
+              return true;
+            }
+          }
+          return false;
         }
+        return false;
       };
       
 
@@ -78,5 +101,6 @@ export const useStateManagement = (
     updateGameState,
     checkForLegalMove,
     updateMoveIsOver,
+    isGameOver,
   };
 };
