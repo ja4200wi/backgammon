@@ -37,12 +37,6 @@ interface GameScrProps {
 }
 
 export const useGameLogic = (
-  gameId: string,
-  localPlayerId: string,
-  setDoubleAlertVisible: React.Dispatch<React.SetStateAction<boolean>>,
-  isWaitingForDouble: boolean,
-  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowWaitingDouble:React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   // #region State Management
 
@@ -94,6 +88,12 @@ export const useGameLogic = (
     boardRef,
     onlineTurns,
     setOnlineTurns,
+    gameId,
+    localPlayerId,
+    setDoubleAlertVisible,
+    isWaitingForDouble,
+    setIsWaitingForDouble,
+    setShowWaitingDouble,
     } = useGameState()
 
     const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom} = useGameHelper()
@@ -173,7 +173,7 @@ export const useGameLogic = (
       }
     };
 
-  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer,localPlayerId,opponentPlayerId)
+  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer,opponentPlayerId)
   const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
   const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
 
@@ -196,7 +196,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
 
       return () => sub.unsubscribe();
     }
-  }, []);
+  }, [,gameId]);
   useEffect(() => {
     console.log('isloadingGame',isLoadingGame)
   },[isLoadingGame])
@@ -309,6 +309,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
             setIsLoadingGame(false)
             setIsWaitingForDouble(true)
             setShowWaitingDouble(true)
+            forceRender()
           } else {
             hasDoubled = true;
           }
@@ -416,9 +417,9 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
       latestTurn?.type === 'DOUBLE' &&
       localPlayerId !== latestTurn?.playerId
     ) {
-      if (!isWaitingForDouble) {
+      if (isWaitingForDouble === false) {
         setDoubleAlertVisible(true);
-      } else {
+      } else if(isWaitingForDouble === true) {
         setIsWaitingForDouble(false);
         setShowWaitingDouble(false);
         double();
@@ -442,7 +443,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     if (gamemode === GAME_TYPE.COMPUTER) {
       return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
     } else if (isOnlineGame()) {
-      if(isWaitingForDouble) return true
+      if(isWaitingForDouble === true) return true
       return whoAmI !== currentGame.getCurrentPlayer();
     }
     return false;

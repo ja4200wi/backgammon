@@ -8,11 +8,10 @@ type OnlineTurn = Schema['Turns']['type'];
 
 export const useStateManagement = (
     switchplayer: () => Promise<void>,
-    localPlayerId:string,
     opponentPlayerId:string,
 ) => {
 
-    const {game,setPositions,gamemode,whoAmI,firstRoll,setFirstRoll,setGameOver,onlineTurns} = useGameState()
+    const {game,setPositions,gamemode,whoAmI,firstRoll,setFirstRoll,setGameOver,onlineTurns,localPlayerId} = useGameState()
 
     const {isOfflineGame,isOnlineGame} = useGameHelper()
 

@@ -42,6 +42,11 @@ export const GameStateProvider = ({ children }) => {
   //const [playerOneId,setPlayerOneId] = useState<string>("")
   //const [playerTwoId,setPlayerTwoId] = useState<string>("")
 
+  // GAME SCREEN
+  const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
+  const [isWaitingForDouble, setIsWaitingForDouble] = useState(false);
+  const [showWaitingDouble,setShowWaitingDouble] = useState(false)
+
   return (
     <GameStateContext.Provider
       value={{
@@ -79,7 +84,13 @@ export const GameStateProvider = ({ children }) => {
         setWhoAmI,
         onlineTurns,
         setOnlineTurns,
-        boardRef
+        boardRef,
+        doubleAlertVisible,
+        setDoubleAlertVisible,
+        isWaitingForDouble,
+        setIsWaitingForDouble,
+        showWaitingDouble,
+        setShowWaitingDouble,
       }}
     >
       {children}

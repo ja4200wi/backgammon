@@ -41,10 +41,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     useState(false);
   const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] =
     useState(false);
-  const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
-  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false);
-  const [showWaitingDouble,setShowWaitingDouble] = useState(false)
   const [doCheckerAnimation, setDoCheckerAnimation] = useState<boolean>(false);
   const [animatedCheckerValues, setAnimatedCheckerValues] = useState<{
     sx: number;
@@ -72,12 +69,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     double,
     onlineTurns,
   } = useGameLogic(
-    gameId,
-    localPlayerId,
-    setDoubleAlertVisible,
-    isWaitingForDouble,
-    setIsWaitingForDouble,
-    setShowWaitingDouble,
   );
 
   const { 
@@ -89,6 +80,13 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     doubleDice,
     gameOver,
     setGameOver,
+    setGameId,
+    setLocalPlayerId,
+    doubleAlertVisible,
+    setDoubleAlertVisible,
+    setIsWaitingForDouble,
+    showWaitingDouble,
+    setShowWaitingDouble
   } = useGameState()
 
   useEffect(() => {
@@ -99,6 +97,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const [startedGame, setStartedGame] = useState<boolean>(false);
   {/* START GAME*/}
   useEffect(() => {
+    if(!startedGame) {
+      console.log('SETTING GAMEID',gameId)
+      setGameId(gameId)
+      setLocalPlayerId(localPlayerId)
+    }
     if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
       console.log('Starting Game')
       setStartedGame(true);
