@@ -63,7 +63,6 @@ export const useGameLogic = (
   };
 
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
-  const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
 
   const { 
     isStartingPhase,
@@ -94,6 +93,8 @@ export const useGameLogic = (
     isWaitingForDouble,
     setIsWaitingForDouble,
     setShowWaitingDouble,
+    opponentPlayerId,
+    setOpponentPlayerId,
     } = useGameState()
 
     const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom} = useGameHelper()
@@ -173,7 +174,7 @@ export const useGameLogic = (
       }
     };
 
-  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer,opponentPlayerId)
+  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
   const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
   const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
 

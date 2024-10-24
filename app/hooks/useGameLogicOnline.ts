@@ -26,10 +26,6 @@ type OnlineDice = Schema['Dice']['type'];
 
 export const useGameLogicOnline = (
   makeTurn: (turn: Turn, quickTurn?: boolean, game?: Game) => Promise<Game | undefined>,
-  gameId:string,
-  setDoubleAlertVisible:React.Dispatch<React.SetStateAction<boolean>>,
-  setIsWaitingForDouble: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowWaitingDouble:React.Dispatch<React.SetStateAction<boolean>>
 ) => {
 
   const {
@@ -41,6 +37,10 @@ export const useGameLogicOnline = (
     setGameOver,
     isWaitingForDouble,
     onlineTurns,
+    setDoubleAlertVisible,
+    setIsWaitingForDouble,
+    setShowWaitingDouble,
+    gameId,
   } = useGameState()
 
   const {double} = useGameTurns()
