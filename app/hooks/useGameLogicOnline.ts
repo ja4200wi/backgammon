@@ -40,25 +40,10 @@ export const useGameLogicOnline = (
     game,
     setGameOver,
     isWaitingForDouble,
-    setOnlineTurns,
     onlineTurns,
   } = useGameState()
 
   const {double} = useGameTurns()
-
-  useEffect(() => {
-    if (gameId !== undefined && gameId !== null) {
-      const sub = client.models.Turns.observeQuery({
-        filter: { gameId: { eq: gameId } },
-      }).subscribe({
-        next: ({ items, isSynced }) => {
-          setOnlineTurns([...items]);
-        },
-      });
-
-      return () => sub.unsubscribe();
-    }
-  }, []);
 
   const runOnline = async () => {
     const latestTurn = getLatestOnlineTurn(onlineTurns!)

@@ -68,7 +68,6 @@ export const useGameLogic = (
     }
   };
 
-  const [onlineTurns, setOnlineTurns] = useState<OnlineTurn[]>();
   const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
   const [opponentPlayerId, setOpponentPlayerId] = useState<string>('');
 
@@ -93,6 +92,8 @@ export const useGameLogic = (
     gameOver,
     setGameOver,
     boardRef,
+    onlineTurns,
+    setOnlineTurns,
     } = useGameState()
 
     const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom} = useGameHelper()
@@ -172,7 +173,7 @@ export const useGameLogic = (
       }
     };
 
-  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer,onlineTurns,localPlayerId,opponentPlayerId)
+  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer,localPlayerId,opponentPlayerId)
   const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
   const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
 

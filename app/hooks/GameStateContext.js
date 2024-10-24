@@ -7,10 +7,6 @@ import { DoubleDice } from '../gameLogic/doubleDice';
 // Create the context
 const GameStateContext = createContext();
 
-/**
- * @typedef {import('../path/to/schema').Schema['Turns']['type']} OnlineTurn
- */
-
 // Create the provider
 export const GameStateProvider = ({ children }) => {
   const boardRef = useRef(null);
@@ -41,7 +37,7 @@ export const GameStateProvider = ({ children }) => {
   const [localPlayerId, setLocalPlayerId] = useState()
   const [whoAmI, setWhoAmI] = useState();
   const [opponentPlayerId, setOpponentPlayerId] = useState();
-  const [onlineTurns, setOnlineTurns] = useState(/** @type {OnlineTurn[]} */ ([]));
+  const [onlineTurns, setOnlineTurns] = useState();
 
   //const [playerOneId,setPlayerOneId] = useState<string>("")
   //const [playerTwoId,setPlayerTwoId] = useState<string>("")
