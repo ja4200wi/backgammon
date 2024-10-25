@@ -247,14 +247,6 @@ export const useGameLogic = (
   }, [isLoadingGame]);
   // #endregion
 
-  // #region Game Actions
-
-  // #endregion
-
-  // #region Utility Functions
-  
-  // #endregion
-
   return {
     game,
     positions,
