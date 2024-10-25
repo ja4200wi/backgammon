@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef, useReducer } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import {
   BOT_NAMES,
@@ -13,6 +12,7 @@ import endGame, { sendTurn, saveGameStats } from '../service/gameService';
 import { useGameState } from '../hooks/GameStateContext';
 import { useGameLogicComputer } from './useGameLogicComputer';
 import { getOnlineDice, transformOnlineDice, pause, transformLocalTurnToOnlineTurn, transformOnlineTurnToLocalTurn, getLatestOnlineTurn} from '../gameLogic/gameUtils';
+import { useState, useEffect, useRef, useReducer } from 'react';
 import { useStateManagement } from './useGameLogicStateManagement';
 import { useGameTurns } from './useGameLogicTurns';
 import { useGameHelper } from './useGameLogicHelper';
@@ -47,6 +47,61 @@ export const useGameLogic = (
         break;
       default:
         break;
+    }
+  };
+
+  const switchplayer = async () => {
+    if (
+      game &&
+      !game.isGameOver() &&
+      isOfflineGame()
+    ) {
+      game.switchPlayer();
+      forceRender()
+      if (disableScreen) {
+        setDisableScreen(false);
+      }
+      const didswitch = await checkForLegalMove(false);
+      if (
+        game.getCurrentPlayer() === PLAYER_COLORS.BLACK &&
+        gamemode === GAME_TYPE.COMPUTER &&
+        !didswitch
+      ) {
+        runGame()
+      }
+    } else if (
+      game &&
+      !game.isGameOver() &&
+      isOnlineGame() &&
+      whoAmI === game.getCurrentPlayer()
+    ) {
+      const turn = game.getTurnAfterMove();
+      const newOnlineDice = await sendTurnToServer(turn);
+      const newLocalDice = transformOnlineDice(newOnlineDice);
+      game.onlineSwitchPlayer(newLocalDice);
+      if (disableScreen) {
+        setDisableScreen(false);
+      } else {
+        setDisableScreen(true);
+      }
+      const copyGame = game.deepCopy()
+      setGame(copyGame)
+    } else if (
+      game &&
+      !game.isGameOver() &&
+      isOnlineGame() &&
+      whoAmI !== game.getCurrentPlayer() &&
+      onlineTurns
+    ) {
+      const newdice = getOnlineDice(onlineTurns);
+      forceRender()
+      game.onlineSwitchPlayer(newdice);
+      if (disableScreen) {
+        setDisableScreen(false);
+      } else {
+        setDisableScreen(true);
+      }
+      await checkForLegalMove(false, game);
     }
   };
 
@@ -85,71 +140,24 @@ export const useGameLogic = (
     setWhoAmI
     } = useGameState()
 
-    const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom} = useGameHelper()
-
-    const switchplayer = async () => {
-      if (
-        game &&
-        !game.isGameOver() &&
-        isOfflineGame()
-      ) {
-        game.switchPlayer();
-        forceRender()
-        if (disableScreen) {
-          setDisableScreen(false);
-        }
-        const didswitch = await checkForLegalMove(false);
-        if (
-          game.getCurrentPlayer() === PLAYER_COLORS.BLACK &&
-          gamemode === GAME_TYPE.COMPUTER &&
-          !didswitch
-        ) {
-          runGame()
-        }
-      } else if (
-        game &&
-        !game.isGameOver() &&
-        isOnlineGame() &&
-        whoAmI === game.getCurrentPlayer()
-      ) {
-        const turn = game.getTurnAfterMove();
-        const newOnlineDice = await sendTurnToServer(turn);
-        const newLocalDice = transformOnlineDice(newOnlineDice);
-        game.onlineSwitchPlayer(newLocalDice);
-        if (disableScreen) {
-          setDisableScreen(false);
-        } else {
-          setDisableScreen(true);
-        }
-        const copyGame = game.deepCopy()
-        setGame(copyGame)
-      } else if (
-        game &&
-        !game.isGameOver() &&
-        isOnlineGame() &&
-        whoAmI !== game.getCurrentPlayer() &&
-        onlineTurns
-      ) {
-        const newdice = getOnlineDice(onlineTurns);
-        forceRender()
-        game.onlineSwitchPlayer(newdice);
-        if (disableScreen) {
-          setDisableScreen(false);
-        } else {
-          setDisableScreen(true);
-        }
-        await checkForLegalMove(false, game);
-      }
-    };
+  const {
+    isOnlineGame, 
+    isOfflineGame, 
+    handleDisableScreen,
+    legalMovesFrom
+  } = useGameHelper()
   
-  const {startGame,resetGame,doStartingPhase} = useGameSetup(runGame)
-
+  const {
+    startGame,
+    resetGame,
+    doStartingPhase,
+  } = useGameSetup(runGame)
 
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
   const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
   const {sendTurnToServer,sendFinalGameStateToServer,runOnline} = useGameLogicOnline(makeTurn,double)
 
-const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
+  const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
 
   const { runBot } = useGameLogicComputer(game,makeTurn)
 
@@ -199,9 +207,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     getWhoAmI()
   },[,gameId])
 
-  useEffect(() => {
-    console.log('isloadingGame',isLoadingGame)
-  },[isLoadingGame])
   useEffect(() => {
     if (
       (gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY) &&
