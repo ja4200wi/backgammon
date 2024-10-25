@@ -77,7 +77,6 @@ export const useGameLogic = (
     ) {
       setWaitingOnLocalPlayer(false)
       const turn = game.getTurnAfterMove();
-      console.log('SWITCHPLAYER: SENDING TURN')
       const newOnlineDice = await sendTurnToServer(turn);
       const newLocalDice = transformOnlineDice(newOnlineDice);
       game.onlineSwitchPlayer(newLocalDice);
@@ -149,12 +148,6 @@ export const useGameLogic = (
     legalMovesFrom,
     CHECKS
   } = useGameHelper()
-  
-  const {
-    startGame,
-    resetGame,
-    setUpGame,
-  } = useGameSetup(runGame)
 
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
   const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
@@ -164,6 +157,12 @@ export const useGameLogic = (
 
   const { runBot } = useGameLogicComputer(game,makeTurn)
 
+  const {
+    startGame,
+    resetGame,
+    setUpGame,
+    loadGame,
+  } = useGameSetup(runGame,makeTurn,forceRenderReducer,checkForLegalMove)
   // #endregion
 
   const getWhoAmI = async () => {
@@ -249,92 +248,6 @@ export const useGameLogic = (
   // #endregion
 
   // #region Game Actions
-  
-  const loadGame = async () => {
-    if (game) {
-      if (isOnlineGame() && onlineTurns) {
-        const startingDice = getOnlineDice(onlineTurns, 0);
-        const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
-        await processTurn(copyOnlineTurns, game, startingDice);
-        await pause(1000);
-      }
-    }
-  };
-  
-  const processTurn = async (
-    copyOnlineTurns: OnlineTurn[],
-    game: Game,
-    startingDice: [number, number]
-  ) => {
-    let hasDoubled = false;
-    let tempDoubleDice = new DoubleDice();
-    let currentGame: Game | undefined = game;
-
-    while (copyOnlineTurns.length > 0) {
-      const tempOnlineTurn = copyOnlineTurns.shift();
-
-      if (!tempOnlineTurn) continue;
-      const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn);
-
-      const nextMoveDice = transformOnlineDice(tempOnlineTurn.diceForNextTurn!); // Use the remaining moves for the next dice roll
-      if (tempOnlineTurn.type === 'MOVE') {
-        currentGame = await makeTurn(tempLocalTurn, true, currentGame);
-        if (currentGame) {
-          currentGame.onlineSwitchPlayer(nextMoveDice);
-          forceRender()
-        }
-      } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
-        if (hasDoubled) {
-          tempDoubleDice = currentGame.double();
-          hasDoubled = false;
-        } else {
-          if (
-            copyOnlineTurns.length === 0 &&
-            localPlayerId !== tempOnlineTurn.playerId
-          ) {
-            setIsLoadingGame(false);
-            setDoubleAlertVisible(true);
-          } else if(copyOnlineTurns.length === 0 && localPlayerId === tempOnlineTurn.playerId) {
-            setIsLoadingGame(false)
-            setIsWaitingForDouble(true)
-            setShowWaitingDouble(true)
-            forceRender()
-          } else {
-            hasDoubled = true;
-          }
-        }
-      } else if (tempOnlineTurn.type === 'GIVE_UP') {
-        if (localPlayerId !== tempOnlineTurn.playerId) {
-          setIsLoadingGame(false)
-          setTimeout(() => {
-            setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
-          }, 100);
-          return
-        } else {
-          setIsLoadingGame(false)
-          setTimeout(() => {
-            setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
-          }, 100);
-          return
-        }
-      }
-    }
-    // After all turns are processed
-    const copyOfGame = currentGame!.deepCopy();
-    setGame(copyOfGame);
-    setDoubleDice(tempDoubleDice);
-    setPositions(copyOfGame.getCurrentPositions());
-    await checkForLegalMove(false, copyOfGame);
-
-    if (copyOfGame.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
-      setDisableScreen(true);
-    } else {
-      setWaitingOnLocalPlayer(true)
-      setDisableScreen(false);
-    }
-    setIsLoadingGame(false)
-
-  };
 
   // #endregion
 

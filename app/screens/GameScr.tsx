@@ -100,7 +100,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       setLocalPlayerId(localPlayerId)
     }
     if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
-      console.log('Starting Game')
       setStartedGame(true);
       startGame(gameMode);
     } else if (!startedGame && gameMode === GAME_TYPE.COMPUTER) {
@@ -140,7 +139,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handeDoubleAccept = () => {
     double();
     if (isOnlineGame(gameMode)) {
-      console.log('HANDLEDOUBLE: SENDING TURN')
       sendTurnToServer(new Turn(), 'DOUBLE');
     }
     setDoubleAlertVisible(false);
@@ -149,7 +147,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     if (gameMode === GAME_TYPE.COMPUTER) {
       double();
     } else if (isOnlineGame(gameMode)) {
-      console.log('HANDLEDOUBLE: SENDING TURN')
       sendTurnToServer(new Turn(), 'DOUBLE');
       setIsWaitingForDouble(true);
       setShowWaitingDouble(true)
@@ -170,11 +167,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       if (type === 'STANDARD') {
         looser = game.getCurrentPlayer();
         if (isOnlineGame(gameMode)) {
-          console.log('HANDLEGIVEUP: SENDING TURN')
           sendTurnToServer(new Turn(), 'GIVE_UP');
         }
       } else {
-        console.log('HANDLEGIVEUP: SENDING TURN')
         sendTurnToServer(new Turn(), 'GIVE_UP');
         looser =
           game.getCurrentPlayer() === PLAYER_COLORS.WHITE
