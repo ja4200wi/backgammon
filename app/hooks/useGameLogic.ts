@@ -150,7 +150,7 @@ export const useGameLogic = (
   const {
     startGame,
     resetGame,
-    doStartingPhase,
+    setUpGame,
   } = useGameSetup(runGame)
 
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
@@ -346,13 +346,6 @@ export const useGameLogic = (
     }
     setIsLoadingGame(false)
 
-  };
-
-  const setUpGame = async () => {
-    if (game) {
-      setPositions(game.getCurrentPositions());
-      doStartingPhase();
-    }
   };
 
   // #endregion
