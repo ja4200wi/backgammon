@@ -153,25 +153,3 @@ export const showUndoMoveButton = (currentGame: Game) => {
 export const getLatestOnlineTurn = (latestTurn: OnlineTurn[]) => {
   return latestTurn.at(-1);
 };
-
-const sendTurnToServer = async (
-  turn: Turn,
-  gameId:string,
-  localPlayerId:string,
-  turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT',
-): Promise<OnlineDice> => {
-  if (!turn.hasMoves && turnType === undefined)
-    return { dieOne: 0, dieTwo: 0 };
-  const turnToSend: SendableTurn = transformLocalTurnToOnlineTurn(
-    turn,
-    gameId,
-    localPlayerId,
-    turnType
-  );
-  const nextDice: OnlineDice | null | undefined = await sendTurn(turnToSend);
-  if (nextDice === null || nextDice === undefined) {
-    return { dieOne: 0, dieTwo: 0 };
-  } else {
-    return nextDice;
-  }
-};

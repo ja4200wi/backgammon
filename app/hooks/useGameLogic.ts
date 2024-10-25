@@ -76,6 +76,7 @@ export const useGameLogic = (
       whoAmI === game.getCurrentPlayer()
     ) {
       const turn = game.getTurnAfterMove();
+      console.log('SWITCHPLAYER: SENDING TURN')
       const newOnlineDice = await sendTurnToServer(turn);
       const newLocalDice = transformOnlineDice(newOnlineDice);
       game.onlineSwitchPlayer(newLocalDice);
