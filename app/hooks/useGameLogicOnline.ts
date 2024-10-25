@@ -26,6 +26,7 @@ type OnlineDice = Schema['Dice']['type'];
 
 export const useGameLogicOnline = (
   makeTurn: (turn: Turn, quickTurn?: boolean, game?: Game) => Promise<Game | undefined>,
+  double: () => void,
 ) => {
 
   const {
@@ -43,7 +44,6 @@ export const useGameLogicOnline = (
     gameId,
   } = useGameState()
 
-  const {double} = useGameTurns()
 
   const runOnline = async () => {
     const latestTurn = getLatestOnlineTurn(onlineTurns!)
