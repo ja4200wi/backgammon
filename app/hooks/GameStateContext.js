@@ -38,6 +38,7 @@ export const GameStateProvider = ({ children }) => {
   const [whoAmI, setWhoAmI] = useState();
   const [opponentPlayerId, setOpponentPlayerId] = useState();
   const [onlineTurns, setOnlineTurns] = useState();
+  const [waitingOnLocalPlayer,setWaitingOnLocalPlayer] = useState();
 
   //const [playerOneId,setPlayerOneId] = useState<string>("")
   //const [playerTwoId,setPlayerTwoId] = useState<string>("")
@@ -91,6 +92,8 @@ export const GameStateProvider = ({ children }) => {
         setIsWaitingForDouble,
         showWaitingDouble,
         setShowWaitingDouble,
+        waitingOnLocalPlayer,
+        setWaitingOnLocalPlayer,
       }}
     >
       {children}

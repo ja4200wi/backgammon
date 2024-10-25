@@ -75,6 +75,7 @@ export const useGameLogic = (
       isOnlineGame() &&
       whoAmI === game.getCurrentPlayer()
     ) {
+      setWaitingOnLocalPlayer(false)
       const turn = game.getTurnAfterMove();
       console.log('SWITCHPLAYER: SENDING TURN')
       const newOnlineDice = await sendTurnToServer(turn);
@@ -136,7 +137,9 @@ export const useGameLogic = (
     opponentPlayerId,
     setOpponentPlayerId,
     whoAmI,
-    setWhoAmI
+    setWhoAmI,
+    waitingOnLocalPlayer,
+    setWaitingOnLocalPlayer,
     } = useGameState()
 
   const {
@@ -326,6 +329,7 @@ export const useGameLogic = (
     if (copyOfGame.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
       setDisableScreen(true);
     } else {
+      setWaitingOnLocalPlayer(true)
       setDisableScreen(false);
     }
     setIsLoadingGame(false)

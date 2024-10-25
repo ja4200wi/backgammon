@@ -17,6 +17,7 @@ export const useGameHelper = (
       onlineTurns,
       isLoadingGame,
       isStartingPhase,
+      waitingOnLocalPlayer
     } = useGameState()
 
     const isOnlineGame = (gameMode?: GAME_TYPE) => {
@@ -88,7 +89,8 @@ export const useGameHelper = (
         READY_RUN_ONLINE: ():boolean => (
           onlineTurns &&
           onlineTurns.length > 0 &&
-          !isLoadingGame
+          !isLoadingGame &&
+          !waitingOnLocalPlayer
         ),
         READY_SET_LOADED_GAME: ():boolean => (
           !isLoadingGame && 
