@@ -141,31 +141,6 @@ export const useGameLogic = (
         await checkForLegalMove(false, game);
       }
     };
-
-    const getWhoAmI = async () => {
-      const { data: session, errors } = await client.models.Session.get({
-        id: gameId,
-      });
-      if (session === null || session === undefined) {
-        setWhoAmI(PLAYER_COLORS.NAP);
-        return
-      }
-      if (session.playerOneID === localPlayerId) {
-        setOpponentPlayerId(
-          session.playerTwoID === null ? '' : session.playerTwoID
-        );
-        setWhoAmI(PLAYER_COLORS.WHITE)
-        forceRender()
-        return
-      } else {
-        setOpponentPlayerId(
-          session.playerOneID === null ? '' : session.playerOneID
-        );
-        setWhoAmI(PLAYER_COLORS.BLACK)
-        forceRender()
-        return
-      }
-    };
   
   const {startGame,resetGame,doStartingPhase} = useGameSetup(runGame)
 
@@ -179,6 +154,31 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   const { runBot } = useGameLogicComputer(game,makeTurn)
 
   // #endregion
+
+  const getWhoAmI = async () => {
+    const { data: session, errors } = await client.models.Session.get({
+      id: gameId,
+    });
+    if (session === null || session === undefined) {
+      setWhoAmI(PLAYER_COLORS.NAP);
+      return
+    }
+    if (session.playerOneID === localPlayerId) {
+      setOpponentPlayerId(
+        session.playerTwoID === null ? '' : session.playerTwoID
+      );
+      setWhoAmI(PLAYER_COLORS.WHITE)
+      forceRender()
+      return
+    } else {
+      setOpponentPlayerId(
+        session.playerOneID === null ? '' : session.playerOneID
+      );
+      setWhoAmI(PLAYER_COLORS.BLACK)
+      forceRender()
+      return
+    }
+  };
 
   // #region Effects
   useEffect(() => {
