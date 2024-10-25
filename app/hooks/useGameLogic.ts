@@ -359,17 +359,6 @@ export const useGameLogic = (
 
   // #region Utility Functions
   
-  
-  const disabledScreen = (currentGame: Game): boolean => {
-    if(!currentGame) return false
-    if (gamemode === GAME_TYPE.COMPUTER) {
-      return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
-    } else if (isOnlineGame()) {
-      if(isWaitingForDouble === true) return true
-      return whoAmI !== currentGame.getCurrentPlayer();
-    }
-    return false;
-  };
   // #endregion
 
   return {
@@ -381,7 +370,6 @@ export const useGameLogic = (
     updateMoveIsOver,
     undoMove,
     legalMovesFrom,
-    disabledScreen,
     giveUp,
     isStartingPhase,
     firstRoll,

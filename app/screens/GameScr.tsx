@@ -22,6 +22,7 @@ import GameOverModal from '../components/game/GameOverModal';
 import LoadingAlert from '../components/misc/LoadingAlert';
 import { useGameState } from '../hooks/GameStateContext';
 import { ConsoleLogger } from 'aws-amplify/utils';
+import { useGameHelper } from '../hooks/useGameLogicHelper';
 
 interface GameScrProps {
   navigation: any;
@@ -62,7 +63,6 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     handleDisableScreen,
     giveUp,
     legalMovesFrom,
-    disabledScreen,
     resetGame,
     sendTurnToServer,
     sendFinalGameStateToServer,
@@ -88,6 +88,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     showWaitingDouble,
     setShowWaitingDouble
   } = useGameState()
+
+  const {disabledScreen} = useGameHelper()
 
   useEffect(() => {
     console.log('firstroll GAMESCR',firstRoll,"startingphase",isStartingPhase)
