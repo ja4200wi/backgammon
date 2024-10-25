@@ -74,25 +74,6 @@ export const useGameLogicOnline = (
     }
   };
 
-  const getWhoAmI = async () => {
-    const { data: session, errors } = await client.models.Session.get({
-      id: gameId,
-    });
-    if (session === null || session === undefined) {
-      return PLAYER_COLORS.NAP;
-    }
-    if (session.playerOneID === localPlayerId) {
-      setOpponentPlayerId(
-        session.playerTwoID === null ? '' : session.playerTwoID
-      );
-      return PLAYER_COLORS.WHITE;
-    } else {
-      setOpponentPlayerId(
-        session.playerOneID === null ? '' : session.playerOneID
-      );
-      return PLAYER_COLORS.BLACK;
-    }
-  };
   const sendTurnToServer = async (
     turn: Turn,
     turnType?: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT'
@@ -137,7 +118,6 @@ export const useGameLogicOnline = (
     }
   };
   return {
-    getWhoAmI,
     sendTurnToServer,
     sendFinalGameStateToServer,
     runOnline,

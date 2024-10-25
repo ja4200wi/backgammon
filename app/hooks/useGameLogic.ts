@@ -175,7 +175,7 @@ export const useGameLogic = (
       }
     };
   
-  const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame,gameId,localPlayerId)
+  const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame)
 
 
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)

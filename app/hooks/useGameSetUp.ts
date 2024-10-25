@@ -12,11 +12,27 @@ type OnlineTurn = Schema['Turns']['type'];
 export const useGameSetup = (
   getWhoAmI: () => Promise<PLAYER_COLORS>,
   runGame: () => void,
-  gameId: string,
-  localPlayerId: string,
 ) => {
 
-    const {setGameMode, setGame , setBot , onlineTurns, setWhoAmI, setPositions, setStartingPhase,game,setGameIsRunning,setFirstRoll,setDisableScreen,setDoubleDice,setGameId,setLocalPlayerId} = useGameState()
+    const {
+      setGameMode, 
+      setGame, 
+      setBot, 
+      onlineTurns, 
+      setWhoAmI, 
+      setPositions, 
+      setStartingPhase,
+      game,
+      setGameIsRunning,
+      setFirstRoll,
+      setDisableScreen,
+      setDoubleDice,
+      setGameId,
+      setLocalPlayerId,
+      localPlayerId,
+      gameId,
+      whoAmI
+    } = useGameState()
     const {isOnlineGame, isOfflineGame} = useGameHelper()
 
     const startGame = async (

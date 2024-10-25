@@ -1,12 +1,12 @@
 import { Game } from '../gameLogic/backgammon';
-import { GAME_TYPE } from '../utils/constants';
+import { GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { useGameState } from './GameStateContext';
 
 export const useGameHelper = (
 ) => {
 
 
-    const {gamemode,setDisableScreen,game,setPositions,whoAmI} = useGameState()
+    const {gamemode,setDisableScreen,game,setPositions,whoAmI,isWaitingForDouble} = useGameState()
 
     const isOnlineGame = (gameMode?: GAME_TYPE) => {
         if (gameMode) {
@@ -43,11 +43,23 @@ export const useGameHelper = (
         }
       };
 
+      const disabledScreen = (currentGame: Game): boolean => {
+        if(!currentGame) return false
+        if (gamemode === GAME_TYPE.COMPUTER) {
+          return currentGame.getCurrentPlayer() === PLAYER_COLORS.BLACK;
+        } else if (isOnlineGame()) {
+          if(isWaitingForDouble === true) return true
+          return whoAmI !== currentGame.getCurrentPlayer();
+        }
+        return false;
+      };
+
   return {
     isOnlineGame,
     isOfflineGame,
     handleDisableScreen,
     legalMovesFrom,
     setUpEndBoard,
+    disabledScreen,
   };
 };
