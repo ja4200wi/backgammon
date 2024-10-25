@@ -24,20 +24,6 @@ const client = generateClient<Schema>();
 
 type OnlineTurn = Schema['Turns']['type'];
 
-type SendableTurn = {
-  gameId: string;
-  playerId: string;
-  moves: { from: number; to: number }[];
-  type: 'MOVE' | 'GIVE_UP' | 'DOUBLE' | 'INIT';
-};
-
-type OnlineDice = Schema['Dice']['type'];
-
-interface GameScrProps {
-  navigation: any;
-  route: any;
-}
-
 export const useGameLogic = (
 ) => {
   // #region State Management
@@ -63,8 +49,6 @@ export const useGameLogic = (
         break;
     }
   };
-
-  const [whoAmI, setWhoAmI] = useState<PLAYER_COLORS>();
 
   const { 
     isStartingPhase,
@@ -97,6 +81,8 @@ export const useGameLogic = (
     setShowWaitingDouble,
     opponentPlayerId,
     setOpponentPlayerId,
+    whoAmI,
+    setWhoAmI
     } = useGameState()
 
     const {isOnlineGame, isOfflineGame, handleDisableScreen,legalMovesFrom} = useGameHelper()
@@ -157,7 +143,28 @@ export const useGameLogic = (
     };
 
     const getWhoAmI = async () => {
-      
+      const { data: session, errors } = await client.models.Session.get({
+        id: gameId,
+      });
+      if (session === null || session === undefined) {
+        setWhoAmI(PLAYER_COLORS.NAP);
+        return
+      }
+      if (session.playerOneID === localPlayerId) {
+        setOpponentPlayerId(
+          session.playerTwoID === null ? '' : session.playerTwoID
+        );
+        setWhoAmI(PLAYER_COLORS.WHITE)
+        forceRender()
+        return
+      } else {
+        setOpponentPlayerId(
+          session.playerOneID === null ? '' : session.playerOneID
+        );
+        setWhoAmI(PLAYER_COLORS.BLACK)
+        forceRender()
+        return
+      }
     };
   
   const {startGame,resetGame,doStartingPhase} = useGameSetup(runGame)
