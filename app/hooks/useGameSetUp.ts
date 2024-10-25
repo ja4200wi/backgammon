@@ -10,7 +10,6 @@ import { DoubleDice } from "../gameLogic/doubleDice";
 type OnlineTurn = Schema['Turns']['type'];
 
 export const useGameSetup = (
-  getWhoAmI: () => Promise<PLAYER_COLORS>,
   runGame: () => void,
 ) => {
 
@@ -68,10 +67,6 @@ export const useGameSetup = (
       };
       const setUpGame = async () => {
         if (game) {
-          if (isOnlineGame() && onlineTurns) {
-            const iAm = await getWhoAmI();
-            setWhoAmI(iAm);
-          }
           setPositions(game.getCurrentPositions());
           doStartingPhase();
         }
@@ -88,8 +83,7 @@ export const useGameSetup = (
             }, 2250);
           }
         } else if (isOnlineGame() && game) {
-          const iAM = await getWhoAmI();
-          if (iAM === game.getCurrentPlayer()) {
+          if (whoAmI === game.getCurrentPlayer()) {
             setTimeout(() => {
               setStartingPhase(false);
             }, 2250);

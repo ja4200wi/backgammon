@@ -18,6 +18,7 @@ import { useGameTurns } from './useGameLogicTurns';
 import { useGameHelper } from './useGameLogicHelper';
 import { useGameSetup } from './useGameSetUp';
 import { useGameLogicOnline } from './useGameLogicOnline';
+import { PlacementConstraint } from 'aws-cdk-lib/aws-ecs';
 
 const client = generateClient<Schema>();
 
@@ -156,26 +157,10 @@ export const useGameLogic = (
     };
 
     const getWhoAmI = async () => {
-      const { data: session, errors } = await client.models.Session.get({
-        id: gameId,
-      });
-      if (session === null || session === undefined) {
-        return PLAYER_COLORS.NAP;
-      }
-      if (session.playerOneID === localPlayerId) {
-        setOpponentPlayerId(
-          session.playerTwoID === null ? '' : session.playerTwoID
-        );
-        return PLAYER_COLORS.WHITE;
-      } else {
-        setOpponentPlayerId(
-          session.playerOneID === null ? '' : session.playerOneID
-        );
-        return PLAYER_COLORS.BLACK;
-      }
+      
     };
   
-  const {startGame,resetGame,doStartingPhase} = useGameSetup(getWhoAmI,runGame)
+  const {startGame,resetGame,doStartingPhase} = useGameSetup(runGame)
 
 
   const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
@@ -202,6 +187,11 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
       return () => sub.unsubscribe();
     }
   }, [,gameId]);
+
+  useEffect(() => {
+    getWhoAmI()
+  },[,gameId])
+
   useEffect(() => {
     console.log('isloadingGame',isLoadingGame)
   },[isLoadingGame])
@@ -265,10 +255,8 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     if (game) {
       if (isOnlineGame() && onlineTurns) {
         const startingDice = getOnlineDice(onlineTurns, 0);
-        const iAm = await getWhoAmI();
-        setWhoAmI(iAm);
         const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
-        await processTurn(copyOnlineTurns, game, iAm, startingDice);
+        await processTurn(copyOnlineTurns, game, startingDice);
         await pause(1000);
       }
     }
@@ -277,7 +265,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
   const processTurn = async (
     copyOnlineTurns: OnlineTurn[],
     game: Game,
-    iAm: PLAYER_COLORS,
     startingDice: [number, number]
   ) => {
     let hasDoubled = false;
@@ -340,7 +327,7 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
     setPositions(copyOfGame.getCurrentPositions());
     await checkForLegalMove(false, copyOfGame);
 
-    if (copyOfGame.getCurrentPlayer() !== iAm) {
+    if (copyOfGame.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
       setDisableScreen(true);
     } else {
       setDisableScreen(false);
@@ -351,10 +338,6 @@ const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
 
   const setUpGame = async () => {
     if (game) {
-      if (isOnlineGame() && onlineTurns) {
-        const iAm = await getWhoAmI();
-        setWhoAmI(iAm);
-      }
       setPositions(game.getCurrentPositions());
       doStartingPhase();
     }
