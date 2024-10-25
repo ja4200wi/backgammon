@@ -114,7 +114,6 @@ export const useGameLogic = (
     setDisableScreen, 
     isLoadingGame, 
     setIsLoadingGame, 
-    gameIsRunning, 
     setGameIsRunning, 
     game, 
     setGame,
@@ -131,7 +130,6 @@ export const useGameLogic = (
     gameId,
     localPlayerId,
     setDoubleAlertVisible,
-    isWaitingForDouble,
     setIsWaitingForDouble,
     setShowWaitingDouble,
     opponentPlayerId,
@@ -144,7 +142,8 @@ export const useGameLogic = (
     isOnlineGame, 
     isOfflineGame, 
     handleDisableScreen,
-    legalMovesFrom
+    legalMovesFrom,
+    CHECKS
   } = useGameHelper()
   
   const {
@@ -208,24 +207,14 @@ export const useGameLogic = (
   },[,gameId])
 
   useEffect(() => {
-    if (
-      (gamemode === GAME_TYPE.COMPUTER || gamemode === GAME_TYPE.PASSPLAY) &&
-      game &&
-      !gameIsRunning
-    ) {
+    if (CHECKS.READY_START_OFFLINE()) {
       setGameIsRunning(true);
       setUpGame();
       setIsLoadingGame(false);
     }
   }, [gamemode, game]);
   useEffect(() => {
-    if (
-      isOnlineGame() &&
-      game &&
-      onlineTurns &&
-      onlineTurns.length === 1 &&
-      !gameIsRunning
-    ) {
+    if (CHECKS.READY_START_ONLINE()) {
       setGameIsRunning(true);
       setUpGame();
       setIsLoadingGame(false);
@@ -233,13 +222,7 @@ export const useGameLogic = (
   }, [gamemode, game, onlineTurns]);
   //Case game just needs to load:
   useEffect(() => {
-    if (
-      isOnlineGame() &&
-      game &&
-      onlineTurns &&
-      onlineTurns.length > 1 &&
-      !gameIsRunning
-    ) {
+    if (CHECKS.READY_LOAD_ONLINE_GAME()) {
       setGameIsRunning(true);
       setIsLoadingGame(true);
       setStartingPhase(false);
@@ -248,13 +231,13 @@ export const useGameLogic = (
     }
   }, [gamemode, game, onlineTurns]);
   useEffect(() => {
-    if (onlineTurns && onlineTurns.length > 0 && !isLoadingGame) {
+    if (CHECKS.READY_RUN_ONLINE()) {
       runOnline();
     }
   }, [onlineTurns]);
 
   useEffect(() => {
-    if (!isLoadingGame && !isStartingPhase) {
+    if (CHECKS.READY_SET_LOADED_GAME()) {
       updatePositionHandler(0, 0, 'DISTRIBUTE');
       setIsLoadingGame(false);
     }

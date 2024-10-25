@@ -6,7 +6,18 @@ export const useGameHelper = (
 ) => {
 
 
-    const {gamemode,setDisableScreen,game,setPositions,whoAmI,isWaitingForDouble} = useGameState()
+    const {
+      gamemode,
+      setDisableScreen,
+      game,
+      setPositions,
+      whoAmI,
+      isWaitingForDouble,
+      gameIsRunning,
+      onlineTurns,
+      isLoadingGame,
+      isStartingPhase,
+    } = useGameState()
 
     const isOnlineGame = (gameMode?: GAME_TYPE) => {
         if (gameMode) {
@@ -54,6 +65,37 @@ export const useGameHelper = (
         return false;
       };
 
+      const CHECKS = {
+        READY_START_OFFLINE: ():boolean => (
+          isOfflineGame() && 
+          game && 
+          !gameIsRunning
+        ),
+        READY_START_ONLINE: ():boolean => (
+          isOnlineGame() &&
+          game &&
+          onlineTurns &&
+          onlineTurns.length === 1 &&
+          !gameIsRunning
+        ),
+        READY_LOAD_ONLINE_GAME: ():boolean => (
+          isOnlineGame() &&
+          game &&
+          onlineTurns &&
+          onlineTurns.length > 1 &&
+          !gameIsRunning
+        ),
+        READY_RUN_ONLINE: ():boolean => (
+          onlineTurns &&
+          onlineTurns.length > 0 &&
+          !isLoadingGame
+        ),
+        READY_SET_LOADED_GAME: ():boolean => (
+          !isLoadingGame && 
+          !isStartingPhase
+        )
+      }
+
   return {
     isOnlineGame,
     isOfflineGame,
@@ -61,5 +103,6 @@ export const useGameHelper = (
     legalMovesFrom,
     setUpEndBoard,
     disabledScreen,
+    CHECKS,
   };
 };
