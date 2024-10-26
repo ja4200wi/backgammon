@@ -99,7 +99,30 @@ export const useGameHelper = (
         READY_SET_LOADED_GAME: ():boolean => (
           !isLoadingGame && 
           !isStartingPhase
-        )
+        ),
+        OFFLINE_SWITCH: ():boolean => (
+          game &&
+          !game.isGameOver() &&
+          isOfflineGame()
+        ),
+        COMPURTERS_TURN: ():boolean => (
+          game.getCurrentPlayer() === PLAYER_COLORS.BLACK &&
+          gamemode === GAME_TYPE.COMPUTER
+        ),
+        ONLINE_SWITCH_AFTER_LOCAL_MOVE: ():boolean => (
+          game &&
+          !game.isGameOver() &&
+          isOnlineGame() &&
+          whoAmI === game.getCurrentPlayer()
+        ),
+        ONLINE_SWITCH: ():boolean => (
+          game &&
+          !game.isGameOver() &&
+          isOnlineGame()
+        ),
+        LOCAL_PLAYER_HAS_TURN: ():boolean => (
+          whoAmI === game.getCurrentPlayer()
+        ),
       }
 
   return {
@@ -110,6 +133,7 @@ export const useGameHelper = (
     setUpEndBoard,
     disabledScreen,
     forceRender,
+    forceRenderReducer,
     CHECKS,
   };
 };

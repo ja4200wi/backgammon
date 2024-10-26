@@ -38,7 +38,7 @@ export const GameStateProvider = ({ children }) => {
   const [whoAmI, setWhoAmI] = useState();
   const [opponentPlayerId, setOpponentPlayerId] = useState();
   const [onlineTurns, setOnlineTurns] = useState();
-  const [waitingOnLocalPlayer,setWaitingOnLocalPlayer] = useState();
+  const [waitingOnLocalPlayer,setWaitingOnLocalPlayer] = useState(); // prevents that runOnline gets triggered if local player has turn after load game
 
   //const [playerOneId,setPlayerOneId] = useState<string>("")
   //const [playerTwoId,setPlayerTwoId] = useState<string>("")

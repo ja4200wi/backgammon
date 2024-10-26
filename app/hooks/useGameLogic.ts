@@ -41,51 +41,41 @@ export const useGameLogic = (
     }
   };
   const switchplayer = async () => {
-    if (
-      game &&
-      !game.isGameOver() &&
-      isOfflineGame()
-    ) {
+    if (CHECKS.OFFLINE_SWITCH()) {
       game.switchPlayer();
-      forceRender()
+      forceRender() // is needed to trigger board response for switching player
+
       if (disableScreen) {
         setDisableScreen(false);
       }
       const didswitch = await checkForLegalMove(false);
       if (
-        game.getCurrentPlayer() === PLAYER_COLORS.BLACK &&
-        gamemode === GAME_TYPE.COMPUTER &&
+        CHECKS.COMPURTERS_TURN() &&
         !didswitch
       ) {
         runGame()
       }
     } else if (
-      game &&
-      !game.isGameOver() &&
-      isOnlineGame() &&
-      whoAmI === game.getCurrentPlayer()
+      CHECKS.ONLINE_SWITCH() &&
+      CHECKS.LOCAL_PLAYER_HAS_TURN()
     ) {
+
       setWaitingOnLocalPlayer(false)
       const turn = game.getTurnAfterMove();
       const newOnlineDice = await sendTurnToServer(turn);
       const newLocalDice = transformOnlineDice(newOnlineDice);
       game.onlineSwitchPlayer(newLocalDice);
+
       if (disableScreen) {
         setDisableScreen(false);
       } else {
         setDisableScreen(true);
       }
-      const copyGame = game.deepCopy()
-      setGame(copyGame)
     } else if (
-      game &&
-      !game.isGameOver() &&
-      isOnlineGame() &&
-      whoAmI !== game.getCurrentPlayer() &&
-      onlineTurns
+      CHECKS.ONLINE_SWITCH() &&
+      !CHECKS.LOCAL_PLAYER_HAS_TURN()
     ) {
       const newdice = getOnlineDice(onlineTurns);
-      forceRender()
       game.onlineSwitchPlayer(newdice);
       if (disableScreen) {
         setDisableScreen(false);
@@ -107,17 +97,13 @@ export const useGameLogic = (
     setIsLoadingGame, 
     setGameIsRunning, 
     game, 
-    setGame,
     gamemode,
     onlineTurns,
     gameId,
-    whoAmI,
     setWaitingOnLocalPlayer,
     } = useGameState()
 
   const {
-    isOnlineGame, 
-    isOfflineGame, 
     handleDisableScreen,
     legalMovesFrom,
     forceRender,
