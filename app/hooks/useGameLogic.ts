@@ -1,28 +1,21 @@
-import { Game } from '../gameLogic/backgammon';
+
 import {
-  BOT_NAMES,
   GAME_TYPE,
   PLAYER_COLORS,
 } from '../utils/constants';
-import { Turn } from '../gameLogic/turn';
-import { DoubleDice } from '../gameLogic/doubleDice';
 import { generateClient } from 'aws-amplify/api';
 import { Schema } from '../../amplify/data/resource';
-import endGame, { sendTurn, saveGameStats } from '../service/gameService';
 import { useGameState } from '../hooks/GameStateContext';
 import { useGameLogicComputer } from './useGameLogicComputer';
-import { getOnlineDice, transformOnlineDice, pause, transformLocalTurnToOnlineTurn, transformOnlineTurnToLocalTurn, getLatestOnlineTurn} from '../gameLogic/gameUtils';
-import { useState, useEffect, useRef, useReducer } from 'react';
+import { getOnlineDice, transformOnlineDice} from '../gameLogic/gameUtils';
+import { useEffect, useReducer } from 'react';
 import { useStateManagement } from './useGameLogicStateManagement';
 import { useGameTurns } from './useGameLogicTurns';
 import { useGameHelper } from './useGameLogicHelper';
 import { useGameSetup } from './useGameSetUp';
 import { useGameLogicOnline } from './useGameLogicOnline';
-import { PlacementConstraint } from 'aws-cdk-lib/aws-ecs';
 
 const client = generateClient<Schema>();
-
-type OnlineTurn = Schema['Turns']['type'];
 
 export const useGameLogic = (
 ) => {
@@ -119,9 +112,7 @@ export const useGameLogic = (
     game, 
     setGame,
     positions,
-    setPositions,
     doubleDice,
-    setDoubleDice,
     gamemode,
     gameOver,
     setGameOver,
@@ -130,14 +121,10 @@ export const useGameLogic = (
     setOnlineTurns,
     gameId,
     localPlayerId,
-    setDoubleAlertVisible,
-    setIsWaitingForDouble,
-    setShowWaitingDouble,
     opponentPlayerId,
     setOpponentPlayerId,
     whoAmI,
     setWhoAmI,
-    waitingOnLocalPlayer,
     setWaitingOnLocalPlayer,
     } = useGameState()
 
