@@ -151,7 +151,7 @@ export const useGameLogic = (
     runOnline
   } = useGameLogicOnline(makeTurn,double)
 
-  const { runBot } = useGameLogicComputer(game,makeTurn)
+  const { runBot } = useGameLogicComputer(makeTurn)
 
   const {
     startGame,
