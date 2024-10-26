@@ -20,7 +20,6 @@ const client = generateClient<Schema>();
 
 export const useGameLogic = (
 ) => {
-  // #region State Management
 
   const runGame = () => {
     if (!gamemode || !game) return;
@@ -34,16 +33,13 @@ export const useGameLogic = (
         runOnline();
         break;
       case GAME_TYPE.FRIENDLIST:
-        // Initialize game with friends logic here
         break;
       case GAME_TYPE.ELO:
-        // Initialize Elo ranked game logic here
         break;
       default:
         break;
     }
   };
-
   const switchplayer = async () => {
     if (
       game &&
@@ -100,10 +96,10 @@ export const useGameLogic = (
     }
   };
 
+  // CONSTANTS
+
   const { 
-    isStartingPhase,
     setStartingPhase, 
-    firstRoll,
     setFirstRoll, 
     disableScreen, 
     setDisableScreen, 
@@ -112,20 +108,10 @@ export const useGameLogic = (
     setGameIsRunning, 
     game, 
     setGame,
-    positions,
-    doubleDice,
     gamemode,
-    gameOver,
-    setGameOver,
-    boardRef,
     onlineTurns,
-    setOnlineTurns,
     gameId,
-    localPlayerId,
-    opponentPlayerId,
-    setOpponentPlayerId,
     whoAmI,
-    setWhoAmI,
     setWaitingOnLocalPlayer,
     } = useGameState()
 
@@ -143,9 +129,27 @@ export const useGameLogic = (
     setLocalPlayerColor,
   } = useGameEffects()
 
-  const {updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
-  const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
-  const {sendTurnToServer,sendFinalGameStateToServer,runOnline} = useGameLogicOnline(makeTurn,double)
+  const {
+    updateGameState,
+    checkForLegalMove,
+    updateMoveIsOver,
+    isGameOver
+  } = useStateManagement(switchplayer)
+
+  const {
+    double,
+    giveUp,
+    makeTurn,
+    updatePositionHandler,
+    undoMove,
+    onMoveChecker
+    } = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
+
+  const {
+    sendTurnToServer,
+    sendFinalGameStateToServer,
+    runOnline
+  } = useGameLogicOnline(makeTurn,double)
 
   const { runBot } = useGameLogicComputer(game,makeTurn)
 
@@ -155,7 +159,6 @@ export const useGameLogic = (
     setUpGame,
     loadGame,
   } = useGameSetup(runGame,makeTurn,checkForLegalMove)
-  // #endregion
 
   // #region Effects
   useEffect(() => {
@@ -180,7 +183,6 @@ export const useGameLogic = (
       setIsLoadingGame(false);
     }
   }, [gamemode, game, onlineTurns]);
-  //Case game just needs to load:
   useEffect(() => {
     if (CHECKS.READY_LOAD_ONLINE_GAME()) {
       setGameIsRunning(true);
@@ -205,30 +207,16 @@ export const useGameLogic = (
   // #endregion
 
   return {
-    game,
-    positions,
-    boardRef,
     onMoveChecker,
     startGame,
     updateMoveIsOver,
     undoMove,
     legalMovesFrom,
     giveUp,
-    isStartingPhase,
-    firstRoll,
-    disableScreen,
-    gameOver,
-    setGameOver,
-    doubleDice,
     double,
     resetGame,
-    onlineTurns,
     sendTurnToServer,
-    isOfflineGame,
     sendFinalGameStateToServer,
-    opponentPlayerId,
-    isOnlineGame,
     handleDisableScreen,
-    isLoadingGame,
   };
 };

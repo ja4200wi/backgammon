@@ -52,13 +52,9 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   }>({ sx: 0, sy: 0, ex: 0, ey: 0 });
   const { gameId, localPlayerId, gameMode, botType } = route.params;
   const {
-    boardRef,
-    opponentPlayerId,
     onMoveChecker,
     startGame,
     updateMoveIsOver,
-    isOnlineGame,
-    isOfflineGame,
     undoMove,
     handleDisableScreen,
     giveUp,
@@ -67,9 +63,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     sendTurnToServer,
     sendFinalGameStateToServer,
     double,
-    onlineTurns,
-  } = useGameLogic(
-  );
+  } = useGameLogic();
 
   const { 
     isLoadingGame,
@@ -86,12 +80,18 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     setDoubleAlertVisible,
     setIsWaitingForDouble,
     showWaitingDouble,
-    setShowWaitingDouble
+    setShowWaitingDouble,
+    boardRef,
+    opponentPlayerId,
+    onlineTurns,
   } = useGameState()
 
-  const {disabledScreen} = useGameHelper()
+  const {
+    disabledScreen,
+    isOfflineGame,
+    isOnlineGame,
+  } = useGameHelper()
 
-  const { pointsToWin } = route.params;
   const [startedGame, setStartedGame] = useState<boolean>(false);
   {/* START GAME*/}
   useEffect(() => {
