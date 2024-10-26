@@ -14,6 +14,7 @@ import { useGameTurns } from './useGameLogicTurns';
 import { useGameHelper } from './useGameLogicHelper';
 import { useGameSetup } from './useGameSetUp';
 import { useGameLogicOnline } from './useGameLogicOnline';
+import { useGameEffects } from './useGameEffects';
 
 const client = generateClient<Schema>();
 
@@ -133,14 +134,18 @@ export const useGameLogic = (
     isOfflineGame, 
     handleDisableScreen,
     legalMovesFrom,
-    CHECKS
+    forceRender,
+    CHECKS,
   } = useGameHelper()
 
-  const {forceRenderReducer, updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
+  const {
+    syncOnlineTunrs,
+    setLocalPlayerColor,
+  } = useGameEffects()
+
+  const {updateGameState, checkForLegalMove,updateMoveIsOver,isGameOver} = useStateManagement(switchplayer)
   const {double,giveUp,makeTurn,updatePositionHandler,undoMove,onMoveChecker,} = useGameTurns(updateGameState,updateMoveIsOver,isGameOver)
   const {sendTurnToServer,sendFinalGameStateToServer,runOnline} = useGameLogicOnline(makeTurn,double)
-
-  const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
 
   const { runBot } = useGameLogicComputer(game,makeTurn)
 
@@ -149,51 +154,16 @@ export const useGameLogic = (
     resetGame,
     setUpGame,
     loadGame,
-  } = useGameSetup(runGame,makeTurn,forceRenderReducer,checkForLegalMove)
+  } = useGameSetup(runGame,makeTurn,checkForLegalMove)
   // #endregion
-
-  const getWhoAmI = async () => {
-    const { data: session, errors } = await client.models.Session.get({
-      id: gameId,
-    });
-    if (session === null || session === undefined) {
-      setWhoAmI(PLAYER_COLORS.NAP);
-      return
-    }
-    if (session.playerOneID === localPlayerId) {
-      setOpponentPlayerId(
-        session.playerTwoID === null ? '' : session.playerTwoID
-      );
-      setWhoAmI(PLAYER_COLORS.WHITE)
-      forceRender()
-      return
-    } else {
-      setOpponentPlayerId(
-        session.playerOneID === null ? '' : session.playerOneID
-      );
-      setWhoAmI(PLAYER_COLORS.BLACK)
-      forceRender()
-      return
-    }
-  };
 
   // #region Effects
   useEffect(() => {
-    if (gameId !== undefined && gameId !== null) {
-      const sub = client.models.Turns.observeQuery({
-        filter: { gameId: { eq: gameId } },
-      }).subscribe({
-        next: ({ items, isSynced }) => {
-          setOnlineTurns([...items]);
-        },
-      });
-
-      return () => sub.unsubscribe();
-    }
+    syncOnlineTunrs()
   }, [,gameId]);
 
   useEffect(() => {
-    getWhoAmI()
+    setLocalPlayerColor()
   },[,gameId])
 
   useEffect(() => {

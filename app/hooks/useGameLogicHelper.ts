@@ -1,3 +1,4 @@
+import { useReducer } from 'react';
 import { Game } from '../gameLogic/backgammon';
 import { GAME_TYPE, PLAYER_COLORS } from '../utils/constants';
 import { useGameState } from './GameStateContext';
@@ -19,6 +20,9 @@ export const useGameHelper = (
       isStartingPhase,
       waitingOnLocalPlayer
     } = useGameState()
+
+    const forceRenderReducer = (x: number) => x + 1;
+    const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
 
     const isOnlineGame = (gameMode?: GAME_TYPE) => {
         if (gameMode) {
@@ -105,6 +109,7 @@ export const useGameHelper = (
     legalMovesFrom,
     setUpEndBoard,
     disabledScreen,
+    forceRender,
     CHECKS,
   };
 };

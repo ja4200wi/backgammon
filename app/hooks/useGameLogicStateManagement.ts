@@ -14,8 +14,6 @@ export const useStateManagement = (
 
     const {isOfflineGame,isOnlineGame} = useGameHelper()
 
-    const forceRenderReducer = (x: number) => x + 1;
-
     const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
         if (currentGame && !currentGame.hasLegalMove()) {
           if (fastSwitch) {
@@ -94,7 +92,6 @@ export const useStateManagement = (
       
 
   return {
-    forceRenderReducer,
     updateGameState,
     checkForLegalMove,
     updateMoveIsOver,

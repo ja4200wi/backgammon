@@ -14,7 +14,6 @@ type OnlineTurn = Schema['Turns']['type'];
 export const useGameSetup = (
   runGame: () => void,
   makeTurn: (turn: Turn, quickTurn?: boolean, game?: Game) => Promise<Game | undefined>,
-  forceRenderReducer: (x: number) => number,
   checkForLegalMove: (fastSwitch: boolean, currentGame?: Game) => Promise<boolean>,
 ) => {
 
@@ -44,8 +43,11 @@ export const useGameSetup = (
       setGameOver,
       opponentPlayerId,
     } = useGameState()
-    const {isOnlineGame, isOfflineGame} = useGameHelper()
-    const [ignored, forceRender] = useReducer(forceRenderReducer, 0);
+    const {
+      isOnlineGame, 
+      isOfflineGame,
+      forceRender,
+    } = useGameHelper()
 
     const startGame = async (
         gamemode: GAME_TYPE,
