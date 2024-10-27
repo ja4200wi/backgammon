@@ -188,20 +188,19 @@ export const useGameSetup = (
           }
         }
         // After all turns are processed
-        const copyOfGame = currentGame!.deepCopy();
-        setGame(copyOfGame);
         setDoubleDice(tempDoubleDice);
-        setPositions(copyOfGame.getCurrentPositions());
-        await checkForLegalMove(false, copyOfGame);
+        setPositions(currentGame!.getCurrentPositions());
+        await checkForLegalMove(false, currentGame);
+        setGame(currentGame);
+        setIsLoadingGame(false)
     
-        if (copyOfGame.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
+        if (currentGame!.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
           setDisableScreen(true);
         } else {
           setWaitingOnLocalPlayer(true)
           setDisableScreen(false);
         }
-        setIsLoadingGame(false)
-    
+        forceRender()
       };
     
     return {

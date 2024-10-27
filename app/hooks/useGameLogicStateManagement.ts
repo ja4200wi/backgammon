@@ -12,7 +12,7 @@ export const useStateManagement = (
 
     const {game,setPositions,gamemode,whoAmI,firstRoll,setFirstRoll,setGameOver,onlineTurns,localPlayerId,opponentPlayerId} = useGameState()
 
-    const {isOfflineGame,isOnlineGame} = useGameHelper()
+    const {isOfflineGame,isOnlineGame,forceRender} = useGameHelper()
 
     const checkForLegalMove = async (fastSwitch: boolean, currentGame?: Game) => {
         if (currentGame && !currentGame.hasLegalMove()) {
