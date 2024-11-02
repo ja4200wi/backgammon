@@ -8,6 +8,7 @@ import { useGameHelper } from "./useGameLogicHelper";
 import { DoubleDice } from "../gameLogic/doubleDice";
 import { Turn } from "../gameLogic/turn";
 import { useReducer } from "react";
+import { Double } from "react-native/Libraries/Types/CodegenTypes";
 
 type OnlineTurn = Schema['Turns']['type'];
 
@@ -47,48 +48,29 @@ export const useGameSetup = (
       isOnlineGame, 
       isOfflineGame,
       forceRender,
+      CHECKS,
     } = useGameHelper()
 
-    const startGame = async (
-        gamemode: GAME_TYPE,
-        newOnlineTurns?: OnlineTurn[],
-        botType?: BOT_NAMES
-      ) => {
-        // Übergabe von onlineturns ist hier unnötig; und mit globalGameState auch die anderen beiden
-        if (newOnlineTurns) {
-          startOnline(gamemode, newOnlineTurns);
+    const startGame = async () => {
+        if (isOnlineGame()) {
+          startOnline();
         } else {
-          if (botType) startOffline(gamemode, botType);
-          else startOffline(gamemode);
+          startOffline()
         }
       };
-      const startOnline = (gamemode: GAME_TYPE, newOnlineTurns?: OnlineTurn[]) => {
-        const onlineDice = getOnlineDice(newOnlineTurns!, 0);
-        setGameMode(gamemode);
-        setGameId(gameId)
-        setLocalPlayerId(localPlayerId)
+      const startOnline = () => {
+        const onlineDice = getOnlineDice(onlineTurns, 0);
         const startPlayer =
           onlineDice[0] > onlineDice[1] ? PLAYER_COLORS.WHITE : PLAYER_COLORS.BLACK;
-        const newGame = new Game(startPlayer, onlineDice);
-        setGame(newGame);
+        setGame(new Game(startPlayer, onlineDice))
       };
-      const startOffline = (gamemode: GAME_TYPE, botTpye?: BOT_NAMES) => {
-        setGameMode(gamemode);
-        if (botTpye) {
-          setBot(new Bot(botTpye))}
-          ;
-        const newGame = new Game();
-        setGame(newGame);
-      };
-      const setUpGame = async () => {
-        if (game) {
-          setPositions(game.getCurrentPositions());
-          doStartingPhase();
-        }
+      const startOffline = () => {
+        setGame(new Game());
       };
       const doStartingPhase = async () => {
-        if (game && isOfflineGame()) {
-          if (game.getDice()[0] > game.getDice()[1]) {
+        setPositions(game.getCurrentPositions());
+        if (isOfflineGame()) {
+          if (CHECKS.WHITE_IS_STARTING()) {
             game.setPlayer(PLAYER_COLORS.WHITE);
             setTimeout(() => setStartingPhase(false), 2250);
           } else {
@@ -97,19 +79,14 @@ export const useGameSetup = (
               runGame();
             }, 2250);
           }
-        } else if (isOnlineGame() && game) {
-          if (whoAmI === game.getCurrentPlayer()) {
-            setTimeout(() => {
-              setStartingPhase(false);
-            }, 2250);
-          } else {
-            setTimeout(() => {
-              setStartingPhase(false);
-            }, 2250);
-          }
+        } else if (isOnlineGame()) {
+          setTimeout(() => {
+            setStartingPhase(false);
+          }, 2250);
         }
       };
       const resetGame = () => {
+        //only needed at gamescr (remove all other imports in usegamelogic)
         setGame(null);
         setGameIsRunning(false);
         setStartingPhase(true);
@@ -119,82 +96,37 @@ export const useGameSetup = (
       };
 
       const loadGame = async () => {
-        if (game) {
-          if (isOnlineGame() && onlineTurns) {
-            const startingDice = getOnlineDice(onlineTurns, 0);
-            const copyOnlineTurns = [...onlineTurns]; // Create a copy of the onlineTurns array
-            await processTurn(copyOnlineTurns, game, startingDice);
-            await pause(1000);
-          }
-        }
+            await processTurn();
       };
       
       const processTurn = async (
-        copyOnlineTurns: OnlineTurn[],
-        game: Game,
-        startingDice: [number, number]
       ) => {
         let hasDoubled = false;
         let tempDoubleDice = new DoubleDice();
-        let currentGame: Game | undefined = game;
     
-        while (copyOnlineTurns.length > 0) {
-          const tempOnlineTurn = copyOnlineTurns.shift();
+        while (onlineTurns.length > 0) {
+          const tempOnlineTurn = onlineTurns.shift();
     
           if (!tempOnlineTurn) continue;
           const tempLocalTurn = transformOnlineTurnToLocalTurn(tempOnlineTurn);
-    
-          const nextMoveDice = transformOnlineDice(tempOnlineTurn.diceForNextTurn!); // Use the remaining moves for the next dice roll
+          const nextMoveDice = transformOnlineDice(tempOnlineTurn.diceForNextTurn); // Use the remaining moves for the next dice roll
           if (tempOnlineTurn.type === 'MOVE') {
-            currentGame = await makeTurn(tempLocalTurn, true, currentGame);
-            if (currentGame) {
-              currentGame.onlineSwitchPlayer(nextMoveDice);
-              forceRender()
-            }
-          } else if (tempOnlineTurn.type === 'DOUBLE'&& currentGame) {
-            if (hasDoubled) {
-              tempDoubleDice = currentGame.double();
-              hasDoubled = false;
-            } else {
-              if (
-                copyOnlineTurns.length === 0 &&
-                localPlayerId !== tempOnlineTurn.playerId
-              ) {
-                setIsLoadingGame(false);
-                setDoubleAlertVisible(true);
-              } else if(copyOnlineTurns.length === 0 && localPlayerId === tempOnlineTurn.playerId) {
-                setIsLoadingGame(false)
-                setIsWaitingForDouble(true)
-                setShowWaitingDouble(true)
-                forceRender()
-              } else {
-                hasDoubled = true;
-              }
-            }
+            handleLoadMove(tempLocalTurn,nextMoveDice)
+          } else if (tempOnlineTurn.type === 'DOUBLE') {
+            ({tempDoubleDice, hasDoubled} = handleLoadDouble(hasDoubled,tempDoubleDice,tempOnlineTurn))
+            forceRender()
           } else if (tempOnlineTurn.type === 'GIVE_UP') {
-            if (localPlayerId !== tempOnlineTurn.playerId) {
-              setIsLoadingGame(false)
-              setTimeout(() => {
-                setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
-              }, 100);
-              return
-            } else {
-              setIsLoadingGame(false)
-              setTimeout(() => {
-                setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
-              }, 100);
-              return
-            }
+            handleGiveUp(tempOnlineTurn)
           }
         }
         // After all turns are processed
         setDoubleDice(tempDoubleDice);
-        setPositions(currentGame!.getCurrentPositions());
-        await checkForLegalMove(false, currentGame);
-        setGame(currentGame);
+        setPositions(game.getCurrentPositions());
+        await checkForLegalMove(false, game);
+        setGame(game);
         setIsLoadingGame(false)
     
-        if (currentGame!.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
+        if (game.getCurrentPlayer() !== whoAmI && whoAmI !== PLAYER_COLORS.NAP) {
           setDisableScreen(true);
         } else {
           setWaitingOnLocalPlayer(true)
@@ -202,6 +134,61 @@ export const useGameSetup = (
         }
         forceRender()
       };
+
+      const handleLoadMove = (tempLocalTurn: Turn, nextMoveDice: [number, number]) => {
+        makeTurn(tempLocalTurn, true, game);
+        game.onlineSwitchPlayer(nextMoveDice);
+        forceRender()
+      }
+      const handleLoadDouble = (
+        hasDoubled: boolean,
+        tempDoubleDice: DoubleDice,
+        tempOnlineTurn: any
+      ): { tempDoubleDice: DoubleDice; hasDoubled: boolean } => {
+        if (hasDoubled) {
+          //case 1: Second double in a row - doubling
+          tempDoubleDice = game.double();
+          hasDoubled = false;
+          return { tempDoubleDice, hasDoubled };
+        } else {
+          if (
+            onlineTurns.length === 0 &&
+            localPlayerId !== tempOnlineTurn.playerId
+          ) {
+            //case 2: Last opponent move was a double - waiting for decicion
+            setDoubleAlertVisible(true);
+            return { tempDoubleDice, hasDoubled };
+          } else if (
+            onlineTurns.length === 0 &&
+            localPlayerId === tempOnlineTurn.playerId
+          ) {
+            //case 3: Last local move was double - waiting for opponent
+            setIsWaitingForDouble(true);
+            setShowWaitingDouble(true);
+            return { tempDoubleDice, hasDoubled };
+          } else {
+            //case 4: Memorizing double to recognize case 1 in next iteration
+            hasDoubled = true;
+            return { tempDoubleDice, hasDoubled };
+          }
+        }
+      };
+      const handleGiveUp = (tempOnlineTurn:any) => {
+        if (localPlayerId !== tempOnlineTurn.playerId) {
+          setIsLoadingGame(false)
+          setTimeout(() => {
+            setGameOver({ gameover: true, winner: localPlayerId, reason: 'GIVE_UP' });
+          }, 100);
+          return
+        } else {
+          setIsLoadingGame(false)
+          setTimeout(() => {
+            setGameOver({ gameover: true, winner: opponentPlayerId, reason: 'GIVE_UP' });
+          }, 100);
+          return
+        }
+      }
+      
     
     return {
       startGame,
@@ -209,7 +196,6 @@ export const useGameSetup = (
       startOnline,
       resetGame,
       doStartingPhase,
-      setUpGame,
       loadGame,
     }
 }

@@ -142,8 +142,8 @@ export const useGameLogic = (
   const {
     startGame,
     resetGame,
-    setUpGame,
     loadGame,
+    doStartingPhase,
   } = useGameSetup(runGame,makeTurn,checkForLegalMove)
 
   // #region Effects
@@ -158,15 +158,15 @@ export const useGameLogic = (
   useEffect(() => {
     if (CHECKS.READY_START_OFFLINE()) {
       setGameIsRunning(true);
-      setUpGame();
       setIsLoadingGame(false);
+      doStartingPhase()
     }
   }, [gamemode, game]);
   useEffect(() => {
     if (CHECKS.READY_START_ONLINE()) {
       setGameIsRunning(true);
-      setUpGame();
       setIsLoadingGame(false);
+      doStartingPhase()
     }
   }, [gamemode, game, onlineTurns]);
   useEffect(() => {

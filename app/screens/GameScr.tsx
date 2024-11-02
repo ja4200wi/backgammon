@@ -23,6 +23,7 @@ import LoadingAlert from '../components/misc/LoadingAlert';
 import { useGameState } from '../hooks/GameStateContext';
 import { ConsoleLogger } from 'aws-amplify/utils';
 import { useGameHelper } from '../hooks/useGameLogicHelper';
+import { Bot } from '../gameLogic/bot';
 
 interface GameScrProps {
   navigation: any;
@@ -84,6 +85,8 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     boardRef,
     opponentPlayerId,
     onlineTurns,
+    setGameMode,
+    setBot,
   } = useGameState()
 
   const {
@@ -98,13 +101,15 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     if(!startedGame) {
       setGameId(gameId)
       setLocalPlayerId(localPlayerId)
+      setGameMode(gameMode)
+      setBot(new Bot(botType))
     }
     if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
       setStartedGame(true);
-      startGame(gameMode);
+      startGame()
     } else if (!startedGame && gameMode === GAME_TYPE.COMPUTER) {
       setStartedGame(true);
-      startGame(gameMode, undefined, botType);
+      startGame();
     } else if (
       !startedGame &&
       isOnlineGame(gameMode) &&
@@ -112,7 +117,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       onlineTurns.length > 0
     ) {
       setStartedGame(true);
-      startGame(gameMode, onlineTurns);
+      startGame();
     }
   }, [onlineTurns, startedGame]);
   {/* END GAME*/}
@@ -158,7 +163,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handleRestart = () => {
     setGameOver({ gameover: false, winner: PLAYER_COLORS.NAP });
     resetGame();
-    startGame(gameMode);
+    startGame();
     setWinnerOfflineAlertVisible(false);
   };
   const handleGiveUp = (type?: 'DOUBLE' | 'STANDARD') => {

@@ -74,7 +74,7 @@ export class Game {
     this.board[24] = this.createStones(15, PLAYER_COLORS.WHITE);
   }
 
-  private setupTestBoard() {
+  private setUpBlackCantMoveOutOfPrisonBoard() {
     this.board[2] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[3] = this.createStones(2, PLAYER_COLORS.BLACK);
     this.board[4] = this.createStones(2, PLAYER_COLORS.BLACK);

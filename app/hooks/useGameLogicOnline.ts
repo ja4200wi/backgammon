@@ -10,6 +10,7 @@ import { Turn } from '../gameLogic/turn';
 import endGame, { saveGameStats, sendTurn } from '../service/gameService';
 import { useGameTurns } from './useGameLogicTurns';
 import { useStateManagement } from './useGameLogicStateManagement';
+import { useGameHelper } from './useGameLogicHelper';
 
 const client = generateClient<Schema>();
 
@@ -31,7 +32,6 @@ export const useGameLogicOnline = (
 
   const {
     localPlayerId,
-    setOpponentPlayerId,
     doubleDice,
     gamemode,
     game,
@@ -42,7 +42,10 @@ export const useGameLogicOnline = (
     setIsWaitingForDouble,
     setShowWaitingDouble,
     gameId,
+    setWaitingOnLocalPlayer,
   } = useGameState()
+
+  const {forceRender} = useGameHelper()
 
 
   const runOnline = async () => {
@@ -59,9 +62,13 @@ export const useGameLogicOnline = (
     ) {
       if (!isWaitingForDouble) {
         setDoubleAlertVisible(true);
+        setWaitingOnLocalPlayer(false)
+        forceRender()
       } else {
         setIsWaitingForDouble(false);
         setShowWaitingDouble(false);
+        setWaitingOnLocalPlayer(true)
+        forceRender()
         double();
       }
     } else if (

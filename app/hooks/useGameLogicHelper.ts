@@ -123,6 +123,9 @@ export const useGameHelper = (
         LOCAL_PLAYER_HAS_TURN: ():boolean => (
           whoAmI === game.getCurrentPlayer()
         ),
+        WHITE_IS_STARTING: ():boolean => (
+          game.getDice()[0] > game.getDice()[1]
+        ),
       }
 
   return {
