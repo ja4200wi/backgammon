@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { showAcceptMoveButton, showUndoMoveButton } from '../gameLogic/gameUtils';
 import Board from '../components/game/Board';
 import { useGameLogic } from '../hooks/useGameLogic';
 import {
@@ -19,6 +20,10 @@ import LoadingPopup from '../components/misc/LoadingAlert';
 import AnimatedChecker from '../components/game/AnimatedChecker';
 import GameOverModal from '../components/game/GameOverModal';
 import LoadingAlert from '../components/misc/LoadingAlert';
+import { useGameState } from '../hooks/GameStateContext';
+import { ConsoleLogger } from 'aws-amplify/utils';
+import { useGameHelper } from '../hooks/useGameLogicHelper';
+import { Bot } from '../gameLogic/bot';
 
 interface GameScrProps {
   navigation: any;
@@ -38,10 +43,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
     useState(false);
   const [winnerOnlineAlertVisible, setWinnerOnlineAlertVisible] =
     useState(false);
-  const [doubleAlertVisible, setDoubleAlertVisible] = useState(false);
   const [winner, setWinner] = useState<PLAYER_COLORS | string | null>(null); // State to hold the winner
-  const [isWaitingForDouble, setIsWaitingForDouble] = useState<boolean>(false);
-  const [showWaitingDouble,setShowWaitingDouble] = useState(false)
   const [doCheckerAnimation, setDoCheckerAnimation] = useState<boolean>(false);
   const [animatedCheckerValues, setAnimatedCheckerValues] = useState<{
     sx: number;
@@ -51,55 +53,63 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   }>({ sx: 0, sy: 0, ex: 0, ey: 0 });
   const { gameId, localPlayerId, gameMode, botType } = route.params;
   const {
-    game,
-    dice,
-    positions,
-    pipCount,
-    homeCheckers,
-    boardRef,
-    opponentPlayerId,
     onMoveChecker,
     startGame,
-    showAcceptMoveButton,
     updateMoveIsOver,
-    isOnlineGame,
-    showUndoMoveButton,
-    isOfflineGame,
     undoMove,
     handleDisableScreen,
     giveUp,
     legalMovesFrom,
-    disabledScreen,
-    setGameOver,
     resetGame,
     sendTurnToServer,
     sendFinalGameStateToServer,
-    doubleDice,
-    isStartingPhase,
-    firstRoll,
-    gameOver,
     double,
-    isLoadingGame,
-    onlineTurns,
-  } = useGameLogic(
-    gameId,
-    localPlayerId,
-    setDoubleAlertVisible,
-    isWaitingForDouble,
-    setIsWaitingForDouble,
-    setShowWaitingDouble,
-  );
+  } = useGameLogic();
 
-  const { pointsToWin } = route.params;
+  const { 
+    isLoadingGame,
+    firstRoll,
+    isStartingPhase,
+    game, 
+    positions,
+    doubleDice,
+    gameOver,
+    setGameOver,
+    setGameId,
+    setLocalPlayerId,
+    doubleAlertVisible,
+    setDoubleAlertVisible,
+    setIsWaitingForDouble,
+    showWaitingDouble,
+    setShowWaitingDouble,
+    boardRef,
+    opponentPlayerId,
+    onlineTurns,
+    setGameMode,
+    setBot,
+  } = useGameState()
+
+  const {
+    disabledScreen,
+    isOfflineGame,
+    isOnlineGame,
+  } = useGameHelper()
+
   const [startedGame, setStartedGame] = useState<boolean>(false);
   {/* START GAME*/}
   useEffect(() => {
+    if(!startedGame) {
+      setGameId(gameId)
+      setLocalPlayerId(localPlayerId)
+      setGameMode(gameMode)
+      setBot(new Bot(botType))
+    }
     if (!startedGame && gameMode === GAME_TYPE.PASSPLAY) {
       setStartedGame(true);
-      startGame(gameMode);
+      startGame()
     } else if (!startedGame && gameMode === GAME_TYPE.COMPUTER) {
       setStartedGame(true);
-      startGame(gameMode, undefined, botType);
+      startGame();
     } else if (
       !startedGame &&
       isOnlineGame(gameMode) &&
@@ -107,7 +117,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
       onlineTurns.length > 0
     ) {
       setStartedGame(true);
-      startGame(gameMode, onlineTurns);
+      startGame();
     }
   }, [onlineTurns, startedGame]);
   {/* END GAME*/}
@@ -153,7 +163,7 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
   const handleRestart = () => {
     setGameOver({ gameover: false, winner: PLAYER_COLORS.NAP });
     resetGame();
-    startGame(gameMode);
+    startGame();
     setWinnerOfflineAlertVisible(false);
   };
   const handleGiveUp = (type?: 'DOUBLE' | 'STANDARD') => {
@@ -251,11 +261,11 @@ const GameScr: React.FC<GameScrProps> = ({ navigation, route }) => {
           ref={boardRef}
           positions={positions}
           currentPlayer={game?.getCurrentPlayer()!}
-          pipCount={pipCount}
-          homeCount={homeCheckers}
+          pipCount={game ? [game?.getDistances().distWhite,game?.getDistances().distBlack] : [167,167]}
+          homeCount={game ? [game?.getHomeCheckers(PLAYER_COLORS.WHITE),game?.getHomeCheckers(PLAYER_COLORS.BLACK)] : [0,0]}
           dice={{
-            diceOne: dice[0],
-            diceTwo: dice[1],
+            diceOne: game ? game?.getDice()[0] : 1,
+            diceTwo: game ? game?.getDice()[1] : 2,
             color:
               game?.getCurrentPlayer()! === PLAYER_COLORS.WHITE
                 ? DICE_COLORS.WHITE

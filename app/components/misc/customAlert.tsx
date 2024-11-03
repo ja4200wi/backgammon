@@ -22,7 +22,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
   onDecline,
 }) => {
   return (
-    <Modal transparent={true} visible={visible} animationType="fade">
+    <Modal transparent={true} visible={visible !== undefined ? visible : false} animationType="fade">
       <View style={styles.modalContainer}>
         <View style={styles.alertBox}>
           {/* Headline */}
