@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Replace with the compatible version for your project
+          node-version: '22.8.0'  # Replace with the compatible version for your project
 
       - name: Install Node.js Dependencies
         run: npm install  # Run npm install at the root level
